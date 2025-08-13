@@ -1,0 +1,7 @@
+__pycache__/
+.env
+venv/
+*.pyc
+docker-compose.override.yml
+
+/data/postgres/
