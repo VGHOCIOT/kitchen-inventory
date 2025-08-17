@@ -1,10 +1,6 @@
 services:
   db:
     image: postgres:15
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: inventory
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     ports:
@@ -12,8 +8,8 @@ services:
 
   api:
     build: .
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://admin:secret@db:5432/inventory
+    env_file:
+      - .env
     depends_on:
       - db
     ports:
