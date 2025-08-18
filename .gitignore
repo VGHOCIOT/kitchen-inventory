@@ -5,3 +5,5 @@ venv/
 docker-compose.override.yml
 
 /data/postgres/
+
+.DS_Store
