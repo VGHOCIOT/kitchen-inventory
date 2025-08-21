@@ -10,7 +10,12 @@ async def lookup_barcode(barcode: str):
                 product = data.get("product", {})
                 return {
                     "name": product.get("product_name"),
-                    "brands": product.get("brands"),
-                    "categories": product.get("categories")
+                    "brands": arrayify(product.get("brands")),
+                    "categories": arrayify(product.get("categories"))
                 }
     return None
+
+def arrayify(arg: str | None) -> list[str]:
+    if not arg:
+        return []
+    return [s.strip() for s in arg.split(",")]
