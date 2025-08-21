@@ -23,17 +23,15 @@ async def get_or_create_from_barcode(barcode: str, location: str = "fridge", db:
     product_info = await lookup_barcode(barcode) or {
         "name": f"Unknown Product {barcode}",
         "brand": None,
-        "category": None,
-        "image_url": None
+        "category": None
     }
 
     new_item = Item(
         barcode=barcode,
         name=product_info["name"],
-        brand=product_info["brand"],
-        category=product_info["category"],
-        location=location,
-        image_url=product_info["image_url"]
+        brands=product_info["brands"],
+        categories=product_info["categories"],
+        location=location
     )
 
     db.add(new_item)

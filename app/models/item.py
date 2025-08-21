@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Date, JSON
+from sqlalchemy.dialects.postgresql import ARRAY
 from app.db.base import Base
 
 class Item(Base):
@@ -10,3 +11,5 @@ class Item(Base):
     qty = Column(Integer, default=1)
     product_data = Column(JSON, default={})
     expiry = Column(Date, nullable=True)
+    brands = Column(ARRAY(String), default=list)
+    categories = Column(ARRAY(String), default=list)
