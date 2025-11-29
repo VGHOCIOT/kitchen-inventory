@@ -2,11 +2,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.item import Item
 from app.api.services.openfood import lookup_barcode
+from app import events
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Core async CRUD functions
 async def get_or_create_from_barcode(barcode: str, location: str = "fridge", db: AsyncSession = None) -> Item:
     stmt = select(Item).where(Item.barcode == barcode)
     result = await db.execute(stmt)
@@ -38,8 +38,10 @@ async def get_or_create_from_barcode(barcode: str, location: str = "fridge", db:
     await db.commit()
     await db.refresh(new_item)
     logger.info(f"Created new item: {new_item.name} (barcode: {barcode})")
+    await events.emit("item_added", new_item)
     return new_item
 
+# add error catching to all api defintions and add testing code
 async def get_item_by_id(item_id: int, db: AsyncSession) -> Item | None:
     result = await db.execute(select(Item).where(Item.id == item_id))
     return result.scalar_one_or_none()
@@ -52,6 +54,8 @@ async def get_items_by_location(location: str, db: AsyncSession) -> list[Item]:
     result = await db.execute(select(Item).where(Item.location == location))
     return result.scalars().all()
 
+# simplify into update_item need to be able to edit new variables for open status as well as 
+# existing location definition, should there 
 async def update_item_location(item_id: int, new_location: str, db: AsyncSession) -> Item | None:
     item = await get_item_by_id(item_id, db)
     if item:
