@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.session import get_db
-from app.crud.items import get_or_create_from_barcode
+from db.session import get_db
+from crud.items import get_or_create_from_barcode
 
 router = APIRouter()
 

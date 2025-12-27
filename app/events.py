@@ -1,5 +1,5 @@
 from typing import Callable, Dict, List
-from app.api.v1.websocket import manager  # reuse WebSocket manager for broadcast
+from api.v1.websocket import manager  # reuse WebSocket manager for broadcast
 
 subscribers: Dict[str, List[Callable]] = {}
 

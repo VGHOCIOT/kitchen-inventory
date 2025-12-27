@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, JSON
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
-from app.db.base import Base
+from db.base import Base
 
 class RecipeIngredient(Base):
     __tablename__ = "recipe_ingredients"
