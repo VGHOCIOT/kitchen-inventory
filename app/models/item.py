@@ -9,7 +9,7 @@ class Item(Base):
     name = Column(String, nullable=True)
     location = Column(String, default="fridge")
     qty = Column(Integer, default=1)
-    product_data = Column(JSON, default={})
+    product_data = Column(JSON, default=dict)
     expiry = Column(Date, nullable=True)
     brands = Column(ARRAY(String), default=list)
     categories = Column(ARRAY(String), default=list)
