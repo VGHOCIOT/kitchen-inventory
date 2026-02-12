@@ -38,7 +38,7 @@ async def create_item(
     db.add(new_item)
     await db.commit()
     await db.refresh(new_item)
-    await events.emit("item_added", new_item)
+    events.emit("item_added", new_item)
     return new_item
 
 
@@ -120,6 +120,6 @@ async def delete_item_by_composite_key(
     if item:
         await db.delete(item)
         await db.commit()
-        await events.emit("item_deleted", item)
+        events.emit("item_deleted", item)
         return True
     return False

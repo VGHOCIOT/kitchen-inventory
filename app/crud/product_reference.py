@@ -36,5 +36,5 @@ async def create_product(
     await db.commit()
     await db.refresh(new_prod_ref)
     logger.info(f"Created new product reference: {new_prod_ref.name} (barcode: {barcode})")
-    await events.emit("product_added", new_prod_ref)
+    events.emit("product_added", new_prod_ref)
     return new_prod_ref
