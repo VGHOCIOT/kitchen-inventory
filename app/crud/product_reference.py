@@ -25,11 +25,11 @@ async def create_product(
 ) -> ProductReference:
 
     new_prod_ref = ProductReference(
-        barcode,
-        name,
-        brands,
-        categories,
-        product_data
+        barcode=barcode,
+        name=name,
+        brands=brands,
+        categories=categories,
+        meta_data=product_data
     )
 
     db.add(new_prod_ref)
