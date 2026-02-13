@@ -63,6 +63,32 @@ async def get_all_items(db: AsyncSession) -> list[Item]:
     result = await db.execute(select(Item))
     return list(result.scalars().all())
 
+
+async def get_all_items_with_products(db: AsyncSession) -> list[dict]:
+    """
+    Get all items with joined ProductReference data.
+    Returns list of dicts with item and product data for inventory aggregation.
+    """
+    from sqlalchemy.orm import selectinload
+    from models.product_reference import ProductReference
+
+    # Query Items with ProductReference data
+    result = await db.execute(
+        select(Item, ProductReference).join(
+            ProductReference,
+            Item.product_reference_id == ProductReference.id
+        )
+    )
+
+    items_with_products = []
+    for item, product in result.all():
+        items_with_products.append({
+            "item": item,
+            "product": product
+        })
+
+    return items_with_products
+
 async def move_item(
     db,
     product_reference_id: UUID,

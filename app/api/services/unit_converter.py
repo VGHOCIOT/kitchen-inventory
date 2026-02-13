@@ -1,0 +1,224 @@
+"""
+Unit conversion service for recipe ingredients.
+
+Handles conversion between different measurement units with ingredient-specific
+density mappings for accurate volume-to-weight conversions.
+"""
+
+from typing import Optional
+from api.services.openfood import standardize_unit
+
+
+# Ingredient density mappings (grams per cup for dry, ml per cup for liquid)
+INGREDIENT_DENSITIES = {
+    # Dry ingredients (g/cup)
+    "flour": 120,
+    "all-purpose flour": 120,
+    "bread flour": 127,
+    "cake flour": 114,
+    "whole wheat flour": 120,
+    "sugar": 200,
+    "white sugar": 200,
+    "granulated sugar": 200,
+    "brown sugar": 220,
+    "powdered sugar": 120,
+    "confectioners sugar": 120,
+    "butter": 227,
+    "cocoa powder": 85,
+    "oats": 90,
+    "rice": 185,
+    "salt": 292,
+    "baking soda": 220,
+    "baking powder": 192,
+
+    # Liquids (ml/cup - mostly 240ml standard)
+    "milk": 240,
+    "water": 240,
+    "oil": 240,
+    "vegetable oil": 240,
+    "olive oil": 216,
+    "honey": 340,
+    "maple syrup": 312,
+}
+
+# Weight unit conversions to grams
+WEIGHT_TO_GRAMS = {
+    "g": 1.0,
+    "kg": 1000.0,
+    "oz": 28.35,
+    "lb": 453.59,
+    "lbs": 453.59,
+}
+
+# Volume unit conversions to milliliters
+VOLUME_TO_ML = {
+    "ml": 1.0,
+    "l": 1000.0,
+    "cl": 10.0,
+    "cup": 240.0,
+    "cups": 240.0,
+    "tbsp": 14.79,
+    "tablespoon": 14.79,
+    "tablespoons": 14.79,
+    "tsp": 4.93,
+    "teaspoon": 4.93,
+    "teaspoons": 4.93,
+    "fl oz": 29.57,
+    "floz": 29.57,
+    "pint": 473.18,
+    "quart": 946.35,
+    "gallon": 3785.41,
+}
+
+# Discrete units (count-based)
+DISCRETE_UNITS = {"unit", "units", "piece", "pieces", "item", "items", "whole", "dozen"}
+
+
+async def convert_to_base_unit(
+    quantity: float,
+    unit: str,
+    ingredient_name: Optional[str] = None
+) -> dict:
+    """
+    Convert quantity to base unit (grams, ml, or unit).
+
+    Args:
+        quantity: Numeric amount
+        unit: Unit of measurement
+        ingredient_name: Optional ingredient name for density-based conversions
+
+    Returns:
+        {
+            "quantity": float,             # Converted quantity
+            "base_unit": "g" | "ml" | "unit",  # Target unit
+            "conversion_confidence": "high" | "medium" | "low"
+        }
+    """
+    # Standardize the unit first
+    unit = standardize_unit(unit.lower().strip())
+
+    # Normalize ingredient name if provided
+    ingredient_norm = ingredient_name.lower().strip() if ingredient_name else None
+
+    # Handle discrete units (no conversion)
+    if unit in DISCRETE_UNITS:
+        # Special case: dozen → 12 units
+        if unit == "dozen":
+            return {
+                "quantity": quantity * 12,
+                "base_unit": "unit",
+                "conversion_confidence": "high"
+            }
+        return {
+            "quantity": quantity,
+            "base_unit": "unit",
+            "conversion_confidence": "high"
+        }
+
+    # Try weight conversion
+    if unit in WEIGHT_TO_GRAMS:
+        return {
+            "quantity": quantity * WEIGHT_TO_GRAMS[unit],
+            "base_unit": "g",
+            "conversion_confidence": "high"
+        }
+
+    # Try volume conversion
+    if unit in VOLUME_TO_ML:
+        ml_value = quantity * VOLUME_TO_ML[unit]
+
+        # If ingredient known and in density table, convert ml to grams
+        if ingredient_norm and ingredient_norm in INGREDIENT_DENSITIES:
+            # For dry ingredients, density is g/cup, so convert ml to cups first
+            if INGREDIENT_DENSITIES[ingredient_norm] > 250:  # Dry ingredient (>250 g/cup)
+                cups = ml_value / 240.0
+                grams = cups * INGREDIENT_DENSITIES[ingredient_norm]
+                return {
+                    "quantity": grams,
+                    "base_unit": "g",
+                    "conversion_confidence": "high"
+                }
+
+        # No density available, return as ml
+        return {
+            "quantity": ml_value,
+            "base_unit": "ml",
+            "conversion_confidence": "medium" if ingredient_norm else "high"
+        }
+
+    # Unit not recognized - return as-is with low confidence
+    return {
+        "quantity": quantity,
+        "base_unit": unit,  # Keep original unit
+        "conversion_confidence": "low"
+    }
+
+
+async def can_convert_units(unit_a: str, unit_b: str) -> bool:
+    """
+    Check if two units can be converted between each other.
+
+    Args:
+        unit_a: First unit
+        unit_b: Second unit
+
+    Returns:
+        True if units are convertible (same dimension)
+    """
+    unit_a = standardize_unit(unit_a.lower().strip())
+    unit_b = standardize_unit(unit_b.lower().strip())
+
+    # Same unit
+    if unit_a == unit_b:
+        return True
+
+    # Both weight units
+    if unit_a in WEIGHT_TO_GRAMS and unit_b in WEIGHT_TO_GRAMS:
+        return True
+
+    # Both volume units
+    if unit_a in VOLUME_TO_ML and unit_b in VOLUME_TO_ML:
+        return True
+
+    # Both discrete units
+    if unit_a in DISCRETE_UNITS and unit_b in DISCRETE_UNITS:
+        return True
+
+    return False
+
+
+async def are_compatible_units(unit_a: str, unit_b: str) -> bool:
+    """
+    Check if units represent the same dimension (weight, volume, or count).
+    Alias for can_convert_units for clarity.
+
+    Args:
+        unit_a: First unit
+        unit_b: Second unit
+
+    Returns:
+        True if units are compatible
+    """
+    return await can_convert_units(unit_a, unit_b)
+
+
+def get_unit_dimension(unit: str) -> str:
+    """
+    Get the dimension of a unit (weight, volume, or count).
+
+    Args:
+        unit: Unit to check
+
+    Returns:
+        "weight", "volume", "count", or "unknown"
+    """
+    unit = standardize_unit(unit.lower().strip())
+
+    if unit in WEIGHT_TO_GRAMS:
+        return "weight"
+    if unit in VOLUME_TO_ML:
+        return "volume"
+    if unit in DISCRETE_UNITS:
+        return "count"
+
+    return "unknown"

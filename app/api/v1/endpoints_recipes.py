@@ -113,6 +113,23 @@ async def delete_recipe_endpoint(
         raise HTTPException(status_code=404, detail="Recipe not found")
 
 
+@router.get("/match-inventory")
+async def match_recipes_to_inventory(
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Match all recipes against current inventory.
+
+    Returns categorized results showing which recipes can be made:
+    - can_make_now: All ingredients available
+    - missing_one: Missing exactly 1 ingredient
+    - missing_few: Missing 2-3 ingredients
+    - with_substitutions: Can make with ingredient substitutions
+    """
+    from api.services.recipe_matcher import match_all_recipes
+    return await match_all_recipes(db)
+
+
 # ============== HELPER FUNCTIONS (Business Logic) ==============
 
 async def find_or_create_ingredient(db: AsyncSession, normalized_name: str):
