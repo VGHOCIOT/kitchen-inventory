@@ -9,6 +9,8 @@ class ProductReferenceOut(BaseModel):
     name: str
     brands: Optional[list[str]] = None
     categories: Optional[list[str]] = None
+    package_quantity: Optional[float] = None
+    package_unit: Optional[str] = None
     meta_data: Optional[dict] = None
 
     class Config:
