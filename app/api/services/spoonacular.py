@@ -1,7 +1,9 @@
 import httpx
 import os
+import logging
 from typing import Optional
 
+logger = logging.getLogger(__name__)
 
 SPOONACULAR_API_KEY = os.getenv("SPOONACULAR_API_KEY")
 
@@ -47,7 +49,7 @@ async def parse_ingredient(ingredient_text: str) -> Optional[dict]:
                         "original": parsed.get("original", ingredient_text)
                     }
         except Exception as e:
-            print(f"Spoonacular API error: {e}")
+            logger.error(f"[SPOON] API error: {e}")
             return None
 
     return None
@@ -71,7 +73,7 @@ async def parse_ingredients_batch(ingredient_list: list[str]) -> list[dict]:
 
     async with httpx.AsyncClient() as client:
         try:
-            print(f"[DEBUG] Calling Spoonacular with {len(ingredient_list)} ingredients")
+            logger.info(f"[SPOON] Calling Spoonacular with {len(ingredient_list)} ingredients")
             response = await client.post(
                 url,
                 params={"apiKey": SPOONACULAR_API_KEY},
@@ -83,10 +85,10 @@ async def parse_ingredients_batch(ingredient_list: list[str]) -> list[dict]:
                 timeout=15
             )
 
-            print(f"[DEBUG] Spoonacular response status: {response.status_code}")
+            logger.info(f"[SPOON] Response status: {response.status_code}")
             if response.status_code == 200:
                 data = response.json()
-                print(f"[DEBUG] Spoonacular returned {len(data)} results")
+                logger.info(f"[SPOON] Returned {len(data)} results")
                 results = []
                 for parsed in data:
                     results.append({
@@ -95,12 +97,12 @@ async def parse_ingredients_batch(ingredient_list: list[str]) -> list[dict]:
                         "unit": parsed.get("unit", "unit"),
                         "original": parsed.get("original", "")
                     })
-                print(f"[DEBUG] First ingredient parsed: {results[0] if results else 'None'}")
+                logger.info(f"[SPOON] First ingredient: {results[0] if results else 'None'}")
                 return results
             else:
-                print(f"[DEBUG] Non-200 status code: {response.text}")
+                logger.warning(f"[SPOON] Non-200 status: {response.status_code} - {response.text}")
         except Exception as e:
-            print(f"[DEBUG] Spoonacular batch API error: {e}")
+            logger.error(f"[SPOON] API error: {e}")
 
     # Fallback on error
     return [{"name": ing, "amount": 1.0, "unit": "unit", "original": ing} for ing in ingredient_list]
