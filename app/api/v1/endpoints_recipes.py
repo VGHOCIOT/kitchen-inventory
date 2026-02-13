@@ -23,6 +23,7 @@ from crud.ingredient_alias import get_alias_by_text
 
 from api.services.recipe_parser import parse_recipe_from_url, normalize_ingredient_text
 from api.services.spoonacular import parse_ingredients_batch
+from api.services.recipe_matcher import match_all_recipes
 from schemas.recipe import (
     RecipeCreateFromURL,
     RecipeOut,
@@ -97,7 +98,6 @@ async def match_recipes_to_inventory(
     - missing_few: Missing 2-3 ingredients
     - with_substitutions: Can make with ingredient substitutions
     """
-    from api.services.recipe_matcher import match_all_recipes
     return await match_all_recipes(db)
 
 

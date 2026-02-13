@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from db.session import get_db
 
 from crud.item import (
@@ -15,8 +16,16 @@ from crud.product_reference import (
     get_product_by_barcode,
     create_product,
 )
+from crud.ingredient_alias import (
+    get_alias_by_text,
+    create_ingredient_alias,
+)
+from crud.ingredient_reference import (
+    get_ingredient_by_normalized_name,
+)
 
 from api.services.openfood import lookup_barcode
+from api.services.recipe_parser import normalize_ingredient_text
 from schemas.item import (
     ItemOut,
     ScanIn,
@@ -26,8 +35,40 @@ from schemas.item import (
     DeleteItemIn,
 )
 from models.item import Locations
+from models.product_reference import ProductReference
 
 router = APIRouter()
+
+
+# ============== HELPER FUNCTIONS ==============
+
+async def auto_map_product_to_ingredient(db: AsyncSession, product_name: str):
+    """
+    Automatically map a product to a canonical ingredient.
+
+    Process:
+    1. Check if alias already exists
+    2. Normalize product name (e.g., "Land O'Lakes Butter" → "butter")
+    3. Find ingredient with matching normalized name
+    4. Create alias mapping product_name → ingredient_id
+    """
+    # Check if alias already exists
+    existing_alias = await get_alias_by_text(db, product_name)
+    if existing_alias:
+        return  # Already mapped
+
+    # Normalize the product name to find base ingredient
+    normalized = normalize_ingredient_text(product_name)
+
+    if not normalized:
+        return  # Can't normalize, skip
+
+    # Try to find ingredient by normalized name
+    ingredient = await get_ingredient_by_normalized_name(db, normalized)
+
+    if ingredient:
+        # Create alias mapping product → ingredient
+        await create_ingredient_alias(db, alias=product_name, ingredient_id=ingredient.id)
 
 
 # ============== READ OPERATIONS ==============
@@ -74,6 +115,9 @@ async def scan_product(
             package_unit=product_info.get("package_unit"),
             product_data=product_info or {},
         )
+
+        # Auto-map product to ingredient for recipe matching
+        await auto_map_product_to_ingredient(db, product_ref.name)
 
     # Upsert logic: check if item exists at this location
     existing_item = await get_item_by_product_and_location(
@@ -167,3 +211,34 @@ async def delete_item(
 
     if not deleted:
         raise HTTPException(status_code=404, detail="Item not found")
+
+
+# ============== UTILITY ENDPOINTS ==============
+
+@router.post("/map-products-to-ingredients")
+async def map_all_products_to_ingredients(db: AsyncSession = Depends(get_db)):
+    """
+    Utility endpoint to retroactively map all existing products to ingredients.
+    Call this once after importing recipes to create ingredient aliases.
+    """
+    # Get all products
+    result = await db.execute(select(ProductReference))
+    products = result.scalars().all()
+
+    mapped_count = 0
+    for product in products:
+        existing_alias = await get_alias_by_text(db, product.name)
+        if not existing_alias:
+            # Try to map this product
+            normalized = normalize_ingredient_text(product.name)
+            if normalized:
+                ingredient = await get_ingredient_by_normalized_name(db, normalized)
+                if ingredient:
+                    await create_ingredient_alias(db, alias=product.name, ingredient_id=ingredient.id)
+                    mapped_count += 1
+
+    return {
+        "total_products": len(products),
+        "newly_mapped": mapped_count,
+        "message": f"Successfully mapped {mapped_count} products to ingredients"
+    }
