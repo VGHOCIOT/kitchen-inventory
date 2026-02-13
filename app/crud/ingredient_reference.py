@@ -50,3 +50,28 @@ async def get_all_ingredients(db: AsyncSession) -> list[IngredientReference]:
     """Get all ingredients"""
     result = await db.execute(select(IngredientReference))
     return list(result.scalars().all())
+
+
+async def find_ingredient_fuzzy(db: AsyncSession, search_text: str) -> IngredientReference | None:
+    """
+    Find ingredient using fuzzy matching.
+    Returns ingredient where normalized name is contained in search_text or vice versa.
+    Prioritizes shorter matches (more specific ingredients).
+    """
+    all_ingredients = await get_all_ingredients(db)
+
+    search_lower = search_text.lower()
+    matches = []
+
+    for ingredient in all_ingredients:
+        ing_normalized = ingredient.normalized_name.lower()
+
+        # Check if ingredient name is in search text or search text is in ingredient name
+        if ing_normalized in search_lower or search_lower in ing_normalized:
+            matches.append(ingredient)
+
+    # If multiple matches, return the one with shortest normalized_name (most specific)
+    if matches:
+        return min(matches, key=lambda x: len(x.normalized_name))
+
+    return None

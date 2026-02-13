@@ -25,6 +25,7 @@ from crud.ingredient_alias import (
 )
 from crud.ingredient_reference import (
     get_ingredient_by_normalized_name,
+    find_ingredient_fuzzy,
 )
 
 from api.services.openfood import lookup_barcode
@@ -52,8 +53,10 @@ async def auto_map_product_to_ingredient(db: AsyncSession, product_name: str):
     Process:
     1. Check if alias already exists
     2. Normalize product name (e.g., "Land O'Lakes Butter" → "butter")
-    3. Find ingredient with matching normalized name
-    4. Create alias mapping product_name → ingredient_id
+    3. Find ingredient with exact normalized name match
+    4. If no exact match, try fuzzy matching (substring matching)
+    5. Create aliases for both product_name AND normalized_name → ingredient_id
+       (this allows future similar products to match without fuzzy matching)
     """
     logger.info(f"[AUTO_MAP] Attempting to map product: '{product_name}'")
 
@@ -70,15 +73,28 @@ async def auto_map_product_to_ingredient(db: AsyncSession, product_name: str):
         logger.warning(f"[AUTO_MAP] Failed to normalize product name: '{product_name}'")
         return  # Can't normalize, skip
 
-    # Try to find ingredient by normalized name
+    # Try exact match first
     ingredient = await get_ingredient_by_normalized_name(db, normalized)
 
+    # If no exact match, try fuzzy matching
+    if not ingredient:
+        logger.info(f"[AUTO_MAP] No exact match, trying fuzzy match for: '{normalized}'")
+        ingredient = await find_ingredient_fuzzy(db, normalized)
+
     if ingredient:
-        # Create alias mapping product → ingredient
+        # Create alias for full product name
         await create_ingredient_alias(db, alias=product_name, ingredient_id=ingredient.id)
-        logger.info(f"[AUTO_MAP] ✓ Created alias: '{product_name}' → ingredient '{ingredient.name}' (id: {ingredient.id})")
+        logger.info(f"[AUTO_MAP] ✓ Created alias: '{product_name}' → '{ingredient.name}'")
+
+        # Also create alias for normalized name (if different from product name)
+        # This allows future products with similar names to match directly
+        if normalized != product_name and normalized != ingredient.name:
+            existing_normalized_alias = await get_alias_by_text(db, normalized)
+            if not existing_normalized_alias:
+                await create_ingredient_alias(db, alias=normalized, ingredient_id=ingredient.id)
+                logger.info(f"[AUTO_MAP] ✓ Created normalized alias: '{normalized}' → '{ingredient.name}'")
     else:
-        logger.warning(f"[AUTO_MAP] ✗ No ingredient found for normalized name: '{normalized}'")
+        logger.warning(f"[AUTO_MAP] ✗ No ingredient found (exact or fuzzy) for normalized name: '{normalized}'")
 
 
 # ============== READ OPERATIONS ==============
@@ -249,13 +265,29 @@ async def map_all_products_to_ingredients(db: AsyncSession = Depends(get_db)):
             # Try to map this product
             normalized = normalize_ingredient_text(product.name)
             if normalized:
+                # Try exact match first
                 ingredient = await get_ingredient_by_normalized_name(db, normalized)
+
+                # If no exact match, try fuzzy matching
+                if not ingredient:
+                    logger.info(f"[MAP_ALL] No exact match, trying fuzzy match for '{product.name}'")
+                    ingredient = await find_ingredient_fuzzy(db, normalized)
+
                 if ingredient:
+                    # Create alias for full product name
                     await create_ingredient_alias(db, alias=product.name, ingredient_id=ingredient.id)
                     logger.info(f"[MAP_ALL] ✓ Mapped '{product.name}' → '{ingredient.name}'")
+
+                    # Also create alias for normalized name if different
+                    if normalized != product.name and normalized != ingredient.name:
+                        existing_normalized_alias = await get_alias_by_text(db, normalized)
+                        if not existing_normalized_alias:
+                            await create_ingredient_alias(db, alias=normalized, ingredient_id=ingredient.id)
+                            logger.info(f"[MAP_ALL] ✓ Created normalized alias: '{normalized}' → '{ingredient.name}'")
+
                     mapped_count += 1
                 else:
-                    logger.warning(f"[MAP_ALL] ✗ No ingredient match for '{product.name}' (normalized: '{normalized}')")
+                    logger.warning(f"[MAP_ALL] ✗ No ingredient match (exact or fuzzy) for '{product.name}' (normalized: '{normalized}')")
             else:
                 logger.warning(f"[MAP_ALL] ✗ Could not normalize '{product.name}'")
 

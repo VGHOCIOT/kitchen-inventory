@@ -41,14 +41,24 @@ def normalize_ingredient_text(ingredient_text: str) -> str:
     # Simple normalization - can be enhanced with Spoonacular later
     text = ingredient_text.lower().strip()
 
-    # Remove common quantity words and units
+    # Remove common quantity words, units, and descriptive modifiers
     remove_words = [
+        # Units
         'cup', 'cups', 'tablespoon', 'tablespoons', 'tbsp', 'teaspoon', 'teaspoons', 'tsp',
         'ounce', 'ounces', 'oz', 'pound', 'pounds', 'lb', 'lbs', 'gram', 'grams', 'g',
         'kilogram', 'kilograms', 'kg', 'liter', 'liters', 'l', 'milliliter', 'milliliters', 'ml',
-        'pinch', 'dash', 'handful', 'slice', 'slices', 'piece', 'pieces',
-        'chopped', 'diced', 'minced', 'sliced', 'fresh', 'dried', 'ground',
-        'large', 'medium', 'small', 'whole', 'half', 'quarter'
+        'pinch', 'dash', 'handful', 'slice', 'slices', 'piece', 'pieces', 'pcs',
+        # Preparation methods
+        'chopped', 'diced', 'minced', 'sliced', 'fresh', 'dried', 'ground', 'crushed', 'grated',
+        'shredded', 'melted', 'softened', 'beaten', 'whisked', 'toasted', 'roasted',
+        # Size descriptors
+        'large', 'medium', 'small', 'whole', 'half', 'quarter', 'mini', 'extra', 'jumbo',
+        # Quality descriptors
+        'pure', 'organic', 'natural', 'raw', 'unbleached', 'free', 'range', 'cage',
+        'grade', 'quality', 'premium', 'fancy', 'select', 'choice',
+        # Common adjectives
+        'all-purpose', 'purpose', 'all', 'light', 'dark', 'unsalted', 'salted', 'sweetened',
+        'unsweetened', 'plain', 'regular', 'low', 'fat', 'sodium', 'reduced'
     ]
 
     words = text.split()
