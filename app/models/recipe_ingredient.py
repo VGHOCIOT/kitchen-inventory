@@ -1,24 +1,13 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, JSON
-from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, ForeignKey, Float
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from db.base import Base
+import uuid
 
 class RecipeIngredient(Base):
     __tablename__ = "recipe_ingredients"
-    id = Column(Integer, primary_key=True, index=True)
-    recipe_id = Column(
-                    Integer, 
-                    ForeignKey("recipes.id", ondelete="CASCADE"),
-                    nullable=False       
-                )
+    id = Column(PGUUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
+    recipe_id = Column(PGUUID(as_uuid=True), ForeignKey("recipes.id", ondelete="CASCADE"), nullable=False)
     ingredient_text = Column(String, nullable=False)
-    canonical_ingredient_id = Column(
-                                Integer,
-                                ForeignKey("ingredient_references.id"),
-                                nullable=False
-                              )
-    quantity = Column(Integer, default=1)
+    canonical_ingredient_id = Column(PGUUID(as_uuid=True), ForeignKey("ingredient_references.id"), nullable=False)
+    quantity = Column(Float, default=1.0)
     unit = Column(String, default='g')
-
-    recipe = relationship("Recipe", back_populates="ingredients")
-    ingredient = relationship("IngredientReference", back_populates="recipe_ingredients")
