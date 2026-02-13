@@ -66,4 +66,6 @@ def normalize_ingredient_text(ingredient_text: str) -> str:
             continue
         filtered.append(word)
 
-    return ' '.join(filtered).strip()
+    normalized = ' '.join(filtered).strip()
+    logger.info(f"[NORMALIZE] '{ingredient_text}' -> '{normalized}'")
+    return normalized

@@ -56,7 +56,9 @@ async def aggregate_inventory_by_ingredient(
     Returns:
         Dict mapping ingredient_id to aggregated inventory data
     """
+    logger.info("[AGGREGATE] Starting inventory aggregation")
     items_with_products = await get_all_items_with_products(db)
+    logger.info(f"[AGGREGATE] Found {len(items_with_products)} items with products")
     inventory_map: dict[UUID, InventoryIngredient] = {}
 
     for entry in items_with_products:
@@ -65,24 +67,34 @@ async def aggregate_inventory_by_ingredient(
 
         # Skip items without product reference data
         if not product or not product.name:
+            logger.warning(f"[AGGREGATE] Skipping item {item.id} - no product name")
             continue
+
+        logger.info(f"[AGGREGATE] Processing product: '{product.name}' (qty: {item.qty}, pkg: {product.package_quantity} {product.package_unit})")
 
         # Try to map product to ingredient via alias
         alias = await get_alias_by_text(db, product.name)
 
         if not alias:
             # No mapping found - skip this product
-            logger.debug(f"No ingredient mapping for product: {product.name}")
+            logger.warning(f"[AGGREGATE] ✗ No alias found for product: '{product.name}'")
             continue
+
+        logger.info(f"[AGGREGATE] ✓ Found alias for '{product.name}' → ingredient_id: {alias.ingredient_id}")
 
         ingredient = await get_ingredient_by_id(db, alias.ingredient_id)
         if not ingredient:
+            logger.warning(f"[AGGREGATE] ✗ Ingredient not found for id: {alias.ingredient_id}")
             continue
+
+        logger.info(f"[AGGREGATE] Ingredient name: '{ingredient.name}'")
 
         # Calculate total quantity for this item
         package_qty = product.package_quantity or 1.0
         package_unit = product.package_unit or "unit"
         total_qty = item.qty * package_qty
+
+        logger.info(f"[AGGREGATE] Total quantity: {total_qty} {package_unit}")
 
         # Convert to base unit
         conversion = await convert_to_base_unit(
@@ -90,6 +102,8 @@ async def aggregate_inventory_by_ingredient(
             package_unit,
             ingredient.name
         )
+
+        logger.info(f"[AGGREGATE] Converted to: {conversion['quantity']} {conversion['base_unit']}")
 
         # Aggregate by ingredient
         ingredient_id = ingredient.id
@@ -106,6 +120,9 @@ async def aggregate_inventory_by_ingredient(
                     "quantity": total_qty,
                     "unit": package_unit
                 })
+                logger.info(f"[AGGREGATE] Added to existing - new total: {existing.total_quantity} {existing.base_unit}")
+            else:
+                logger.warning(f"[AGGREGATE] Unit mismatch: {existing.base_unit} vs {conversion['base_unit']}")
         else:
             # Create new inventory entry
             inventory_map[ingredient_id] = InventoryIngredient(
@@ -119,8 +136,11 @@ async def aggregate_inventory_by_ingredient(
                     "unit": package_unit
                 }]
             )
+            logger.info(f"[AGGREGATE] Created new inventory entry for '{ingredient.name}'")
 
-    logger.info(f"Aggregated inventory for {len(inventory_map)} ingredients")
+    logger.info(f"[AGGREGATE] Complete: Aggregated inventory for {len(inventory_map)} ingredients")
+    for ing_id, inv_data in inventory_map.items():
+        logger.info(f"[AGGREGATE] - {inv_data.ingredient_name}: {inv_data.total_quantity} {inv_data.base_unit}")
     return inventory_map
 
 

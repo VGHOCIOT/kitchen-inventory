@@ -2,6 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from db.session import get_db
+import logging
+
+logger = logging.getLogger(__name__)
 
 from crud.item import (
     get_all_items,
@@ -52,15 +55,19 @@ async def auto_map_product_to_ingredient(db: AsyncSession, product_name: str):
     3. Find ingredient with matching normalized name
     4. Create alias mapping product_name → ingredient_id
     """
+    logger.info(f"[AUTO_MAP] Attempting to map product: '{product_name}'")
+
     # Check if alias already exists
     existing_alias = await get_alias_by_text(db, product_name)
     if existing_alias:
+        logger.info(f"[AUTO_MAP] Product '{product_name}' already has alias")
         return  # Already mapped
 
     # Normalize the product name to find base ingredient
     normalized = normalize_ingredient_text(product_name)
 
     if not normalized:
+        logger.warning(f"[AUTO_MAP] Failed to normalize product name: '{product_name}'")
         return  # Can't normalize, skip
 
     # Try to find ingredient by normalized name
@@ -69,6 +76,9 @@ async def auto_map_product_to_ingredient(db: AsyncSession, product_name: str):
     if ingredient:
         # Create alias mapping product → ingredient
         await create_ingredient_alias(db, alias=product_name, ingredient_id=ingredient.id)
+        logger.info(f"[AUTO_MAP] ✓ Created alias: '{product_name}' → ingredient '{ingredient.name}' (id: {ingredient.id})")
+    else:
+        logger.warning(f"[AUTO_MAP] ✗ No ingredient found for normalized name: '{normalized}'")
 
 
 # ============== READ OPERATIONS ==============
@@ -221,24 +231,38 @@ async def map_all_products_to_ingredients(db: AsyncSession = Depends(get_db)):
     Utility endpoint to retroactively map all existing products to ingredients.
     Call this once after importing recipes to create ingredient aliases.
     """
+    logger.info("[MAP_ALL] Starting product-to-ingredient mapping")
+
     # Get all products
     result = await db.execute(select(ProductReference))
     products = result.scalars().all()
+    logger.info(f"[MAP_ALL] Found {len(products)} products to process")
 
     mapped_count = 0
+    skipped_count = 0
     for product in products:
         existing_alias = await get_alias_by_text(db, product.name)
-        if not existing_alias:
+        if existing_alias:
+            logger.info(f"[MAP_ALL] Skipped '{product.name}' - already mapped")
+            skipped_count += 1
+        else:
             # Try to map this product
             normalized = normalize_ingredient_text(product.name)
             if normalized:
                 ingredient = await get_ingredient_by_normalized_name(db, normalized)
                 if ingredient:
                     await create_ingredient_alias(db, alias=product.name, ingredient_id=ingredient.id)
+                    logger.info(f"[MAP_ALL] ✓ Mapped '{product.name}' → '{ingredient.name}'")
                     mapped_count += 1
+                else:
+                    logger.warning(f"[MAP_ALL] ✗ No ingredient match for '{product.name}' (normalized: '{normalized}')")
+            else:
+                logger.warning(f"[MAP_ALL] ✗ Could not normalize '{product.name}'")
 
+    logger.info(f"[MAP_ALL] Complete: {mapped_count} mapped, {skipped_count} skipped")
     return {
         "total_products": len(products),
         "newly_mapped": mapped_count,
+        "already_mapped": skipped_count,
         "message": f"Successfully mapped {mapped_count} products to ingredients"
     }
