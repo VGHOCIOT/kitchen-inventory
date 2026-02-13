@@ -71,6 +71,7 @@ async def parse_ingredients_batch(ingredient_list: list[str]) -> list[dict]:
 
     async with httpx.AsyncClient() as client:
         try:
+            print(f"[DEBUG] Calling Spoonacular with {len(ingredient_list)} ingredients")
             response = await client.post(
                 url,
                 params={"apiKey": SPOONACULAR_API_KEY},
@@ -82,8 +83,10 @@ async def parse_ingredients_batch(ingredient_list: list[str]) -> list[dict]:
                 timeout=15
             )
 
+            print(f"[DEBUG] Spoonacular response status: {response.status_code}")
             if response.status_code == 200:
                 data = response.json()
+                print(f"[DEBUG] Spoonacular returned {len(data)} results")
                 results = []
                 for parsed in data:
                     results.append({
@@ -92,9 +95,12 @@ async def parse_ingredients_batch(ingredient_list: list[str]) -> list[dict]:
                         "unit": parsed.get("unit", "unit"),
                         "original": parsed.get("original", "")
                     })
+                print(f"[DEBUG] First ingredient parsed: {results[0] if results else 'None'}")
                 return results
+            else:
+                print(f"[DEBUG] Non-200 status code: {response.text}")
         except Exception as e:
-            print(f"Spoonacular batch API error: {e}")
+            print(f"[DEBUG] Spoonacular batch API error: {e}")
 
     # Fallback on error
     return [{"name": ing, "amount": 1.0, "unit": "unit", "original": ing} for ing in ingredient_list]
