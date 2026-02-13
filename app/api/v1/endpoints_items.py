@@ -70,6 +70,8 @@ async def scan_product(
             name=product_info.get("name", f"Unknown product {scan.barcode}"),
             brands=product_info.get("brands", []),
             categories=product_info.get("categories", []),
+            package_quantity=product_info.get("package_quantity"),
+            package_unit=product_info.get("package_unit"),
             product_data=product_info or {},
         )
 

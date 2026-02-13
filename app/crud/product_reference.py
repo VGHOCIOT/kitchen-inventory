@@ -16,11 +16,13 @@ async def get_product_by_barcode(
 
 
 async def create_product(
-    db: AsyncSession, 
+    db: AsyncSession,
     barcode: str,
     name: str | None = None,
     brands: list[str] | None = None,
     categories: list[str] | None = None,
+    package_quantity: float | None = None,
+    package_unit: str | None = None,
     product_data: dict | None = None
 ) -> ProductReference:
 
@@ -29,6 +31,8 @@ async def create_product(
         name=name,
         brands=brands,
         categories=categories,
+        package_quantity=package_quantity,
+        package_unit=package_unit,
         meta_data=product_data
     )
 

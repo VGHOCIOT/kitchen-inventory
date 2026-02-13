@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, JSON
+from sqlalchemy import Column, String, JSON, Float
 from sqlalchemy.dialects.postgresql import ARRAY, UUID as PGUUID
 from db.base import Base
 import uuid
@@ -10,4 +10,6 @@ class ProductReference(Base):
     name = Column(String, index=True, nullable=False)
     categories = Column(ARRAY(String), nullable=True)
     brands = Column(ARRAY(String), nullable=True)
+    package_quantity = Column(Float, nullable=True)
+    package_unit = Column(String, nullable=True)
     meta_data = Column(JSON, nullable=True)
