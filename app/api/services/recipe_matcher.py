@@ -70,6 +70,16 @@ async def aggregate_inventory_by_ingredient(
             logger.warning(f"[AGGREGATE] Skipping item {item.id} - no product name")
             continue
 
+        # Skip products with incomplete quantity/unit data
+        # These products cannot be used for recipe matching (we don't know actual amounts)
+        if product.package_quantity is None or product.package_unit is None:
+            logger.warning(
+                f"[AGGREGATE] ⚠️  Skipping product '{product.name}' - missing quantity/unit data "
+                f"(qty={product.package_quantity}, unit={product.package_unit}). "
+                f"Cannot use for recipe matching."
+            )
+            continue
+
         logger.info(f"[AGGREGATE] Processing product: '{product.name}' (qty: {item.qty}, pkg: {product.package_quantity} {product.package_unit})")
 
         # Try to map product to ingredient via alias
@@ -90,8 +100,9 @@ async def aggregate_inventory_by_ingredient(
         logger.info(f"[AGGREGATE] Ingredient name: '{ingredient.name}'")
 
         # Calculate total quantity for this item
-        package_qty = product.package_quantity or 1.0
-        package_unit = product.package_unit or "unit"
+        # Note: We've already validated that package_quantity and package_unit are not None
+        package_qty = product.package_quantity
+        package_unit = product.package_unit
         total_qty = item.qty * package_qty
 
         logger.info(f"[AGGREGATE] Total quantity: {total_qty} {package_unit}")

@@ -9,9 +9,8 @@ from typing import Optional
 from api.services.openfood import standardize_unit
 
 
-# Ingredient density mappings (grams per cup for dry, ml per cup for liquid)
-INGREDIENT_DENSITIES = {
-    # Dry ingredients (g/cup)
+# Dry ingredients: grams per cup
+DRY_INGREDIENT_DENSITIES = {
     "flour": 120,
     "all-purpose flour": 120,
     "bread flour": 127,
@@ -30,8 +29,10 @@ INGREDIENT_DENSITIES = {
     "salt": 292,
     "baking soda": 220,
     "baking powder": 192,
+}
 
-    # Liquids (ml/cup - mostly 240ml standard)
+# Liquid ingredients: ml per cup
+LIQUID_INGREDIENT_DENSITIES = {
     "milk": 240,
     "water": 240,
     "oil": 240,
@@ -39,6 +40,7 @@ INGREDIENT_DENSITIES = {
     "olive oil": 216,
     "honey": 340,
     "maple syrup": 312,
+    "vanilla extract": 240,
 }
 
 # Weight unit conversions to grams
@@ -72,6 +74,34 @@ VOLUME_TO_ML = {
 
 # Discrete units (count-based)
 DISCRETE_UNITS = {"unit", "units", "piece", "pieces", "item", "items", "whole", "dozen"}
+
+# Default densities for unknown ingredients
+DEFAULT_DRY_DENSITY = 150  # g/cup - reasonable average for dry ingredients
+DEFAULT_LIQUID_DENSITY = 240  # ml/cup - standard for liquids
+
+# Keywords that indicate an ingredient is a liquid
+LIQUID_KEYWORDS = {
+    "oil", "milk", "water", "juice", "broth", "stock", "sauce", "vinegar",
+    "wine", "beer", "liquor", "cream", "yogurt", "buttermilk", "extract",
+    "syrup", "honey", "molasses", "marinade", "dressing", "gravy"
+}
+
+
+def is_likely_liquid(ingredient_name: Optional[str]) -> bool:
+    """
+    Determine if an ingredient is likely a liquid based on its name.
+
+    Args:
+        ingredient_name: Name of the ingredient
+
+    Returns:
+        True if ingredient appears to be a liquid
+    """
+    if not ingredient_name:
+        return False
+
+    name_lower = ingredient_name.lower()
+    return any(keyword in name_lower for keyword in LIQUID_KEYWORDS)
 
 
 async def convert_to_base_unit(
@@ -127,23 +157,50 @@ async def convert_to_base_unit(
     if unit in VOLUME_TO_ML:
         ml_value = quantity * VOLUME_TO_ML[unit]
 
-        # If ingredient known and in density table, convert ml to grams
-        if ingredient_norm and ingredient_norm in INGREDIENT_DENSITIES:
-            # For dry ingredients, density is g/cup, so convert ml to cups first
-            if INGREDIENT_DENSITIES[ingredient_norm] > 250:  # Dry ingredient (>250 g/cup)
+        # Strategy: Check specific density table first, then use heuristics + defaults
+
+        # 1. Check if we have a specific dry ingredient density
+        if ingredient_norm and ingredient_norm in DRY_INGREDIENT_DENSITIES:
+            cups = ml_value / 240.0
+            grams = cups * DRY_INGREDIENT_DENSITIES[ingredient_norm]
+            return {
+                "quantity": grams,
+                "base_unit": "g",
+                "conversion_confidence": "high"
+            }
+
+        # 2. Check if we have a specific liquid ingredient density
+        if ingredient_norm and ingredient_norm in LIQUID_INGREDIENT_DENSITIES:
+            return {
+                "quantity": ml_value,
+                "base_unit": "ml",
+                "conversion_confidence": "high"
+            }
+
+        # 3. Use heuristics to determine if liquid or dry, then apply defaults
+        if ingredient_name:
+            if is_likely_liquid(ingredient_name):
+                # Liquid ingredient - keep as ml
+                return {
+                    "quantity": ml_value,
+                    "base_unit": "ml",
+                    "conversion_confidence": "medium"
+                }
+            else:
+                # Likely dry ingredient - convert to grams using default density
                 cups = ml_value / 240.0
-                grams = cups * INGREDIENT_DENSITIES[ingredient_norm]
+                grams = cups * DEFAULT_DRY_DENSITY
                 return {
                     "quantity": grams,
                     "base_unit": "g",
-                    "conversion_confidence": "high"
+                    "conversion_confidence": "medium"
                 }
 
-        # No density available, return as ml
+        # 4. No ingredient name provided - keep as ml with low confidence
         return {
             "quantity": ml_value,
             "base_unit": "ml",
-            "conversion_confidence": "medium" if ingredient_norm else "high"
+            "conversion_confidence": "low"
         }
 
     # Unit not recognized - return as-is with low confidence

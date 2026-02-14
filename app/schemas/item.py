@@ -24,6 +24,7 @@ class ScanIn(BaseModel):
 class ScanOut(BaseModel):
     product_reference: "ProductReferenceOut"
     item: ItemOut
+    data_quality_warning: Optional[str] = None  # Warning if product data is incomplete
 
     class Config:
         from_attributes = True

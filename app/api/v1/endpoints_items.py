@@ -131,6 +131,18 @@ async def scan_product(
 
     if not product_ref:
         product_info = await lookup_barcode(scan.barcode)
+
+        # Check data quality
+        has_quantity = product_info.get("package_quantity") is not None
+        has_unit = product_info.get("package_unit") is not None
+
+        if not has_quantity or not has_unit:
+            logger.warning(
+                f"[SCAN] ⚠️  Incomplete product data for barcode {scan.barcode}: "
+                f"quantity={product_info.get('package_quantity')}, unit={product_info.get('package_unit')}. "
+                f"This product will NOT be usable for recipe matching."
+            )
+
         product_ref = await create_product(
             db,
             barcode=scan.barcode,
@@ -142,8 +154,11 @@ async def scan_product(
             product_data=product_info or {},
         )
 
-        # Auto-map product to ingredient for recipe matching
-        await auto_map_product_to_ingredient(db, product_ref.name)
+        # Auto-map product to ingredient for recipe matching (only if data is complete)
+        if has_quantity and has_unit:
+            await auto_map_product_to_ingredient(db, product_ref.name)
+        else:
+            logger.warning(f"[SCAN] Skipping ingredient mapping for '{product_ref.name}' - incomplete data")
 
     # Upsert logic: check if item exists at this location
     existing_item = await get_item_by_product_and_location(
@@ -161,9 +176,19 @@ async def scan_product(
             db, product_reference_id=product_ref.id, location=scan.location, qty=1
         )
 
+    # Check if product has complete data for recipe matching
+    data_warning = None
+    if product_ref.package_quantity is None or product_ref.package_unit is None:
+        data_warning = (
+            f"⚠️  Product '{product_ref.name}' has incomplete quantity/unit data. "
+            f"This product cannot be used for recipe matching. "
+            f"Consider scanning a different barcode or manually updating product data."
+        )
+
     return ScanOut(
         product_reference=product_ref,
         item=item,
+        data_quality_warning=data_warning,
     )
 
 
