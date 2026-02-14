@@ -155,7 +155,9 @@ async def match_recipe_to_inventory(
     Returns:
         RecipeMatchResult with availability details and substitution suggestions
     """
+    logger.info(f"[MATCH] Matching recipe '{recipe.title}'")
     recipe_ingredients = await get_recipe_ingredients(db, recipe.id)
+    logger.info(f"[MATCH] Recipe has {len(recipe_ingredients)} ingredients")
 
     ingredient_availability = []
     missing_ingredients = []
@@ -167,7 +169,10 @@ async def match_recipe_to_inventory(
         # Get ingredient details
         ingredient = await get_ingredient_by_id(db, recipe_ing.canonical_ingredient_id)
         if not ingredient:
+            logger.warning(f"[MATCH] Ingredient not found for id: {recipe_ing.canonical_ingredient_id}")
             continue
+
+        logger.info(f"[MATCH] Checking ingredient '{ingredient.name}': need {recipe_ing.quantity} {recipe_ing.unit}")
 
         # Convert recipe requirement to base unit
         required_conversion = await convert_to_base_unit(
@@ -176,8 +181,11 @@ async def match_recipe_to_inventory(
             ingredient.name
         )
 
+        logger.info(f"[MATCH] Required (converted): {required_conversion['quantity']} {required_conversion['base_unit']}")
+
         # Check if ingredient is in inventory
         if recipe_ing.canonical_ingredient_id in inventory:
+            logger.info(f"[MATCH] ✓ Ingredient '{ingredient.name}' found in inventory")
             inv_data = inventory[recipe_ing.canonical_ingredient_id]
 
             # Check if units are compatible
@@ -210,6 +218,7 @@ async def match_recipe_to_inventory(
                 missing_ingredients.append(ingredient.name)
         else:
             # Ingredient not in inventory - check for substitutions
+            logger.warning(f"[MATCH] ✗ Ingredient '{ingredient.name}' NOT in inventory")
             substitution = await find_substitution_for_ingredient(
                 db,
                 recipe_ing.canonical_ingredient_id,
@@ -231,6 +240,8 @@ async def match_recipe_to_inventory(
 
     # Calculate availability percentage
     availability_percent = (available_count / total_ingredients * 100) if total_ingredients > 0 else 0
+
+    logger.info(f"[MATCH] Result: {availability_percent:.0f}% available ({available_count}/{total_ingredients}), missing: {missing_ingredients}")
 
     # Determine match type
     if availability_percent == 100:
