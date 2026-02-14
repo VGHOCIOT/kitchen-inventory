@@ -72,8 +72,9 @@ VOLUME_TO_ML = {
     "gallon": 3785.41,
 }
 
-# Discrete units (count-based)
-DISCRETE_UNITS = {"unit", "units", "piece", "pieces", "item", "items", "whole", "dozen"}
+# Discrete units (count-based) - after standardization
+# Note: All discrete units get standardized to "unit" except "dozen" which converts to 12 units
+DISCRETE_UNITS = {"unit", "dozen"}
 
 # Default densities for unknown ingredients
 DEFAULT_DRY_DENSITY = 150  # g/cup - reasonable average for dry ingredients
@@ -114,7 +115,7 @@ async def convert_to_base_unit(
 
     Args:
         quantity: Numeric amount
-        unit: Unit of measurement
+        unit: Unit of measurement (empty string treated as discrete "unit")
         ingredient_name: Optional ingredient name for density-based conversions
 
     Returns:
@@ -124,6 +125,14 @@ async def convert_to_base_unit(
             "conversion_confidence": "high" | "medium" | "low"
         }
     """
+    # Handle blank/empty units (discrete items like "2 eggs")
+    if not unit or unit.strip() == "":
+        return {
+            "quantity": quantity,
+            "base_unit": "unit",
+            "conversion_confidence": "high"
+        }
+
     # Standardize the unit first
     unit = standardize_unit(unit.lower().strip())
 
@@ -216,14 +225,18 @@ async def can_convert_units(unit_a: str, unit_b: str) -> bool:
     Check if two units can be converted between each other.
 
     Args:
-        unit_a: First unit
-        unit_b: Second unit
+        unit_a: First unit (empty string treated as discrete "unit")
+        unit_b: Second unit (empty string treated as discrete "unit")
 
     Returns:
         True if units are convertible (same dimension)
     """
-    unit_a = standardize_unit(unit_a.lower().strip())
-    unit_b = standardize_unit(unit_b.lower().strip())
+    # Handle blank units
+    unit_a = unit_a.strip() if unit_a else ""
+    unit_b = unit_b.strip() if unit_b else ""
+
+    unit_a = standardize_unit(unit_a.lower() if unit_a else "")
+    unit_b = standardize_unit(unit_b.lower() if unit_b else "")
 
     # Same unit
     if unit_a == unit_b:
@@ -264,11 +277,15 @@ def get_unit_dimension(unit: str) -> str:
     Get the dimension of a unit (weight, volume, or count).
 
     Args:
-        unit: Unit to check
+        unit: Unit to check (empty string treated as count)
 
     Returns:
         "weight", "volume", "count", or "unknown"
     """
+    # Handle blank units
+    if not unit or unit.strip() == "":
+        return "count"
+
     unit = standardize_unit(unit.lower().strip())
 
     if unit in WEIGHT_TO_GRAMS:
