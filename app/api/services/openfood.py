@@ -1,5 +1,6 @@
 import httpx
 import re
+from api.services.unit_converter import standardize_unit
 
 async def lookup_barcode(barcode: str):
     url = f"https://world.openfoodfacts.org/api/v0/product/{barcode}.json"
@@ -46,39 +47,3 @@ def parse_quantity(product: dict) -> dict:
             }
 
     return {"quantity": None, "unit": None}
-
-def standardize_unit(unit: str) -> str:
-    """Standardize unit names to common formats"""
-    # Handle None or blank units early (discrete/count-based)
-    if not unit:
-        return "unit"
-
-    unit = unit.lower().strip()
-
-    # Empty/blank units are discrete (count-based) - e.g., "2 eggs" with no unit
-    if unit == "":
-        return "unit"
-
-    # Weight conversions
-    if unit in ["g", "gr", "gram", "grams"]:
-        return "g"
-    if unit in ["kg", "kilo", "kilogram", "kilograms"]:
-        return "kg"
-
-    # Volume conversions
-    if unit in ["ml", "milliliter", "milliliters", "millilitre", "millilitres"]:
-        return "ml"
-    if unit in ["l", "liter", "liters", "litre", "litres"]:
-        return "l"
-    if unit in ["cl", "centiliter", "centiliters"]:
-        return "cl"
-
-    # Count/discrete units - all standardize to "unit"
-    if unit in ["unit", "units", "piece", "pieces", "item", "items", "pcs", "pc", "whole", "count"]:
-        return "unit"
-
-    # Dozen is special - keep it separate for 12x conversion
-    if unit in ["dozen", "doz"]:
-        return "dozen"
-
-    return unit

@@ -6,7 +6,65 @@ density mappings for accurate volume-to-weight conversions.
 """
 
 from typing import Optional
-from api.services.openfood import standardize_unit
+
+
+def standardize_unit(unit: str) -> str:
+    """Standardize unit names to common formats"""
+    # Handle None or blank units early (discrete/count-based)
+    if not unit:
+        return "unit"
+
+    unit = unit.lower().strip()
+
+    # Empty/blank units are discrete (count-based) - e.g., "2 eggs" with no unit
+    if unit == "":
+        return "unit"
+
+    # Weight conversions
+    if unit in ["g", "gr", "gram", "grams"]:
+        return "g"
+    if unit in ["kg", "kilo", "kilogram", "kilograms"]:
+        return "kg"
+    if unit in ["oz", "ounce", "ounces"]:
+        return "oz"
+    if unit in ["lb", "lbs", "pound", "pounds"]:
+        return "lb"
+
+    # Volume conversions
+    if unit in ["ml", "milliliter", "milliliters", "millilitre", "millilitres"]:
+        return "ml"
+    if unit in ["l", "liter", "liters", "litre", "litres"]:
+        return "l"
+    if unit in ["cl", "centiliter", "centiliters"]:
+        return "cl"
+    if unit in ["cup", "cups", "c"]:
+        return "cup"
+    if unit in ["tbsp", "tablespoon", "tablespoons", "tbs", "T"]:
+        return "tbsp"
+    if unit in ["tsp", "teaspoon", "teaspoons", "t"]:
+        return "tsp"
+    if unit in ["fl oz", "floz", "fluid ounce", "fluid ounces"]:
+        return "fl oz"
+    if unit in ["pint", "pints", "pt"]:
+        return "pint"
+    if unit in ["quart", "quarts", "qt"]:
+        return "quart"
+    if unit in ["gal", "gallon", "gallons"]:
+        return "gallon"
+
+    # Count/discrete units - all standardize to "unit"
+    if unit in ["unit", "units", "piece", "pieces", "item", "items", "pcs", "pc", "whole", "count",
+                "clove", "cloves", "packet", "packets", "serving", "servings", "bag", "bags",
+                "can", "cans", "jar", "jars", "bottle", "bottles", "box", "boxes",
+                "small", "medium", "large", "head", "heads", "bunch", "bunches",
+                "slice", "slices", "stalk", "stalks", "sprig", "sprigs", "leaf", "leaves"]:
+        return "unit"
+
+    # Dozen is special - keep it separate for 12x conversion
+    if unit in ["dozen", "doz"]:
+        return "dozen"
+
+    return unit
 
 
 # Dry ingredients: grams per cup

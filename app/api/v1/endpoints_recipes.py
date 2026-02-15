@@ -66,14 +66,23 @@ async def create_recipe_from_url(
         # Find or create ingredient (business logic in endpoint)
         ingredient_ref = await find_or_create_ingredient(db, normalized)
 
+        # Prefer metric weight data over volume/count when available
+        # This makes matching more accurate for fresh ingredients and reduces conversion work
+        if parsed.get("metric_amount") and parsed.get("metric_unit"):
+            quantity = float(parsed["metric_amount"])
+            unit = parsed["metric_unit"]
+        else:
+            quantity = float(parsed["amount"])
+            unit = parsed["unit"]
+
         # Link ingredient to recipe with parsed quantity and unit
         await create_recipe_ingredient(
             db,
             recipe_id=recipe.id,
             ingredient_text=parsed["original"],
             canonical_ingredient_id=ingredient_ref.id,
-            quantity=float(parsed["amount"]),
-            unit=parsed["unit"]
+            quantity=quantity,
+            unit=unit
         )
 
     return recipe

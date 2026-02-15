@@ -17,6 +17,7 @@ from crud.item import (
 )
 from crud.product_reference import (
     get_product_by_barcode,
+    get_product_by_name,
     create_product,
 )
 from crud.ingredient_alias import (
@@ -38,8 +39,9 @@ from schemas.item import (
     MoveItemIn,
     DeleteItemIn,
 )
+from schemas.product_reference import CreateFreshItemIn
 from models.item import Locations
-from models.product_reference import ProductReference
+from models.product_reference import ProductReference, ProductType
 
 router = APIRouter()
 
@@ -145,8 +147,9 @@ async def scan_product(
 
         product_ref = await create_product(
             db,
-            barcode=scan.barcode,
             name=product_info.get("name", f"Unknown product {scan.barcode}"),
+            barcode=scan.barcode,
+            product_type=ProductType.UPC,
             brands=product_info.get("brands", []),
             categories=product_info.get("categories", []),
             package_quantity=product_info.get("package_quantity"),
@@ -189,6 +192,61 @@ async def scan_product(
         product_reference=product_ref,
         item=item,
         data_quality_warning=data_warning,
+    )
+
+
+@router.post("/add-fresh", response_model=ScanOut)
+async def add_fresh_item(
+    payload: CreateFreshItemIn,
+    location: Locations = Locations.FRIDGE,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Add a fresh/weight-based item (PLU) to inventory without barcode.
+    Used for produce, fresh meat, etc. that are weighed rather than scanned.
+
+    This endpoint will be integrated with OCR receipt parsing in the future.
+    """
+    # Check if this fresh item already exists as a product
+    product_ref = await get_product_by_name(db, payload.name, ProductType.PLU)
+
+    if not product_ref:
+        # Create new PLU product reference
+        product_ref = await create_product(
+            db,
+            name=payload.name,
+            barcode=None,  # No barcode for fresh items
+            product_type=ProductType.PLU,
+            brands=payload.brands,
+            categories=payload.categories,
+            package_quantity=payload.weight_grams,
+            package_unit="g",  # Fresh items are always in grams
+            product_data={"entry_method": "manual"},
+        )
+
+        # Auto-map product to ingredient for recipe matching
+        await auto_map_product_to_ingredient(db, product_ref.name)
+
+    # Upsert logic: check if item exists at this location
+    existing_item = await get_item_by_product_and_location(
+        db, product_ref.id, location
+    )
+
+    if existing_item:
+        # Item exists - increment quantity
+        item = await adjust_item_quantity(
+            db, product_ref.id, location, delta=1
+        )
+    else:
+        # Item doesn't exist - create new
+        item = await create_item(
+            db, product_reference_id=product_ref.id, location=location, qty=1
+        )
+
+    return ScanOut(
+        product_reference=product_ref,
+        item=item,
+        data_quality_warning=None,
     )
 
 

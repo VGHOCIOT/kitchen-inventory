@@ -17,7 +17,9 @@ async def parse_ingredient(ingredient_text: str) -> Optional[dict]:
             "name": "butter",
             "amount": 2.0,
             "unit": "tablespoons",
-            "original": "2 tablespoons butter"
+            "original": "2 tablespoons butter",
+            "metric_amount": 28.0,  # Optional: if measures.metric exists
+            "metric_unit": "g"       # Optional: if measures.metric exists
         }
     """
     if not SPOONACULAR_API_KEY:
@@ -42,12 +44,22 @@ async def parse_ingredient(ingredient_text: str) -> Optional[dict]:
                 data = response.json()
                 if data and len(data) > 0:
                     parsed = data[0]
-                    return {
+                    result = {
                         "name": parsed.get("name", ""),
                         "amount": parsed.get("amount", 1.0),
                         "unit": parsed.get("unit", "unit"),
                         "original": parsed.get("original", ingredient_text)
                     }
+
+                    # Extract metric weight data if available
+                    measures = parsed.get("measures", {})
+                    metric = measures.get("metric", {})
+                    if metric and metric.get("amount"):
+                        result["metric_amount"] = metric.get("amount")
+                        result["metric_unit"] = metric.get("unitShort", metric.get("unitLong", ""))
+                        logger.info(f"[SPOON] Extracted metric: {result['metric_amount']} {result['metric_unit']} for '{result['name']}'")
+
+                    return result
         except Exception as e:
             logger.error(f"[SPOON] API error: {e}")
             return None
@@ -63,7 +75,7 @@ async def parse_ingredients_batch(ingredient_list: list[str]) -> list[dict]:
         ingredient_list: List of ingredient strings
 
     Returns:
-        List of parsed ingredient dicts
+        List of parsed ingredient dicts with optional metric data
     """
     if not SPOONACULAR_API_KEY:
         # Fallback: return simple parsing
@@ -88,12 +100,22 @@ async def parse_ingredients_batch(ingredient_list: list[str]) -> list[dict]:
                 data = response.json()
                 results = []
                 for parsed in data:
-                    results.append({
+                    result = {
                         "name": parsed.get("name", ""),
                         "amount": parsed.get("amount", 1.0),
                         "unit": parsed.get("unit", "unit"),
                         "original": parsed.get("original", "")
-                    })
+                    }
+
+                    # Extract metric weight data if available
+                    measures = parsed.get("measures", {})
+                    metric = measures.get("metric", {})
+                    if metric and metric.get("amount"):
+                        result["metric_amount"] = metric.get("amount")
+                        result["metric_unit"] = metric.get("unitShort", metric.get("unitLong", ""))
+                        logger.info(f"[SPOON] Batch extracted metric: {result['metric_amount']} {result['metric_unit']} for '{result['name']}'")
+
+                    results.append(result)
                 return results
             else:
                 logger.warning(f"Spoonacular returned {response.status_code}: {response.text}")
