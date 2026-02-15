@@ -44,6 +44,8 @@ async def parse_ingredient(ingredient_text: str) -> Optional[dict]:
                 data = response.json()
                 if data and len(data) > 0:
                     parsed = data[0]
+                    logger.info(f"[SPOON] Raw parsed data for '{ingredient_text}': {parsed}")
+
                     result = {
                         "name": parsed.get("name", ""),
                         "amount": parsed.get("amount", 1.0),
@@ -53,11 +55,16 @@ async def parse_ingredient(ingredient_text: str) -> Optional[dict]:
 
                     # Extract metric weight data if available
                     measures = parsed.get("measures", {})
+                    logger.info(f"[SPOON] Measures data: {measures}")
                     metric = measures.get("metric", {})
+                    logger.info(f"[SPOON] Metric data: {metric}")
+
                     if metric and metric.get("amount"):
                         result["metric_amount"] = metric.get("amount")
                         result["metric_unit"] = metric.get("unitShort", metric.get("unitLong", ""))
-                        logger.info(f"[SPOON] Extracted metric: {result['metric_amount']} {result['metric_unit']} for '{result['name']}'")
+                        logger.info(f"[SPOON] ✓ Extracted metric: {result['metric_amount']} {result['metric_unit']} for '{result['name']}'")
+                    else:
+                        logger.info(f"[SPOON] ✗ No metric data available for '{result['name']}'")
 
                     return result
         except Exception as e:
@@ -98,8 +105,11 @@ async def parse_ingredients_batch(ingredient_list: list[str]) -> list[dict]:
 
             if response.status_code == 200:
                 data = response.json()
+                logger.info(f"[SPOON] Batch parsing {len(data)} ingredients")
                 results = []
                 for parsed in data:
+                    logger.info(f"[SPOON] Batch raw data: {parsed}")
+
                     result = {
                         "name": parsed.get("name", ""),
                         "amount": parsed.get("amount", 1.0),
@@ -109,11 +119,16 @@ async def parse_ingredients_batch(ingredient_list: list[str]) -> list[dict]:
 
                     # Extract metric weight data if available
                     measures = parsed.get("measures", {})
+                    logger.info(f"[SPOON] Batch measures: {measures}")
                     metric = measures.get("metric", {})
+                    logger.info(f"[SPOON] Batch metric: {metric}")
+
                     if metric and metric.get("amount"):
                         result["metric_amount"] = metric.get("amount")
                         result["metric_unit"] = metric.get("unitShort", metric.get("unitLong", ""))
-                        logger.info(f"[SPOON] Batch extracted metric: {result['metric_amount']} {result['metric_unit']} for '{result['name']}'")
+                        logger.info(f"[SPOON] ✓ Batch extracted metric: {result['metric_amount']} {result['metric_unit']} for '{result['name']}'")
+                    else:
+                        logger.info(f"[SPOON] ✗ Batch no metric data for '{result['name']}'")
 
                     results.append(result)
                 return results
