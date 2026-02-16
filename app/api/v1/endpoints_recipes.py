@@ -24,6 +24,7 @@ from crud.ingredient_alias import get_alias_by_text
 from api.services.recipe_parser import parse_recipe_from_url, normalize_ingredient_text
 from api.services.spoonacular import parse_ingredients_batch
 from api.services.recipe_matcher import match_all_recipes
+from api.services.fresh_ingredient_service import get_weight_for_count_ingredient
 from schemas.recipe import (
     RecipeCreateFromURL,
     RecipeOut,
@@ -66,12 +67,31 @@ async def create_recipe_from_url(
         # Find or create ingredient (business logic in endpoint)
         ingredient_ref = await find_or_create_ingredient(db, normalized)
 
-        # Prefer metric weight data over volume/count when available
-        # This makes matching more accurate for fresh ingredients and reduces conversion work
+        # Determine quantity and unit with 3-tier fallback
+        # 1. Spoonacular metric data (if available - currently not provided)
+        # 2. Fresh ingredient weight lookup (for count-based items)
+        # 3. Original parsed amount/unit
+
         if parsed.get("metric_amount") and parsed.get("metric_unit"):
+            # Tier 1: Use Spoonacular metric data (when available)
             quantity = float(parsed["metric_amount"])
             unit = parsed["metric_unit"]
+        elif not parsed["unit"] or parsed["unit"].strip() == "":
+            # Tier 2: Count-based ingredient - try to get weight
+            weight_data = await get_weight_for_count_ingredient(
+                normalized,
+                float(parsed["amount"]),
+                parsed["original"]
+            )
+            if weight_data:
+                quantity = weight_data["quantity"]
+                unit = weight_data["unit"]
+            else:
+                # Fallback to count
+                quantity = float(parsed["amount"])
+                unit = parsed["unit"]
         else:
+            # Tier 3: Use original parsed data
             quantity = float(parsed["amount"])
             unit = parsed["unit"]
 
