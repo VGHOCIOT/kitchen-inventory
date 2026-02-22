@@ -12,7 +12,7 @@ class ProductType(str, enum.Enum):
 class ProductReference(Base):
     __tablename__ = "product_references"
     id = Column(PGUUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
-    product_type = Column(SQLEnum(ProductType), nullable=False, default=ProductType.UPC, index=True)
+    product_type = Column(SQLEnum(ProductType, values_callable=lambda x: [e.value for e in x]), nullable=False, default=ProductType.UPC, index=True)
     barcode = Column(String, unique=True, index=True, nullable=True)  # Nullable for PLU items
     name = Column(String, index=True, nullable=False)
     categories = Column(ARRAY(String), nullable=True)
