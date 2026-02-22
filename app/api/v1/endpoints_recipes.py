@@ -79,7 +79,8 @@ async def create_recipe_from_url(
         elif not parsed["unit"] or parsed["unit"].strip() == "":
             # Tier 2: Count-based ingredient - try to get weight
             weight_data = await get_weight_for_count_ingredient(
-                normalized,
+                db,
+                ingredient_ref,
                 float(parsed["amount"]),
                 parsed["original"]
             )

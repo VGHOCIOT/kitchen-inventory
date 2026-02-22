@@ -75,3 +75,33 @@ async def find_ingredient_fuzzy(db: AsyncSession, search_text: str) -> Ingredien
         return min(matches, key=lambda x: len(x.normalized_name))
 
     return None
+
+
+async def update_avg_weight(
+    db: AsyncSession,
+    ingredient_id: UUID,
+    avg_weight_grams: float,
+    weight_source: str
+) -> IngredientReference:
+    """
+    Update average weight for an ingredient.
+
+    Args:
+        db: Database session
+        ingredient_id: UUID of ingredient to update
+        avg_weight_grams: Average weight in grams
+        weight_source: Source of weight data ("recipe_text", "manual", "usda", "user_override")
+
+    Returns:
+        Updated IngredientReference
+    """
+    ingredient = await get_ingredient_by_id(db, ingredient_id)
+    if not ingredient:
+        raise ValueError(f"Ingredient {ingredient_id} not found")
+
+    ingredient.avg_weight_grams = avg_weight_grams
+    ingredient.weight_source = weight_source
+
+    await db.commit()
+    await db.refresh(ingredient)
+    return ingredient

@@ -1,8 +1,13 @@
 """
-USDA FoodData Central API integration for fetching average ingredient weights.
+USDA FoodData Central API - FNDDS portion weight lookup.
 
-Free API for food nutrition data including portion sizes.
-Get API key: https://fdc.nal.usda.gov/api-key-signup.html
+FNDDS (Food and Nutrient Database for Dietary Studies) was specifically built
+to convert food portions into gram amounts. Unlike general FoodData Central
+search results, FNDDS food detail records contain a foodPortions array with
+entries like "1 medium carrot = 61g".
+
+Free API key: https://fdc.nal.usda.gov/api-key-signup.html
+Rate limit: 1,000 requests/hour with key, 30/hour without
 """
 
 import httpx
@@ -16,68 +21,133 @@ USDA_API_KEY = os.getenv("USDA_API_KEY")
 USDA_BASE_URL = "https://api.nal.usda.gov/fdc/v1"
 
 
-async def get_average_weight(ingredient_name: str) -> Optional[float]:
+def _extract_unit_weight_from_portions(portions: list, ingredient_name: str) -> Optional[float]:
     """
-    Get average weight in grams for an ingredient from USDA FoodData Central.
+    Extract per-unit gram weight from FNDDS foodPortions array.
+
+    FNDDS portions look like:
+      {"amount": 1.0, "modifier": "medium", "gramWeight": 61.0, "portionDescription": "medium"}
+      {"amount": 1.0, "modifier": "large",  "gramWeight": 80.0, "portionDescription": "large"}
+      {"amount": 0.5, "modifier": "small",  "gramWeight": 30.0, "portionDescription": "small"}
+
+    Strategy:
+    1. Prefer amount=1 with "medium" modifier (most representative)
+    2. Fall back to any amount=1 portion
+    3. Last resort: normalize first portion by dividing gramWeight / amount
 
     Args:
-        ingredient_name: Name of ingredient (e.g., "chicken breast", "carrot")
+        portions: foodPortions array from FNDDS detail response
+        ingredient_name: Used for logging only
 
     Returns:
-        Average weight in grams, or None if not found
+        Per-unit gram weight, or None if extraction fails
+    """
+    if not portions:
+        return None
+
+    # Filter to portions that have gramWeight
+    valid = [p for p in portions if p.get("gramWeight") and p.get("amount")]
+    if not valid:
+        return None
+
+    # Priority 1: amount=1 with "medium" modifier
+    for p in valid:
+        modifier = (p.get("modifier") or p.get("portionDescription") or "").lower()
+        if float(p["amount"]) == 1.0 and "medium" in modifier:
+            weight = float(p["gramWeight"])
+            logger.debug(f"[USDA] '{ingredient_name}': medium portion = {weight}g")
+            return weight
+
+    # Priority 2: any amount=1 portion (take first = smallest/most common)
+    for p in valid:
+        if float(p["amount"]) == 1.0:
+            weight = float(p["gramWeight"])
+            modifier = p.get("modifier") or p.get("portionDescription") or "unknown"
+            logger.debug(f"[USDA] '{ingredient_name}': amount=1 portion ({modifier}) = {weight}g")
+            return weight
+
+    # Priority 3: normalize first portion by dividing gramWeight by amount
+    p = valid[0]
+    normalized = float(p["gramWeight"]) / float(p["amount"])
+    modifier = p.get("modifier") or p.get("portionDescription") or "unknown"
+    logger.debug(f"[USDA] '{ingredient_name}': normalized portion ({modifier}) = {normalized}g")
+    return normalized
+
+
+async def get_average_weight(ingredient_name: str) -> Optional[float]:
+    """
+    Get per-unit gram weight for an ingredient using USDA FNDDS.
+
+    Two-step lookup:
+    1. Search for food → get fdcId of best FNDDS match
+    2. Fetch food detail → extract from foodPortions array
+
+    Only runs if USDA_API_KEY is set in .env.
+
+    Args:
+        ingredient_name: Normalized ingredient name (e.g., "carrot", "chicken breast")
+
+    Returns:
+        Per-unit gram weight, or None if not found
     """
     if not USDA_API_KEY:
-        logger.warning("[USDA] API key not configured, skipping USDA lookup")
+        logger.debug("[USDA] API key not set, skipping USDA lookup")
         return None
 
     try:
         async with httpx.AsyncClient() as client:
-            # Search for the ingredient
-            search_url = f"{USDA_BASE_URL}/foods/search"
-            params = {
-                "api_key": USDA_API_KEY,
-                "query": ingredient_name,
-                "dataType": ["Survey (FNDDS)", "Foundation"],  # Most reliable data types
-                "pageSize": 1  # Just get the top result
-            }
 
-            response = await client.get(search_url, params=params, timeout=10)
+            # Step 1: Search for best FNDDS match
+            search_response = await client.get(
+                f"{USDA_BASE_URL}/foods/search",
+                params={
+                    "api_key": USDA_API_KEY,
+                    "query": ingredient_name,
+                    "dataType": "Survey (FNDDS)",  # FNDDS only - has portion weights
+                    "pageSize": 3,
+                },
+                timeout=5.0,
+            )
 
-            if response.status_code != 200:
-                logger.warning(f"[USDA] API returned {response.status_code} for '{ingredient_name}'")
+            if search_response.status_code != 200:
+                logger.warning(f"[USDA] Search failed ({search_response.status_code}) for '{ingredient_name}'")
                 return None
 
-            data = response.json()
-            foods = data.get("foods", [])
-
+            foods = search_response.json().get("foods", [])
             if not foods:
-                logger.info(f"[USDA] No results found for '{ingredient_name}'")
+                logger.debug(f"[USDA] No FNDDS results for '{ingredient_name}'")
                 return None
 
-            # Get the first (best match) food item
-            food = foods[0]
+            # Use top result
+            fdc_id = foods[0]["fdcId"]
+            description = foods[0].get("description", "unknown")
+            logger.debug(f"[USDA] Best match for '{ingredient_name}': '{description}' (fdcId={fdc_id})")
 
-            # Try to extract portion/serving size in grams
-            # USDA data has "servingSize" and "servingSizeUnit"
-            serving_size = food.get("servingSize")
-            serving_unit = food.get("servingSizeUnit", "").lower()
+            # Step 2: Fetch full food detail to get complete foodPortions
+            detail_response = await client.get(
+                f"{USDA_BASE_URL}/food/{fdc_id}",
+                params={"api_key": USDA_API_KEY},
+                timeout=5.0,
+            )
 
-            if serving_size and serving_unit == "g":
-                weight_g = float(serving_size)
-                logger.info(f"[USDA] Found weight for '{ingredient_name}': {weight_g}g (from '{food.get('description')}')")
-                return weight_g
+            if detail_response.status_code != 200:
+                logger.warning(f"[USDA] Detail fetch failed ({detail_response.status_code}) for fdcId={fdc_id}")
+                return None
 
-            # Fallback: Check food portions
-            portions = food.get("foodPortions", [])
-            for portion in portions:
-                if portion.get("gramWeight"):
-                    weight_g = float(portion["gramWeight"])
-                    logger.info(f"[USDA] Found weight for '{ingredient_name}': {weight_g}g from portion data")
-                    return weight_g
+            detail = detail_response.json()
+            portions = detail.get("foodPortions", [])
 
-            logger.info(f"[USDA] Found '{food.get('description')}' but no weight data available")
+            weight = _extract_unit_weight_from_portions(portions, ingredient_name)
+            if weight:
+                logger.info(f"[USDA] Found weight for '{ingredient_name}': {weight}g (from '{description}')")
+                return weight
+
+            logger.debug(f"[USDA] '{description}' has no usable portion weights for '{ingredient_name}'")
             return None
 
+    except httpx.TimeoutException:
+        logger.warning(f"[USDA] Timeout fetching weight for '{ingredient_name}'")
+        return None
     except Exception as e:
-        logger.error(f"[USDA] Error fetching data for '{ingredient_name}': {e}")
+        logger.error(f"[USDA] Error fetching weight for '{ingredient_name}': {e}")
         return None

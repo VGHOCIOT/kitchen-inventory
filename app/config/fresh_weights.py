@@ -13,20 +13,61 @@ MANUAL_FRESH_WEIGHTS = {
     "chicken thigh": 150,   # 1 boneless thigh
     "chicken leg": 200,     # 1 drumstick + thigh
     "pork chop": 200,       # 1 medium chop
+    "pork tenderloin": 450, # 1 portion (usually sold in pairs)
     "beef steak": 225,      # 1 portion steak
+    "ground beef": 450,     # 1 lb (common package)
+    "ground turkey": 450,   # 1 lb (common package)
+    "ground chicken": 450,  # 1 lb (common package)
+    "bacon": 450,           # 1 package (usually ~12 slices)
+    "sausage": 75,          # 1 link
+
+    # Seafood
+    "shrimp": 15,           # 1 large shrimp (peeled)
+    "salmon": 170,          # 1 fillet/portion
+    "cod": 150,             # 1 fillet/portion
+    "tilapia": 120,         # 1 fillet/portion
+    "tuna": 150,            # 1 steak/portion
 
     # Vegetables
     "carrot": 60,           # 1 medium carrot
     "bell pepper": 120,     # 1 medium pepper
+    "red bell pepper": 120, # 1 medium pepper
+    "green bell pepper": 120, # 1 medium pepper
+    "jalapeño": 15,         # 1 pepper
+    "serrano pepper": 10,   # 1 pepper
     "onion": 150,           # 1 medium onion
+    "red onion": 150,       # 1 medium onion
+    "yellow onion": 150,    # 1 medium onion
+    "white onion": 150,     # 1 medium onion
+    "green onion": 15,      # 1 stalk/scallion
+    "scallion": 15,         # 1 stalk
+    "shallot": 40,          # 1 medium shallot
+    "leek": 100,            # 1 medium leek
     "tomato": 150,          # 1 medium tomato
+    "cherry tomato": 15,    # 1 tomato
+    "grape tomato": 10,     # 1 tomato
     "potato": 200,          # 1 medium potato
+    "sweet potato": 200,    # 1 medium
     "zucchini": 200,        # 1 medium zucchini
     "cucumber": 300,        # 1 medium cucumber
     "broccoli": 150,        # 1 crown/head
     "cauliflower": 500,     # 1 head
+    "brussels sprout": 20,  # 1 sprout
     "celery": 40,           # 1 stalk
     "garlic": 5,            # 1 clove
+    "ginger": 50,           # 1 knob (thumb-sized)
+    "mushroom": 18,         # 1 medium button mushroom
+    "portobello mushroom": 100, # 1 cap
+    "shiitake mushroom": 15, # 1 mushroom
+    "spinach": 30,          # 1 cup fresh (loosely packed)
+    "kale": 35,             # 1 cup chopped
+    "lettuce": 500,         # 1 head romaine
+    "green bean": 10,       # 1 bean
+    "asparagus": 20,        # 1 spear
+    "corn": 200,            # 1 cob
+    "eggplant": 450,        # 1 medium
+    "radish": 15,           # 1 radish
+    "beet": 100,            # 1 medium beet
 
     # Fruits
     "apple": 180,           # 1 medium apple
@@ -35,9 +76,31 @@ MANUAL_FRESH_WEIGHTS = {
     "lemon": 58,            # 1 medium lemon
     "lime": 44,             # 1 medium lime
     "avocado": 150,         # 1 medium avocado
+    "strawberry": 15,       # 1 medium berry
+    "blueberry": 1,         # 1 berry
+    "raspberry": 1,         # 1 berry
+    "mango": 200,           # 1 medium mango
+    "pineapple": 900,       # 1 whole pineapple
+    "pear": 180,            # 1 medium pear
+    "peach": 150,           # 1 medium peach
+    "plum": 70,             # 1 medium plum
+    "grape": 5,             # 1 grape
+
+    # Fresh Herbs (by bunch/package)
+    "basil": 25,            # 1 bunch (typical grocery package)
+    "cilantro": 25,         # 1 bunch
+    "parsley": 30,          # 1 bunch
+    "mint": 20,             # 1 bunch
+    "thyme": 10,            # 1 bunch (smaller)
+    "rosemary": 15,         # 1 bunch
+    "dill": 20,             # 1 bunch
 
     # Eggs & Dairy (if not packaged)
     "egg": 50,              # 1 large egg
+
+    # Plant-based proteins
+    "tofu": 350,            # 1 block (standard package)
+    "tempeh": 240,          # 1 package
 
     # Add more as needed based on your shopping habits
 }
