@@ -19,8 +19,9 @@ from crud.ingredient_reference import (
     get_ingredient_by_name,
     get_ingredient_by_normalized_name,
 )
-from crud.ingredient_alias import get_alias_by_text
+from crud.ingredient_alias import get_alias_by_text, create_ingredient_alias
 
+from config.ingredient_aliases import INGREDIENT_ALIAS_SEEDS
 from api.services.recipe_parser import parse_recipe_from_url, normalize_ingredient_text
 from api.services.spoonacular import parse_ingredients_batch
 from api.services.recipe_matcher import match_all_recipes
@@ -149,6 +150,51 @@ async def get_recipe(
     )
 
 
+@router.post("/seed-aliases")
+async def seed_ingredient_aliases(db: AsyncSession = Depends(get_db)):
+    """
+    Seed the ingredient alias table with known variations.
+
+    Handles cases plural/singular logic can't resolve automatically:
+    - Regional names: scallions → green onion, capsicum → bell pepper
+    - Synonyms: cilantro → coriander
+    - Modifier variants: boneless skinless chicken breast → chicken breast
+
+    Safe to run multiple times - skips aliases that already exist.
+    Creates canonical IngredientReference if it doesn't exist yet.
+    """
+    created_ingredients = 0
+    created_aliases = 0
+    skipped = 0
+
+    for canonical_name, aliases in INGREDIENT_ALIAS_SEEDS.items():
+        # Find or create the canonical ingredient
+        ingredient = await get_ingredient_by_name(db, canonical_name)
+        if not ingredient:
+            ingredient = await get_ingredient_by_normalized_name(db, canonical_name)
+        if not ingredient:
+            ingredient = await create_ingredient_reference(
+                db, name=canonical_name, normalized_name=canonical_name
+            )
+            created_ingredients += 1
+
+        # Create each alias if it doesn't already exist
+        for alias_text in aliases:
+            existing = await get_alias_by_text(db, alias_text)
+            if existing:
+                skipped += 1
+            else:
+                await create_ingredient_alias(db, alias=alias_text, ingredient_id=ingredient.id)
+                created_aliases += 1
+
+    return {
+        "ingredients_created": created_ingredients,
+        "aliases_created": created_aliases,
+        "aliases_skipped": skipped,
+        "message": f"Seeded {created_aliases} aliases across {len(INGREDIENT_ALIAS_SEEDS)} canonical ingredients",
+    }
+
+
 @router.delete("/{recipe_id}", status_code=204)
 async def delete_recipe_endpoint(
     recipe_id: UUID,
@@ -162,10 +208,45 @@ async def delete_recipe_endpoint(
 
 # ============== HELPER FUNCTIONS (Business Logic) ==============
 
+def _try_singularize(name: str) -> list[str]:
+    """
+    Generate candidate singular forms to try when a name isn't found directly.
+    Returns candidates in priority order.
+    """
+    candidates = []
+    words = name.split()
+
+    # Single-word plurals: "carrots" → "carrot", "tomatoes" → "tomato"
+    if len(words) == 1:
+        if name.endswith("oes"):           # potatoes → potato
+            candidates.append(name[:-2])
+        elif name.endswith("es") and len(name) > 3:  # tomatoes → tomato (via oes already handled)
+            candidates.append(name[:-1])   # also try just strip s
+        if name.endswith("s") and not name.endswith("ss"):
+            candidates.append(name[:-1])   # carrots → carrot
+
+    # Multi-word: strip 's' from last word - "green onions" → "green onion"
+    elif len(words) > 1:
+        last = words[-1]
+        if last.endswith("oes"):
+            candidates.append(" ".join(words[:-1] + [last[:-2]]))
+        if last.endswith("s") and not last.endswith("ss"):
+            candidates.append(" ".join(words[:-1] + [last[:-1]]))
+
+    return candidates
+
+
 async def find_or_create_ingredient(db: AsyncSession, normalized_name: str):
     """
     Business logic: Find existing ingredient or create new one.
-    This orchestrates multiple CRUD calls.
+
+    Resolution order:
+    1. Exact name match
+    2. Normalized name match
+    3. Alias table lookup
+    4. Plural/singular auto-resolution (e.g., "carrots" → "carrot")
+       - If resolved, creates the alias so future lookups are instant
+    5. Create new IngredientReference
     """
     # Try exact match on name
     ingredient = await get_ingredient_by_name(db, normalized_name)
@@ -181,6 +262,16 @@ async def find_or_create_ingredient(db: AsyncSession, normalized_name: str):
     alias = await get_alias_by_text(db, normalized_name)
     if alias:
         return await get_ingredient_by_id(db, alias.ingredient_id)
+
+    # Try plural → singular resolution before creating a new ingredient
+    for candidate in _try_singularize(normalized_name):
+        ingredient = await get_ingredient_by_name(db, candidate)
+        if not ingredient:
+            ingredient = await get_ingredient_by_normalized_name(db, candidate)
+        if ingredient:
+            # Auto-create alias so next lookup is instant
+            await create_ingredient_alias(db, alias=normalized_name, ingredient_id=ingredient.id)
+            return ingredient
 
     # Not found - create new ingredient
     return await create_ingredient_reference(
