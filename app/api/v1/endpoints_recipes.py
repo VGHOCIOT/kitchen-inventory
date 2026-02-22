@@ -22,6 +22,7 @@ from crud.ingredient_reference import (
 from crud.ingredient_alias import get_alias_by_text, create_ingredient_alias
 
 from config.ingredient_aliases import INGREDIENT_ALIAS_SEEDS
+from config.fresh_weights import MANUAL_FRESH_WEIGHTS
 from api.services.recipe_parser import parse_recipe_from_url, normalize_ingredient_text
 from api.services.spoonacular import parse_ingredients_batch
 from api.services.recipe_matcher import match_all_recipes
@@ -208,74 +209,115 @@ async def delete_recipe_endpoint(
 
 # ============== HELPER FUNCTIONS (Business Logic) ==============
 
-def _try_singularize(name: str) -> list[str]:
+def _find_canonical_in_seeds(name: str) -> str | None:
     """
-    Generate candidate singular forms to try when a name isn't found directly.
-    Returns candidates in priority order.
+    Reverse-lookup INGREDIENT_ALIAS_SEEDS to find the canonical name for an alias.
+    e.g. "scallions" → "green onion", "boneless chicken breast" → "chicken breast"
+    """
+    for canonical, aliases in INGREDIENT_ALIAS_SEEDS.items():
+        if name in aliases:
+            return canonical
+    return None
+
+
+def _singularize_candidates(name: str) -> list[str]:
+    """
+    Generate candidate singular forms in priority order.
+    e.g. "carrots" → ["carrot"], "green onions" → ["green onion"]
     """
     candidates = []
     words = name.split()
 
-    # Single-word plurals: "carrots" → "carrot", "tomatoes" → "tomato"
     if len(words) == 1:
-        if name.endswith("oes"):           # potatoes → potato
+        if name.endswith("oes"):                          # potatoes → potato
             candidates.append(name[:-2])
-        elif name.endswith("es") and len(name) > 3:  # tomatoes → tomato (via oes already handled)
-            candidates.append(name[:-1])   # also try just strip s
-        if name.endswith("s") and not name.endswith("ss"):
-            candidates.append(name[:-1])   # carrots → carrot
-
-    # Multi-word: strip 's' from last word - "green onions" → "green onion"
+        if name.endswith("s") and not name.endswith("ss"):  # carrots → carrot
+            candidates.append(name[:-1])
     elif len(words) > 1:
         last = words[-1]
         if last.endswith("oes"):
             candidates.append(" ".join(words[:-1] + [last[:-2]]))
-        if last.endswith("s") and not last.endswith("ss"):
+        if last.endswith("s") and not last.endswith("ss"):   # green onions → green onion
             candidates.append(" ".join(words[:-1] + [last[:-1]]))
 
     return candidates
 
 
+async def _get_or_create_canonical(db: AsyncSession, canonical_name: str):
+    """Find or create an IngredientReference for a canonical name."""
+    ingredient = await get_ingredient_by_name(db, canonical_name)
+    if not ingredient:
+        ingredient = await get_ingredient_by_normalized_name(db, canonical_name)
+    if not ingredient:
+        ingredient = await create_ingredient_reference(
+            db, name=canonical_name, normalized_name=canonical_name
+        )
+    return ingredient
+
+
 async def find_or_create_ingredient(db: AsyncSession, normalized_name: str):
     """
-    Business logic: Find existing ingredient or create new one.
+    Find or create an IngredientReference, always resolving to the canonical form.
 
-    Resolution order:
-    1. Exact name match
-    2. Normalized name match
-    3. Alias table lookup
-    4. Plural/singular auto-resolution (e.g., "carrots" → "carrot")
-       - If resolved, creates the alias so future lookups are instant
-    5. Create new IngredientReference
+    Resolution order (first match wins):
+    1. Exact DB match
+    2. DB alias lookup
+    3. Explicit alias seeds (INGREDIENT_ALIAS_SEEDS) - handles regional/synonym cases
+       e.g. "scallions" → canonical "green onion"
+    4. Singularize + check manual weights table - handles plurals of known ingredients
+       e.g. "carrots" → singularize to "carrot" → in MANUAL_FRESH_WEIGHTS → canonical "carrot"
+    5. Singularize + check existing DB ingredient
+       e.g. "carrots" → "carrot" already in DB from a previous recipe
+    6. Name itself is in manual weights (create canonical as-is)
+    7. Create new IngredientReference (unknown ingredient)
+
+    When an alias is resolved (steps 3-5), it's saved to the DB so subsequent
+    lookups for the same name skip all this and hit step 2 instantly.
     """
-    # Try exact match on name
+    # 1. Exact DB match
     ingredient = await get_ingredient_by_name(db, normalized_name)
     if ingredient:
         return ingredient
 
-    # Try match on normalized_name
     ingredient = await get_ingredient_by_normalized_name(db, normalized_name)
     if ingredient:
         return ingredient
 
-    # Try match via alias
+    # 2. DB alias lookup
     alias = await get_alias_by_text(db, normalized_name)
     if alias:
         return await get_ingredient_by_id(db, alias.ingredient_id)
 
-    # Try plural → singular resolution before creating a new ingredient
-    for candidate in _try_singularize(normalized_name):
+    # 3. Explicit alias seeds (regional names, synonyms, modifier variants)
+    canonical_name = _find_canonical_in_seeds(normalized_name)
+    if canonical_name:
+        ingredient = await _get_or_create_canonical(db, canonical_name)
+        await create_ingredient_alias(db, alias=normalized_name, ingredient_id=ingredient.id)
+        return ingredient
+
+    # 4. Singularize + check manual weights (create canonical from weights table)
+    for candidate in _singularize_candidates(normalized_name):
+        if candidate in MANUAL_FRESH_WEIGHTS:
+            ingredient = await _get_or_create_canonical(db, candidate)
+            await create_ingredient_alias(db, alias=normalized_name, ingredient_id=ingredient.id)
+            return ingredient
+
+    # 5. Singularize + check existing DB ingredient
+    for candidate in _singularize_candidates(normalized_name):
         ingredient = await get_ingredient_by_name(db, candidate)
         if not ingredient:
             ingredient = await get_ingredient_by_normalized_name(db, candidate)
         if ingredient:
-            # Auto-create alias so next lookup is instant
             await create_ingredient_alias(db, alias=normalized_name, ingredient_id=ingredient.id)
             return ingredient
 
-    # Not found - create new ingredient
+    # 6. Name itself is a known manual weight - create canonical directly
+    if normalized_name in MANUAL_FRESH_WEIGHTS:
+        return await create_ingredient_reference(
+            db, name=normalized_name, normalized_name=normalized_name
+        )
+
+    # 7. Unknown ingredient - create as-is
     return await create_ingredient_reference(
-        db,
-        name=normalized_name,
-        normalized_name=normalized_name
+        db, name=normalized_name, normalized_name=normalized_name
     )
