@@ -120,11 +120,16 @@ async def get_average_weight(ingredient_name: str) -> Optional[float]:
 
             # Take best match (first result)
             food = foods[0] if isinstance(foods, list) else foods
+
+            # Log raw response keys so we can confirm field names from the actual API
+            logger.debug(f"[CNF] Food response keys for '{ingredient_name}': {list(food.keys()) if isinstance(food, dict) else type(food)}")
+            logger.debug(f"[CNF] Food response sample: {food}")
+
             food_id = food.get("foodId") or food.get("food_id") or food.get("FoodID")
             description = food.get("foodDescription") or food.get("food_description") or food.get("FoodDescription") or "unknown"
 
             if not food_id:
-                logger.debug(f"[CNF] Could not extract food_id from response for '{ingredient_name}'")
+                logger.warning(f"[CNF] Could not extract food_id from response for '{ingredient_name}' - raw keys: {list(food.keys()) if isinstance(food, dict) else food}")
                 return None
 
             logger.debug(f"[CNF] Best match for '{ingredient_name}': '{description}' (id={food_id})")
@@ -148,12 +153,17 @@ async def get_average_weight(ingredient_name: str) -> Optional[float]:
                 logger.debug(f"[CNF] No serving sizes for '{description}'")
                 return None
 
+            # Log raw serving response so we can confirm field names and structure
+            first = servings[0] if isinstance(servings, list) else servings
+            logger.debug(f"[CNF] Serving response keys for '{ingredient_name}': {list(first.keys()) if isinstance(first, dict) else type(first)}")
+            logger.debug(f"[CNF] Servings sample (first 3): {servings[:3] if isinstance(servings, list) else servings}")
+
             weight = _extract_unit_weight_from_servings(servings, ingredient_name)
             if weight:
                 logger.info(f"[CNF] Found weight for '{ingredient_name}': {weight}g (from '{description}')")
                 return weight
 
-            logger.debug(f"[CNF] '{description}' has no usable unit serving sizes for '{ingredient_name}'")
+            logger.warning(f"[CNF] '{description}' has no usable unit serving sizes for '{ingredient_name}' - all servings: {servings}")
             return None
 
     except httpx.TimeoutException:

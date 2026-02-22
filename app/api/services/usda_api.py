@@ -103,7 +103,7 @@ async def get_average_weight(ingredient_name: str) -> Optional[float]:
                 params={
                     "api_key": USDA_API_KEY,
                     "query": ingredient_name,
-                    "dataType": "Survey (FNDDS)",  # FNDDS only - has portion weights
+                    "dataType": ["Survey (FNDDS)"],  # List format required - string gets over-encoded by httpx
                     "pageSize": 3,
                 },
                 timeout=5.0,
