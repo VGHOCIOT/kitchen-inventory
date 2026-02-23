@@ -35,6 +35,9 @@ MANUAL_FRESH_WEIGHTS = {
     "green bell pepper": 120, # 1 medium pepper
     "jalapeño": 15,         # 1 pepper
     "serrano pepper": 10,   # 1 pepper
+    "poblano pepper": 150,  # 1 medium poblano
+    "anaheim pepper": 100,  # 1 medium Anaheim
+    "habanero pepper": 10,  # 1 pepper
     "onion": 150,           # 1 medium onion
     "red onion": 150,       # 1 medium onion
     "yellow onion": 150,    # 1 medium onion
@@ -62,6 +65,16 @@ MANUAL_FRESH_WEIGHTS = {
     "spinach": 30,          # 1 cup fresh (loosely packed)
     "kale": 35,             # 1 cup chopped
     "lettuce": 500,         # 1 head romaine
+    "tomatillo": 60,        # 1 medium tomatillo
+    "fennel": 250,          # 1 medium fennel bulb
+    "parsnip": 150,         # 1 medium parsnip
+    "turnip": 150,          # 1 medium turnip
+    "bok choy": 500,        # 1 head
+    "baby bok choy": 200,   # 1 head
+    "butternut squash": 700,  # 1 medium squash
+    "acorn squash": 500,    # 1 medium squash
+    "artichoke": 150,       # 1 medium globe artichoke
+    "okra": 15,             # 1 pod
     "green bean": 10,       # 1 bean
     "asparagus": 20,        # 1 spear
     "corn": 200,            # 1 cob
@@ -85,6 +98,12 @@ MANUAL_FRESH_WEIGHTS = {
     "peach": 150,           # 1 medium peach
     "plum": 70,             # 1 medium plum
     "grape": 5,             # 1 grape
+    "cherry": 8,            # 1 cherry
+    "nectarine": 140,       # 1 medium nectarine
+    "apricot": 45,          # 1 medium apricot
+    "fig": 40,              # 1 fresh fig
+    "kiwi": 75,             # 1 medium kiwi
+    "pomegranate": 250,     # 1 medium pomegranate
 
     # Fresh Herbs (by bunch/package)
     "basil": 25,            # 1 bunch (typical grocery package)
@@ -94,6 +113,11 @@ MANUAL_FRESH_WEIGHTS = {
     "thyme": 10,            # 1 bunch (smaller)
     "rosemary": 15,         # 1 bunch
     "dill": 20,             # 1 bunch
+
+    # Additional proteins
+    "lamb chop": 125,       # 1 rib chop
+    "duck breast": 200,     # 1 breast half
+    "scallop": 35,          # 1 large scallop
 
     # Eggs & Dairy (if not packaged)
     "egg": 50,              # 1 large egg

@@ -69,6 +69,12 @@ INGREDIENT_ALIAS_SEEDS: dict[str, list[str]] = {
         "jalapeño pepper", "jalapeño peppers",
         "jalapeno pepper", "jalapeno peppers",
     ],
+    "poblano pepper": [
+        "poblano", "poblanos", "poblano peppers",
+        "pasilla pepper", "pasilla peppers",
+    ],
+    "habanero pepper": ["habanero", "habaneros", "habanero peppers"],
+    "anaheim pepper": ["anaheim", "anaheims", "anaheim peppers"],
 
     # ── Root vegetables ────────────────────────────────────────────────────────
     "carrot": ["carrots", "baby carrot", "baby carrots"],
@@ -76,9 +82,18 @@ INGREDIENT_ALIAS_SEEDS: dict[str, list[str]] = {
     "sweet potato": ["sweet potatoes", "yam", "yams"],
     "beet": ["beets", "beetroot", "beetroots"],
 
+    # ── Squash ─────────────────────────────────────────────────────────────────
+    "butternut squash": ["butternut", "butternut squashes"],
+    "acorn squash": ["acorn squashes"],
+
+    # ── Aromatics ──────────────────────────────────────────────────────────────
+    "fennel": ["fennel bulb", "fennel bulbs"],
+
     # ── Brassicas ──────────────────────────────────────────────────────────────
     "broccoli": ["broccoli floret", "broccoli florets", "broccoli crown", "broccoli crowns"],
     "brussels sprout": ["brussels sprouts", "brussel sprout", "brussel sprouts"],
+    "bok choy": ["bok choys", "pak choi", "pak choy"],
+    "baby bok choy": ["baby bok choys", "baby pak choi"],
 
     # ── Fungi ──────────────────────────────────────────────────────────────────
     "mushroom": [
@@ -122,11 +137,17 @@ INGREDIENT_ALIAS_SEEDS: dict[str, list[str]] = {
     "shrimp": ["prawns", "prawn", "large shrimp", "jumbo shrimp"],
     "salmon": ["salmon fillet", "salmon fillets", "salmon steak", "atlantic salmon"],
     "tuna": ["tuna steak", "tuna steaks", "ahi tuna"],
+    "scallop": ["scallops", "sea scallop", "sea scallops", "bay scallop", "bay scallops"],
+    "lamb chop": ["lamb chops", "lamb rib chop", "lamb rib chops"],
+    "duck breast": ["duck breasts"],
 
     # ── Fruits ─────────────────────────────────────────────────────────────────
     "avocado": ["avocados", "hass avocado", "hass avocados"],
     "lemon": ["lemons"],
     "lime": ["limes"],
+    "kiwi": ["kiwis", "kiwifruit"],
+    "fig": ["figs", "fresh fig", "fresh figs"],
+    "pomegranate": ["pomegranates"],
 
     # ── Ginger / aromatics ─────────────────────────────────────────────────────
     "ginger": ["fresh ginger", "ginger root", "ginger knob"],

@@ -223,21 +223,26 @@ def _find_canonical_in_seeds(name: str) -> str | None:
 def _singularize_candidates(name: str) -> list[str]:
     """
     Generate candidate singular forms in priority order.
-    e.g. "carrots" → ["carrot"], "green onions" → ["green onion"]
+    e.g. "carrots" → ["carrot"], "green onions" → ["green onion"],
+         "cherries" → ["cherry"], "strawberries" → ["strawberry"]
     """
     candidates = []
     words = name.split()
 
     if len(words) == 1:
-        if name.endswith("oes"):                          # potatoes → potato
+        if name.endswith("ies"):                                        # cherries → cherry
+            candidates.append(name[:-3] + "y")
+        if name.endswith("oes"):                                        # potatoes → potato
             candidates.append(name[:-2])
-        if name.endswith("s") and not name.endswith("ss"):  # carrots → carrot
+        if name.endswith("s") and not name.endswith("ss") and not name.endswith("ies"):  # carrots → carrot
             candidates.append(name[:-1])
     elif len(words) > 1:
         last = words[-1]
+        if last.endswith("ies"):
+            candidates.append(" ".join(words[:-1] + [last[:-3] + "y"]))
         if last.endswith("oes"):
             candidates.append(" ".join(words[:-1] + [last[:-2]]))
-        if last.endswith("s") and not last.endswith("ss"):   # green onions → green onion
+        if last.endswith("s") and not last.endswith("ss") and not last.endswith("ies"):  # green onions → green onion
             candidates.append(" ".join(words[:-1] + [last[:-1]]))
 
     return candidates
