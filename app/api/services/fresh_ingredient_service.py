@@ -1,11 +1,10 @@
 """
 Fresh ingredient service - orchestrates weight lookup from multiple sources.
 
-4-tier lookup system:
+3-tier lookup system:
 1. Weight hint in recipe text (e.g., "(about 1.5 lb)")
 2. Manual curated weights (config/fresh_weights.py)
 3. USDA FNDDS API - purpose-built portion weight database (free, key required)
-4. Canadian Nutrient File API - Canadian-specific coverage (free, no key required)
 
 Results are cached in IngredientReference.avg_weight_grams for future use.
 """
@@ -19,7 +18,6 @@ from api.services.weight_parser import extract_weight_from_text
 from api.services.unit_converter import convert_to_base_unit
 from config.fresh_weights import get_manual_weight
 from api.services.usda_api import get_average_weight as usda_get_weight
-from api.services.cnf_api import get_average_weight as cnf_get_weight
 
 logger = logging.getLogger(__name__)
 
@@ -33,10 +31,10 @@ async def get_weight_for_count_ingredient(
     """
     Get weight for a count-based ingredient (e.g., "2 chicken breasts").
 
-    Checks cached weight first, then runs 3-tier lookup:
+    Checks cached weight first, then runs tiered lookup:
     1. Extract weight from original_text
     2. Manual weight table lookup
-    3. USDA API lookup
+    3. USDA FNDDS API lookup
 
     Caches the per-unit weight in IngredientReference for future use.
 
@@ -94,14 +92,6 @@ async def get_weight_for_count_ingredient(
             weight_per_unit = usda_weight
             source = "usda"
             logger.info(f"[FRESH] Found via USDA FNDDS: {weight_per_unit}g per unit")
-
-    # Tier 4: Canadian Nutrient File lookup
-    if not weight_per_unit:
-        cnf_weight = await cnf_get_weight(ingredient_name)
-        if cnf_weight:
-            weight_per_unit = cnf_weight
-            source = "cnf"
-            logger.info(f"[FRESH] Found via Canadian Nutrient File: {weight_per_unit}g per unit")
 
     # Cache the per-unit weight for future use
     if weight_per_unit and source:

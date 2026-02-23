@@ -38,11 +38,23 @@ def normalize_ingredient_text(ingredient_text: str) -> str:
 
     Example: "2 cups all-purpose flour" -> "flour"
     """
-    # Simple normalization - can be enhanced with Spoonacular later
     text = ingredient_text.lower().strip()
 
+    # Strip leading preparation phrases that word-level filtering can't catch
+    phrase_prefixes = [
+        "juice and zest of ",
+        "juice of ",
+        "zest of ",
+        "optional variation: ",
+        "optional: ",
+    ]
+    for prefix in phrase_prefixes:
+        if text.startswith(prefix):
+            text = text[len(prefix):]
+            break
+
     # Remove common quantity words, units, and descriptive modifiers
-    remove_words = [
+    remove_words = {
         # Units
         'cup', 'cups', 'tablespoon', 'tablespoons', 'tbsp', 'teaspoon', 'teaspoons', 'tsp',
         'ounce', 'ounces', 'oz', 'pound', 'pounds', 'lb', 'lbs', 'gram', 'grams', 'g',
@@ -51,15 +63,21 @@ def normalize_ingredient_text(ingredient_text: str) -> str:
         # Preparation methods
         'chopped', 'diced', 'minced', 'sliced', 'fresh', 'dried', 'ground', 'crushed', 'grated',
         'shredded', 'melted', 'softened', 'beaten', 'whisked', 'toasted', 'roasted',
+        # Plant part descriptors (e.g. "cilantro leaves" → "cilantro")
+        'leaves', 'leaf', 'stalks', 'stalk', 'sprig', 'sprigs', 'florets', 'floret',
         # Size descriptors
         'large', 'medium', 'small', 'whole', 'half', 'quarter', 'mini', 'extra', 'jumbo',
+        # Range/connector words (e.g. "1 to 2 jalapeños" → "jalapeños")
+        'to',
         # Quality descriptors
         'pure', 'organic', 'natural', 'raw', 'unbleached', 'free', 'range', 'cage',
         'grade', 'quality', 'premium', 'fancy', 'select', 'choice',
         # Common adjectives
         'all-purpose', 'purpose', 'all', 'light', 'dark', 'unsalted', 'salted', 'sweetened',
-        'unsweetened', 'plain', 'regular', 'low', 'fat', 'sodium', 'reduced'
-    ]
+        'unsweetened', 'plain', 'regular', 'low', 'fat', 'sodium', 'reduced',
+        # Optional/variation markers that slip through scraping
+        'optional', 'variation',
+    }
 
     words = text.split()
     filtered = []

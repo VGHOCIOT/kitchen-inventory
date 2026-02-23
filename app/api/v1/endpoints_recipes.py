@@ -72,13 +72,21 @@ async def create_recipe_from_url(
         # Determine quantity and unit with 3-tier fallback
         # 1. Spoonacular metric data (if available - currently not provided)
         # 2. Fresh ingredient weight lookup (for count-based items)
-        # 3. Original parsed amount/unit
+        # 3. Original parsed data
+
+        # Spoonacular returns size descriptors as unit for whole produce (e.g. "2 medium onions"
+        # → unit="medium"). These must be treated as count-based so weight lookup fires.
+        # See CLAUDE.md: "Weight-Based Ingredient Matching" constraint.
+        _SPOONACULAR_SIZE_UNITS = {"small", "medium", "large", "extra-large", "jumbo", "mini", "whole"}
+
+        parsed_unit = (parsed["unit"] or "").strip()
+        is_count_based = not parsed_unit or parsed_unit.lower() in _SPOONACULAR_SIZE_UNITS
 
         if parsed.get("metric_amount") and parsed.get("metric_unit"):
             # Tier 1: Use Spoonacular metric data (when available)
             quantity = float(parsed["metric_amount"])
             unit = parsed["metric_unit"]
-        elif not parsed["unit"] or parsed["unit"].strip() == "":
+        elif is_count_based:
             # Tier 2: Count-based ingredient - try to get weight
             weight_data = await get_weight_for_count_ingredient(
                 db,
@@ -90,9 +98,9 @@ async def create_recipe_from_url(
                 quantity = weight_data["quantity"]
                 unit = weight_data["unit"]
             else:
-                # Fallback to count
+                # No weight found - store count as-is
                 quantity = float(parsed["amount"])
-                unit = parsed["unit"]
+                unit = "unit"
         else:
             # Tier 3: Use original parsed data
             quantity = float(parsed["amount"])
