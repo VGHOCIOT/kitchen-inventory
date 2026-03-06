@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 from schemas.item import ScanOut
 from models.item import Locations
@@ -23,6 +23,13 @@ class ReceiptLineItem(BaseModel):
     weight_value: Optional[float] = None   # e.g. 1.24  — present for fresh/PLU items
     weight_unit: Optional[str] = None      # e.g. "kg", "lb", "g"
     suggested_location: Locations = Locations.FRIDGE
+
+    @field_validator("suggested_location", mode="before")
+    @classmethod
+    def normalize_location(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.title()
+        return v
 
 
 class ReceiptScanOut(BaseModel):

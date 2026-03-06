@@ -9,7 +9,7 @@ POST /api/v1/receipt/scan
 """
 
 import logging
-from fastapi import APIRouter, Depends, UploadFile, File, Query
+from fastapi import APIRouter, Depends, UploadFile, File, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.session import get_db
@@ -45,8 +45,17 @@ async def scan_receipt(
     Unresolvable lines (tax, totals, store header) are returned in skipped[].
     """
 
-    image_bytes = await image_file.read()
+    SUPPORTED_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
+    EXT_FALLBACK = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".gif": "image/gif", ".webp": "image/webp"}
+
     mime_type = image_file.content_type
+    if mime_type not in SUPPORTED_TYPES:
+        ext = (image_file.filename or "").lower().rsplit(".", 1)
+        mime_type = EXT_FALLBACK.get(f".{ext[-1]}") if len(ext) == 2 else None
+    if mime_type not in SUPPORTED_TYPES:
+        raise HTTPException(status_code=400, detail=f"Unsupported image type. Must be one of: {', '.join(SUPPORTED_TYPES)}")
+
+    image_bytes = await image_file.read()
 
     items, skipped = await parse_receipt_image(image_bytes, mime_type, store_name)
     processed = []
