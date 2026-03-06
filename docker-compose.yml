@@ -14,12 +14,15 @@ services:
     build: .
     env_file:
       - .env
+    environment:
+      - UPLOAD_DIR=/data/receipts
     depends_on:
       - db
     ports:
       - "8000:8000"
     volumes:
       - ./app:/app
+      - ${RECEIPTS_HOST_PATH:-./data/receipts}:/data/receipts
 
 volumes:
   postgres_data:

@@ -11,3 +11,4 @@ psycopg2-binary
 requests
 pytest
 recipe-scrapers
+anthropic
