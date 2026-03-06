@@ -12,3 +12,4 @@ requests
 pytest
 recipe-scrapers
 anthropic
+python-multipart
