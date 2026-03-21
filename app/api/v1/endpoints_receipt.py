@@ -19,6 +19,7 @@ from schemas.item import ScanOut
 from api.services.receipt_parser import parse_receipt_image
 from api.services.unit_converter import convert_to_base_unit
 from api.services.ingredient_mapper import auto_map_product_to_ingredient
+from config.fresh_weights import get_manual_weight
 from crud.product_reference import get_product_by_name, create_product
 from crud.item import get_item_by_product_and_location, create_item, adjust_item_quantity
 
@@ -37,7 +38,7 @@ async def scan_receipt(
     For each parsed line item:
     - Fresh/PLU items (weight_value present): convert receipt weight to grams,
       find or create a PLU ProductReference (package_quantity=1, package_unit="g"),
-      upsert Item using weight_grams as the qty delta — total qty = total grams held
+      upsert Item using qty as the qty delta — total qty = total grams held
     - Packaged/UPC items (no weight): match by name to existing ProductReference,
       create a UPC ProductReference if no match found, upsert Item
 
@@ -60,7 +61,7 @@ async def scan_receipt(
     items, skipped = await parse_receipt_image(image_bytes, mime_type, store_name)
     processed = []
     for item in items:
-        if item.weight_value is not None:
+        if item.weight_value is not None or item.is_fresh_produce:
             result = await _process_fresh_item(db, item)
         else:
             result = await _process_packaged_item(db, item)
@@ -90,17 +91,28 @@ async def _process_fresh_item(
        - package_quantity is always 1 so that Item.qty directly equals total grams held,
          allowing variable purchase weights to accumulate correctly across receipts
     3. Call auto_map_product_to_ingredient(db, product_ref.name) for recipe matching
-    4. Upsert Item at item.suggested_location using weight_grams as the delta:
-       - If exists: adjust_item_quantity(delta=weight_grams)
-       - If not: create_item(qty=weight_grams)
+    4. Upsert Item at item.suggested_location using qty as the delta:
+       - If exists: adjust_item_quantity(delta=qty)
+       - If not: create_item(qty=qty)
     5. Return ScanOut
 
     Args:
         db: Database session
         item: Parsed receipt line item with weight fields populated
     """
-    converted = await convert_to_base_unit(item.weight_value, item.weight_unit, item.product_name)
-    weight_grams = int(converted["quantity"])
+    if item.weight_value is not None:
+        converted = await convert_to_base_unit(item.weight_value, item.weight_unit, item.product_name)
+        qty = int(converted["quantity"])
+        package_unit = "g"
+    else:
+        # Count-based fresh produce — look up per-unit weight from manual table
+        weight_per_unit = get_manual_weight(item.product_name)
+        if weight_per_unit:
+            qty = int(item.quantity * weight_per_unit)
+            package_unit = "g"
+        else:
+            qty = item.quantity
+            package_unit = "unit"
 
     product_ref = await get_product_by_name(db, item.product_name, ProductType.PLU)
 
@@ -113,7 +125,7 @@ async def _process_fresh_item(
             brands=None,
             categories=None,
             package_quantity=1,
-            package_unit="g",
+            package_unit=package_unit,
             product_data={"entry_method": "receipt"},
         )
 
@@ -125,11 +137,11 @@ async def _process_fresh_item(
 
     if existing_item:
         inventory_item = await adjust_item_quantity(
-            db, product_ref.id, item.suggested_location, delta=weight_grams
+            db, product_ref.id, item.suggested_location, delta=qty
         )
     else:
         inventory_item = await create_item(
-            db, product_reference_id=product_ref.id, location=item.suggested_location, qty=weight_grams
+            db, product_reference_id=product_ref.id, location=item.suggested_location, qty=qty
         )
 
     return ScanOut(

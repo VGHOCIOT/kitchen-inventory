@@ -22,6 +22,7 @@ class ReceiptLineItem(BaseModel):
     quantity: int = 1
     weight_value: Optional[float] = None   # e.g. 1.24  — present for fresh/PLU items
     weight_unit: Optional[str] = None      # e.g. "kg", "lb", "g"
+    is_fresh_produce: bool = False         # True for loose produce/deli sold by count with no weight
     suggested_location: Locations = Locations.FRIDGE
 
     @field_validator("suggested_location", mode="before")

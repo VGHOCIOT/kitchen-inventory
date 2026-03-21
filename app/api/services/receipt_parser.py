@@ -107,6 +107,9 @@ def _build_receipt_prompt(store_name: Optional[str]) -> str:
         "     FRIDGE for fresh produce, dairy, meat, deli\n"
         "     FREEZER for anything frozen\n"
         "     CUPBOARD for dry goods, canned, packaged shelf-stable items\n"
+        " is_fresh_produce (boolean) — true for loose produce sold at a flat price per piece\n"
+        "     with no weight on the receipt (e.g. lemon, avocado, individual apple)\n"
+        "     false for all packaged goods and any item that has a weight\n"
         " skipped (boolean) — true for tax, totals, store header, loyalty points\n\n"
         "Return strict JSON array only — no markdown, no explanation."
     )
