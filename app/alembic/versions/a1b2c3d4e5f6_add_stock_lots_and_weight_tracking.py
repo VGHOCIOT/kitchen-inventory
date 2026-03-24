@@ -9,7 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import ENUM, UUID
 
 
 # revision identifiers, used by Alembic.
@@ -26,8 +26,8 @@ def upgrade() -> None:
         sa.Column('id', UUID(as_uuid=True), primary_key=True),
         sa.Column('product_reference_id', UUID(as_uuid=True),
                    sa.ForeignKey('product_references.id'), nullable=False),
-        sa.Column('location', sa.Enum('Fridge', 'Freezer', 'Cupboard', name='locations',
-                                       create_type=False), nullable=False),
+        sa.Column('location', ENUM('Fridge', 'Freezer', 'Cupboard', name='locations',
+                                    create_type=False), nullable=False),
         sa.Column('initial_quantity', sa.Float(), nullable=False),
         sa.Column('remaining_quantity', sa.Float(), nullable=False),
         sa.Column('unit', sa.String(), nullable=False),
