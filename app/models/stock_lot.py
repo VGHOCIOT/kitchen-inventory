@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Float, DateTime, ForeignKey, Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
-from datetime import datetime, timezone
+from datetime import datetime
 import uuid
 
 from db.base import Base
@@ -22,4 +22,4 @@ class StockLot(Base):
     remaining_quantity = Column(Float, nullable=False)
     unit = Column(String, nullable=False)  # "g", "ml", or "unit"
     expires_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
