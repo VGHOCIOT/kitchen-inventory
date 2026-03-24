@@ -8,19 +8,16 @@ with current items, including substitution suggestions.
 from dataclasses import dataclass
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 import logging
 
-from models.ingredient_reference import IngredientReference
 from models.recipe import Recipe
-from models.recipe_ingredient import RecipeIngredient
 from crud.item import get_all_items_with_products
 from crud.ingredient_alias import get_alias_by_text
 from crud.ingredient_reference import get_ingredient_by_id
 from crud.ingredient_substitution import get_substitutions_for_ingredient
 from crud.recipe import get_all_recipes
 from crud.recipe_ingredient import get_recipe_ingredients
-from api.services.unit_converter import convert_to_base_unit, can_convert_units
+from api.services.unit_converter import convert_to_base_unit
 from schemas.recipe_match import (
     RecipeMatchResponse,
     RecipeMatchResult,
@@ -47,11 +44,14 @@ async def aggregate_inventory_by_ingredient(
     """
     Build inventory map: ingredient_id → total available quantity.
 
+    Item.qty is already stored in base units (g, ml, or unit count),
+    so no package_quantity multiplication or unit conversion is needed.
+
     Process:
     1. Query all Items with ProductReference data
     2. Map each product to its canonical ingredient via IngredientAlias
-    3. Calculate total: Item.qty × ProductReference.package_quantity
-    4. Convert to base units and aggregate by ingredient_id
+    3. Use Item.qty directly (already in base units)
+    4. Aggregate by ingredient_id
 
     Returns:
         Dict mapping ingredient_id to aggregated inventory data
@@ -65,92 +65,64 @@ async def aggregate_inventory_by_ingredient(
         item = entry["item"]
         product = entry["product"]
 
-        # Skip items without product reference data
         if not product or not product.name:
             logger.warning(f"[AGGREGATE] Skipping item {item.id} - no product name")
             continue
 
-        # Skip products with incomplete quantity/unit data
-        # These products cannot be used for recipe matching (we don't know actual amounts)
-        if product.package_quantity is None or product.package_unit is None:
-            logger.warning(
-                f"[AGGREGATE] ⚠️  Skipping product '{product.name}' - missing quantity/unit data "
-                f"(qty={product.package_quantity}, unit={product.package_unit}). "
-                f"Cannot use for recipe matching."
-            )
-            continue
-
-        logger.info(f"[AGGREGATE] Processing product: '{product.name}' (qty: {item.qty}, pkg: {product.package_quantity} {product.package_unit})")
+        logger.info(f"[AGGREGATE] Processing product: '{product.name}' (qty: {item.qty} {item.unit})")
 
         # Try to map product to ingredient via alias
         alias = await get_alias_by_text(db, product.name)
 
         if not alias:
-            # No mapping found - skip this product
-            logger.warning(f"[AGGREGATE] ✗ No alias found for product: '{product.name}'")
+            logger.warning(f"[AGGREGATE] No alias found for product: '{product.name}'")
             continue
 
-        logger.info(f"[AGGREGATE] ✓ Found alias for '{product.name}' → ingredient_id: {alias.ingredient_id}")
+        logger.info(f"[AGGREGATE] Found alias for '{product.name}' → ingredient_id: {alias.ingredient_id}")
 
         ingredient = await get_ingredient_by_id(db, alias.ingredient_id)
         if not ingredient:
-            logger.warning(f"[AGGREGATE] ✗ Ingredient not found for id: {alias.ingredient_id}")
+            logger.warning(f"[AGGREGATE] Ingredient not found for id: {alias.ingredient_id}")
             continue
 
         logger.info(f"[AGGREGATE] Ingredient name: '{ingredient.name}'")
 
-        # Calculate total quantity for this item
-        # Note: We've already validated that package_quantity and package_unit are not None
-        package_qty = product.package_quantity
-        package_unit = product.package_unit
-        total_qty = item.qty * package_qty
-
-        logger.info(f"[AGGREGATE] Total quantity: {total_qty} {package_unit}")
-
-        # Convert to base unit
-        conversion = await convert_to_base_unit(
-            total_qty,
-            package_unit,
-            ingredient.name
-        )
-
-        logger.info(f"[AGGREGATE] Converted to: {conversion['quantity']} {conversion['base_unit']}")
+        # Item.qty is already in base units — use directly
+        total_qty = item.qty
+        base_unit = item.unit
 
         # Aggregate by ingredient
         ingredient_id = ingredient.id
 
         if ingredient_id in inventory_map:
-            # Add to existing inventory
             existing = inventory_map[ingredient_id]
 
-            # Only aggregate if units are compatible
-            if existing.base_unit == conversion["base_unit"]:
-                existing.total_quantity += conversion["quantity"]
+            if existing.base_unit == base_unit:
+                existing.total_quantity += total_qty
                 existing.product_references.append({
                     "product_name": product.name,
                     "quantity": total_qty,
-                    "unit": package_unit
+                    "unit": base_unit
                 })
                 logger.info(f"[AGGREGATE] Added to existing - new total: {existing.total_quantity} {existing.base_unit}")
             else:
-                logger.warning(f"[AGGREGATE] Unit mismatch: {existing.base_unit} vs {conversion['base_unit']}")
+                logger.warning(f"[AGGREGATE] Unit mismatch: {existing.base_unit} vs {base_unit}")
         else:
-            # Create new inventory entry
             inventory_map[ingredient_id] = InventoryIngredient(
                 ingredient_id=ingredient_id,
                 ingredient_name=ingredient.name,
-                total_quantity=conversion["quantity"],
-                base_unit=conversion["base_unit"],
+                total_quantity=total_qty,
+                base_unit=base_unit,
                 product_references=[{
                     "product_name": product.name,
                     "quantity": total_qty,
-                    "unit": package_unit
+                    "unit": base_unit
                 }]
             )
             logger.info(f"[AGGREGATE] Created new inventory entry for '{ingredient.name}'")
 
     logger.info(f"[AGGREGATE] Complete: Aggregated inventory for {len(inventory_map)} ingredients")
-    for ing_id, inv_data in inventory_map.items():
+    for _, inv_data in inventory_map.items():
         logger.info(f"[AGGREGATE] - {inv_data.ingredient_name}: {inv_data.total_quantity} {inv_data.base_unit}")
     return inventory_map
 
@@ -177,7 +149,6 @@ async def match_recipe_to_inventory(
     available_count = 0
 
     for recipe_ing in recipe_ingredients:
-        # Get ingredient details
         ingredient = await get_ingredient_by_id(db, recipe_ing.canonical_ingredient_id)
         if not ingredient:
             logger.warning(f"[MATCH] Ingredient not found for id: {recipe_ing.canonical_ingredient_id}")
@@ -196,10 +167,9 @@ async def match_recipe_to_inventory(
 
         # Check if ingredient is in inventory
         if recipe_ing.canonical_ingredient_id in inventory:
-            logger.info(f"[MATCH] ✓ Ingredient '{ingredient.name}' found in inventory")
+            logger.info(f"[MATCH] Ingredient '{ingredient.name}' found in inventory")
             inv_data = inventory[recipe_ing.canonical_ingredient_id]
 
-            # Check if units are compatible
             if inv_data.base_unit == required_conversion["base_unit"]:
                 is_sufficient = inv_data.total_quantity >= required_conversion["quantity"]
 
@@ -229,7 +199,7 @@ async def match_recipe_to_inventory(
                 missing_ingredients.append(ingredient.name)
         else:
             # Ingredient not in inventory - check for substitutions
-            logger.warning(f"[MATCH] ✗ Ingredient '{ingredient.name}' NOT in inventory")
+            logger.warning(f"[MATCH] Ingredient '{ingredient.name}' NOT in inventory")
             substitution = await find_substitution_for_ingredient(
                 db,
                 recipe_ing.canonical_ingredient_id,
@@ -289,11 +259,9 @@ async def find_substitution_for_ingredient(
     substitutions = await get_substitutions_for_ingredient(db, ingredient_id)
 
     for sub in substitutions:
-        # Quality threshold
         if sub.quality_score < 5:
             continue
 
-        # Check if substitute is in inventory
         if sub.substitute_ingredient_id in inventory:
             substitute_ing = await get_ingredient_by_id(db, sub.substitute_ingredient_id)
             original_ing = await get_ingredient_by_id(db, ingredient_id)
@@ -319,19 +287,14 @@ async def match_all_recipes(db: AsyncSession) -> RecipeMatchResponse:
     Returns:
         Categorized results: can_make_now, missing_one, missing_few, with_substitutions
     """
-    # Build inventory map
     inventory = await aggregate_inventory_by_ingredient(db)
-
-    # Get all recipes
     recipes = await get_all_recipes(db)
 
-    # Match each recipe
     all_matches = []
     for recipe in recipes:
         match_result = await match_recipe_to_inventory(db, recipe, inventory)
         all_matches.append(match_result)
 
-    # Categorize results
     can_make_now = []
     missing_one = []
     missing_few = []

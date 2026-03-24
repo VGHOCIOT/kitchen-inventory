@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.v1.endpoints_items import router as items_router
 from api.v1.endpoints_recipes import router as recipes_router
 from api.v1.endpoints_receipt import router as receipt_router
+from api.v1.endpoints_shopping_list import router as shopping_list_router
 from api.v1.websocket import router as websocket_router
 
 app = FastAPI(title="Kitchen Inventory API")
@@ -18,4 +19,5 @@ app.add_middleware(
 app.include_router(items_router, prefix="/api/v1/items")
 app.include_router(recipes_router, prefix="/api/v1/recipes")
 app.include_router(receipt_router, prefix="/api/v1/receipt")
+app.include_router(shopping_list_router, prefix="/api/v1/shopping-list")
 app.include_router(websocket_router)

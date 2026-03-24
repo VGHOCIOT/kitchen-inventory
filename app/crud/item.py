@@ -1,17 +1,21 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from models.item import Item, Locations
+from models.product_reference import ProductReference
 from uuid import UUID
 import events
 import logging
 
+from crud.stock_lot import create_lot, deduct_from_lots, refresh_item_cache
+
 logger = logging.getLogger(__name__)
 
+
 async def get_item_by_product_and_location(
-    db,
+    db: AsyncSession,
     product_reference_id: UUID,
     location: Locations,
-):
+) -> Item | None:
     result = await db.execute(
         select(Item).where(
             Item.product_reference_id == product_reference_id,
@@ -20,33 +24,51 @@ async def get_item_by_product_and_location(
     )
     return result.scalar_one_or_none()
 
-async def create_item(
+
+async def add_stock(
     db: AsyncSession,
     product_reference_id: UUID,
     location: Locations,
-    qty: int = 1,
-    expires_at: None = None,
+    quantity: float,
+    unit: str,
+    expires_at=None,
 ) -> Item:
-    """Create a new item. Assumes item doesn't already exist."""
-    new_item = Item(
-        product_reference_id=product_reference_id,
-        location=location,
-        qty=qty,
-        expires_at=expires_at,
-    )
+    """Add stock by creating a lot and refreshing the Item cache."""
+    await create_lot(db, product_reference_id, location, quantity, unit, expires_at)
+    item = await refresh_item_cache(db, product_reference_id, location, unit)
 
-    db.add(new_item)
-    await db.commit()
-    await db.refresh(new_item)
     events.emit("item_added", {
-        "id": str(new_item.id),
-        "product_reference_id": str(new_item.product_reference_id),
-        "location": new_item.location.value,
-        "qty": new_item.qty,
+        "id": str(item.id),
+        "product_reference_id": str(item.product_reference_id),
+        "location": item.location.value,
+        "qty": item.qty,
+        "unit": item.unit,
     })
-    return new_item
+    return item
 
 
+async def deduct_stock(
+    db: AsyncSession,
+    product_reference_id: UUID,
+    location: Locations,
+    amount: float,
+    unit: str,
+) -> Item | None:
+    """Deduct stock by walking lots FIFO. Returns updated Item or None if depleted."""
+    actual_deducted = await deduct_from_lots(db, product_reference_id, location, amount)
+
+    if actual_deducted <= 0:
+        return None
+
+    item = await refresh_item_cache(db, product_reference_id, location, unit)
+
+    if item is None:
+        events.emit("item_deleted", {
+            "product_reference_id": str(product_reference_id),
+            "location": location.value,
+        })
+
+    return item
 
 
 async def get_item_by_id(item_id: UUID | str, db: AsyncSession) -> Item | None:
@@ -56,13 +78,15 @@ async def get_item_by_id(item_id: UUID | str, db: AsyncSession) -> Item | None:
         except ValueError:
             logger.error(f"Invalid UUID format: {item_id}")
             return None
-        
+
     result = await db.execute(select(Item).where(Item.id == item_id))
     return result.scalar_one_or_none()
+
 
 async def get_items_by_location(location: Locations, db: AsyncSession) -> list[Item]:
     result = await db.execute(select(Item).where(Item.location == location))
     return list(result.scalars().all())
+
 
 async def get_all_items(db: AsyncSession) -> list[Item]:
     result = await db.execute(select(Item))
@@ -70,14 +94,7 @@ async def get_all_items(db: AsyncSession) -> list[Item]:
 
 
 async def get_all_items_with_products(db: AsyncSession) -> list[dict]:
-    """
-    Get all items with joined ProductReference data.
-    Returns list of dicts with item and product data for inventory aggregation.
-    """
-    from sqlalchemy.orm import selectinload
-    from models.product_reference import ProductReference
-
-    # Query Items with ProductReference data
+    """Get all items with joined ProductReference data for inventory aggregation."""
     result = await db.execute(
         select(Item, ProductReference).join(
             ProductReference,
@@ -94,51 +111,28 @@ async def get_all_items_with_products(db: AsyncSession) -> list[dict]:
 
     return items_with_products
 
+
 async def move_item(
-    db,
+    db: AsyncSession,
     product_reference_id: UUID,
     from_location: Locations,
     to_location: Locations,
-    quantity: int,
-):
-    await adjust_item_quantity(
-        db,
-        product_reference_id,
-        from_location,
-        -quantity,
-    )
-
-    return await adjust_item_quantity(
-        db,
-        product_reference_id,
-        to_location,
-        quantity,
-    )
-
-async def adjust_item_quantity(
-    db,
-    product_reference_id: UUID,
-    location: Locations,
-    delta: int,
+    quantity: float,
+    unit: str,
 ) -> Item | None:
-    item = await get_item_by_product_and_location(
-        db,
-        product_reference_id,
-        location,
+    """Move stock between locations by deducting from source and adding to destination."""
+    actual_deducted = await deduct_from_lots(
+        db, product_reference_id, from_location, quantity
     )
 
-    if item:
-        new_qty = item.qty + delta
+    if actual_deducted <= 0:
+        return None
 
-        if new_qty <= 0:
-            await db.delete(item)
-            await db.commit()
-            return None
+    await create_lot(db, product_reference_id, to_location, actual_deducted, unit)
+    await refresh_item_cache(db, product_reference_id, from_location, unit)
+    item = await refresh_item_cache(db, product_reference_id, to_location, unit)
 
-        item.qty = new_qty
-        await db.commit()
-        await db.refresh(item)
-        return item
+    return item
 
 
 async def delete_item_by_composite_key(
@@ -146,7 +140,21 @@ async def delete_item_by_composite_key(
     product_reference_id: UUID,
     location: Locations,
 ) -> bool:
-    """Delete item by composite key (product_reference_id, location)"""
+    """Delete item and all its lots by composite key."""
+    from models.stock_lot import StockLot
+
+    # Delete all lots for this product+location
+    result = await db.execute(
+        select(StockLot).where(
+            StockLot.product_reference_id == product_reference_id,
+            StockLot.location == location,
+        )
+    )
+    lots = result.scalars().all()
+    for lot in lots:
+        await db.delete(lot)
+
+    # Delete the item cache row
     item = await get_item_by_product_and_location(db, product_reference_id, location)
     if item:
         await db.delete(item)
@@ -157,4 +165,6 @@ async def delete_item_by_composite_key(
             "location": item.location.value,
         })
         return True
+
+    await db.commit()
     return False

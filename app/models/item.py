@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, Enum as SAEnum, UniqueConstraint
+from sqlalchemy import Column, Float, String, DateTime, ForeignKey, Enum as SAEnum, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from enum import Enum
 import uuid
@@ -19,5 +19,6 @@ class Item(Base):
         nullable=True
     )
     location = Column(SAEnum(Locations), default=Locations.FRIDGE)
-    qty = Column(Integer, default=1)
+    qty = Column(Float, nullable=False)
+    unit = Column(String, nullable=False)
     expires_at = Column(DateTime, nullable=True)

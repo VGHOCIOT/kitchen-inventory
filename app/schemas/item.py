@@ -9,7 +9,8 @@ class ItemOut(BaseModel):
     id: UUID
     product_reference_id: UUID
     location: Locations
-    qty: int
+    qty: float
+    unit: str
     expires_at: Optional[datetime] = None
 
     class Config:
@@ -24,7 +25,7 @@ class ScanIn(BaseModel):
 class ScanOut(BaseModel):
     product_reference: "ProductReferenceOut"
     item: ItemOut
-    data_quality_warning: Optional[str] = None  # Warning if product data is incomplete
+    data_quality_warning: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -33,14 +34,14 @@ class ScanOut(BaseModel):
 class AdjustQuantityIn(BaseModel):
     product_reference_id: UUID
     location: Locations
-    delta: int
+    delta: float
 
 
 class MoveItemIn(BaseModel):
     product_reference_id: UUID
     from_location: Locations
     to_location: Locations
-    quantity: int
+    quantity: float
 
 
 class DeleteItemIn(BaseModel):

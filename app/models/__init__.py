@@ -5,3 +5,4 @@ from .ingredient_alias import IngredientAlias
 from .ingredient_substitution import IngredientSubstitution
 from .item import Item
 from .product_reference import ProductReference
+from .stock_lot import StockLot

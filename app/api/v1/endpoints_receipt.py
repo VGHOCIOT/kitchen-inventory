@@ -4,7 +4,7 @@ Receipt scanning endpoint.
 POST /api/v1/receipt/scan
   - Accepts a multipart image upload of a grocery receipt
   - Parses line items via Claude Vision
-  - For each line item: find or create a ProductReference, upsert an Item
+  - For each line item: find or create a ProductReference, create a StockLot, refresh Item cache
   - Returns ReceiptScanOut with processed ScanOut entries and skipped lines
 """
 
@@ -21,7 +21,7 @@ from api.services.unit_converter import convert_to_base_unit
 from api.services.ingredient_mapper import auto_map_product_to_ingredient
 from config.fresh_weights import get_manual_weight
 from crud.product_reference import get_product_by_name, create_product
-from crud.item import get_item_by_product_and_location, create_item, adjust_item_quantity
+from crud.item import add_stock
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -37,10 +37,9 @@ async def scan_receipt(
 
     For each parsed line item:
     - Fresh/PLU items (weight_value present): convert receipt weight to grams,
-      find or create a PLU ProductReference (package_quantity=1, package_unit="g"),
-      upsert Item using qty as the qty delta — total qty = total grams held
+      find or create a PLU ProductReference, create a StockLot with the weight
     - Packaged/UPC items (no weight): match by name to existing ProductReference,
-      create a UPC ProductReference if no match found, upsert Item
+      create a StockLot with package weight (or count if no package data)
 
     Location is inferred per item by the parser (FRIDGE/FREEZER/CUPBOARD).
     Unresolvable lines (tax, totals, store header) are returned in skipped[].
@@ -69,7 +68,7 @@ async def scan_receipt(
             processed.append(result)
 
     return ReceiptScanOut(processed=processed, skipped=skipped)
-    
+
 
 
 async def _process_fresh_item(
@@ -80,39 +79,21 @@ async def _process_fresh_item(
     Handle a fresh/produce line item that has a weight printed on the receipt
     (e.g. "BANANAS   1.24 kg   $1.49").
 
-    Steps:
-    1. Convert item.weight_value + item.weight_unit to grams using convert_to_base_unit
-    2. Look up an existing PLU ProductReference by name (get_product_by_name, ProductType.PLU)
-       - If not found, create one with:
-             product_type = ProductType.PLU
-             package_quantity = 1
-             package_unit = "g"
-             product_data = {"entry_method": "receipt"}
-       - package_quantity is always 1 so that Item.qty directly equals total grams held,
-         allowing variable purchase weights to accumulate correctly across receipts
-    3. Call auto_map_product_to_ingredient(db, product_ref.name) for recipe matching
-    4. Upsert Item at item.suggested_location using qty as the delta:
-       - If exists: adjust_item_quantity(delta=qty)
-       - If not: create_item(qty=qty)
-    5. Return ScanOut
-
-    Args:
-        db: Database session
-        item: Parsed receipt line item with weight fields populated
+    Converts weight to grams, creates a StockLot, and refreshes the Item cache.
     """
     if item.weight_value is not None:
         converted = await convert_to_base_unit(item.weight_value, item.weight_unit, item.product_name)
-        qty = int(converted["quantity"])
-        package_unit = "g"
+        lot_qty = converted["quantity"]
+        lot_unit = converted["base_unit"]
     else:
         # Count-based fresh produce — look up per-unit weight from manual table
         weight_per_unit = get_manual_weight(item.product_name)
         if weight_per_unit:
-            qty = int(item.quantity * weight_per_unit)
-            package_unit = "g"
+            lot_qty = item.quantity * weight_per_unit
+            lot_unit = "g"
         else:
-            qty = item.quantity
-            package_unit = "unit"
+            lot_qty = float(item.quantity)
+            lot_unit = "unit"
 
     product_ref = await get_product_by_name(db, item.product_name, ProductType.PLU)
 
@@ -125,24 +106,19 @@ async def _process_fresh_item(
             brands=None,
             categories=None,
             package_quantity=1,
-            package_unit=package_unit,
+            package_unit=lot_unit,
             product_data={"entry_method": "receipt"},
         )
 
     await auto_map_product_to_ingredient(db, product_ref.name)
 
-    existing_item = await get_item_by_product_and_location(
-        db, product_ref.id, item.suggested_location
+    inventory_item = await add_stock(
+        db,
+        product_reference_id=product_ref.id,
+        location=item.suggested_location,
+        quantity=lot_qty,
+        unit=lot_unit,
     )
-
-    if existing_item:
-        inventory_item = await adjust_item_quantity(
-            db, product_ref.id, item.suggested_location, delta=qty
-        )
-    else:
-        inventory_item = await create_item(
-            db, product_reference_id=product_ref.id, location=item.suggested_location, qty=qty
-        )
 
     return ScanOut(
         product_reference=product_ref,
@@ -159,29 +135,9 @@ async def _process_packaged_item(
     Handle a packaged/UPC line item with no weight on the receipt
     (e.g. "TROPICANA OJ 1.75L   $4.99").
 
-    Receipts do not carry barcodes, so an OpenFoodFacts lookup is not possible here.
-    Prefer matching an existing ProductReference by name — it may already have full
-    package data from a prior barcode scan. Only create a minimal record if no match exists.
-
-    Steps:
-    1. Look up existing ProductReference by name (get_product_by_name, ProductType.UPC)
-    2. If found: use it as-is — it already has barcode, package_quantity, package_unit
-       from a previous OpenFoodFacts scan
-    3. If not found: create a minimal UPC ProductReference and warn:
-           product_type = ProductType.UPC
-           barcode = None  (unavailable from receipt)
-           name = item.product_name
-           package_quantity/package_unit = None
-           product_data = {"entry_method": "receipt"}
-       → set data_quality_warning: product has no barcode/package data, rescan barcode for full info
-    4. Call auto_map_product_to_ingredient(db, product_ref.name) for recipe matching
-       (only if package data is complete — mirrors scan_product behaviour)
-    5. Upsert Item at item.suggested_location using item.quantity as the delta
-    6. Return ScanOut
-
-    Args:
-        db: Database session
-        item: Parsed receipt line item without weight fields
+    If the product has package data (from a prior barcode scan), computes
+    lot weight as item.quantity x package_quantity in base units.
+    Otherwise falls back to count-based tracking.
     """
     product_ref = await get_product_by_name(db, item.product_name, ProductType.UPC)
     data_quality_warning = None
@@ -199,32 +155,36 @@ async def _process_packaged_item(
             product_data={"entry_method": "receipt"},
         )
         data_quality_warning = (
-            f"⚠️  '{product_ref.name}' was created from a receipt with no barcode data. "
+            f"'{product_ref.name}' was created from a receipt with no barcode data. "
             f"Scan the barcode to get full package info for recipe matching."
         )
 
     has_package_data = product_ref.package_quantity is not None and product_ref.package_unit is not None
     if has_package_data:
         await auto_map_product_to_ingredient(db, product_ref.name)
+        # Compute total weight: count from receipt x package weight
+        conversion = await convert_to_base_unit(
+            item.quantity * product_ref.package_quantity,
+            product_ref.package_unit,
+            product_ref.name,
+        )
+        lot_qty = conversion["quantity"]
+        lot_unit = conversion["base_unit"]
     else:
         logger.warning(f"[RECEIPT] Skipping ingredient mapping for '{product_ref.name}' — incomplete package data")
+        lot_qty = float(item.quantity)
+        lot_unit = "unit"
 
-    existing_item = await get_item_by_product_and_location(
-        db, product_ref.id, item.suggested_location
+    inventory_item = await add_stock(
+        db,
+        product_reference_id=product_ref.id,
+        location=item.suggested_location,
+        quantity=lot_qty,
+        unit=lot_unit,
     )
-
-    if existing_item:
-        inventory_item = await adjust_item_quantity(
-            db, product_ref.id, item.suggested_location, delta=item.quantity
-        )
-    else:
-        inventory_item = await create_item(
-            db, product_reference_id=product_ref.id, location=item.suggested_location, qty=item.quantity
-        )
 
     return ScanOut(
         product_reference=product_ref,
         item=inventory_item,
         data_quality_warning=data_quality_warning,
     )
-
