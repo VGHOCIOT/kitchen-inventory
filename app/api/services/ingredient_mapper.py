@@ -40,11 +40,14 @@ async def auto_map_product_to_ingredient(db: AsyncSession, product_name: str):
         logger.warning(f"[AUTO_MAP] Failed to normalize product name: '{product_name}'")
         return
 
-    ingredient = await get_ingredient_by_normalized_name(db, normalized)
+    # Try fuzzy match first — prefers existing ingredients over creating new ones.
+    # e.g. "virgin olive oil" fuzzy-matches existing "olive oil" rather than
+    # exact-matching a non-existent "virgin olive oil" and creating a duplicate.
+    ingredient = await find_ingredient_fuzzy(db, normalized)
 
     if not ingredient:
-        logger.info(f"[AUTO_MAP] No exact match, trying fuzzy match for: '{normalized}'")
-        ingredient = await find_ingredient_fuzzy(db, normalized)
+        logger.info(f"[AUTO_MAP] No fuzzy match, trying exact normalized match for: '{normalized}'")
+        ingredient = await get_ingredient_by_normalized_name(db, normalized)
 
     if ingredient:
         await create_ingredient_alias(db, alias=product_name, ingredient_id=ingredient.id)
