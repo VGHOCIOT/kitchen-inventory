@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from db.session import get_db
 import logging
 
@@ -32,7 +31,7 @@ from schemas.item import (
 )
 from schemas.product_reference import CreateFreshItemIn
 from models.item import Locations
-from models.product_reference import ProductReference, ProductType
+from models.product_reference import ProductType
 
 router = APIRouter()
 
@@ -258,64 +257,3 @@ async def delete_item(
 
     if not deleted:
         raise HTTPException(status_code=404, detail="Item not found")
-
-
-# ============== UTILITY ENDPOINTS ==============
-
-@router.post("/map-products-to-ingredients")
-async def map_all_products_to_ingredients(db: AsyncSession = Depends(get_db)):
-    """
-    Utility endpoint to retroactively map all existing products to ingredients.
-    Call this once after importing recipes to create ingredient aliases.
-    """
-    logger.info("[MAP_ALL] Starting product-to-ingredient mapping")
-
-    # Get all products
-    result = await db.execute(select(ProductReference))
-    products = result.scalars().all()
-    logger.info(f"[MAP_ALL] Found {len(products)} products to process")
-
-    mapped_count = 0
-    skipped_count = 0
-    for product in products:
-        existing_alias = await get_alias_by_text(db, product.name)
-        if existing_alias:
-            logger.info(f"[MAP_ALL] Skipped '{product.name}' - already mapped")
-            skipped_count += 1
-        else:
-            # Try to map this product
-            normalized = normalize_ingredient_text(product.name)
-            if normalized:
-                # Try exact match first
-                ingredient = await get_ingredient_by_normalized_name(db, normalized)
-
-                # If no exact match, try fuzzy matching
-                if not ingredient:
-                    logger.info(f"[MAP_ALL] No exact match, trying fuzzy match for '{product.name}'")
-                    ingredient = await find_ingredient_fuzzy(db, normalized)
-
-                if ingredient:
-                    # Create alias for full product name
-                    await create_ingredient_alias(db, alias=product.name, ingredient_id=ingredient.id)
-                    logger.info(f"[MAP_ALL] ✓ Mapped '{product.name}' → '{ingredient.name}'")
-
-                    # Also create alias for normalized name if different
-                    if normalized != product.name and normalized != ingredient.name:
-                        existing_normalized_alias = await get_alias_by_text(db, normalized)
-                        if not existing_normalized_alias:
-                            await create_ingredient_alias(db, alias=normalized, ingredient_id=ingredient.id)
-                            logger.info(f"[MAP_ALL] ✓ Created normalized alias: '{normalized}' → '{ingredient.name}'")
-
-                    mapped_count += 1
-                else:
-                    logger.warning(f"[MAP_ALL] ✗ No ingredient match (exact or fuzzy) for '{product.name}' (normalized: '{normalized}')")
-            else:
-                logger.warning(f"[MAP_ALL] ✗ Could not normalize '{product.name}'")
-
-    logger.info(f"[MAP_ALL] Complete: {mapped_count} mapped, {skipped_count} skipped")
-    return {
-        "total_products": len(products),
-        "newly_mapped": mapped_count,
-        "already_mapped": skipped_count,
-        "message": f"Successfully mapped {mapped_count} products to ingredients"
-    }

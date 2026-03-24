@@ -59,5 +59,9 @@ async def create_product(
 
     identifier = f"barcode: {barcode}" if barcode else "PLU item"
     logger.info(f"Created new {product_type.value.upper()} product reference: {new_prod_ref.name} ({identifier})")
-    events.emit("product_added", new_prod_ref)
+    events.emit("product_added", {
+        "id": str(new_prod_ref.id),
+        "name": new_prod_ref.name,
+        "product_type": new_prod_ref.product_type.value,
+    })
     return new_prod_ref

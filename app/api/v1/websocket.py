@@ -1,9 +1,8 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from typing import List
-from fastapi.responses import JSONResponse
+import json
 import logging
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -16,16 +15,23 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
+        logger.info(f"WebSocket client connected ({len(self.active_connections)} active)")
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
+        logger.info(f"WebSocket client disconnected ({len(self.active_connections)} active)")
 
-    async def broadcast(self, message: str):
+    async def broadcast_event(self, event: str, payload: dict):
+        """Broadcast a structured JSON event to all connected clients."""
+        message = json.dumps({"event": event, "data": payload})
+        disconnected = []
         for connection in self.active_connections:
             try:
                 await connection.send_text(message)
-            except Exception as e:
-                logger.error(f"Error broadcasting: {e}")
+            except Exception:
+                disconnected.append(connection)
+        for conn in disconnected:
+            self.active_connections.remove(conn)
 
 
 manager = ConnectionManager()
@@ -33,27 +39,14 @@ manager = ConnectionManager()
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-
-    logger.info("=" * 50)
-    logger.info("WebSocket connection attempt!")
-    logger.info(f"Client: {websocket.client}")
-    logger.info(f"Headers: {dict(websocket.headers)}")
-    logger.info(f"Query params: {websocket.query_params}")
-    logger.info(f"Path params: {websocket.path_params}")
-    logger.info("=" * 50)
-    
+    await manager.connect(websocket)
     try:
-        await manager.connect(websocket)
-        logger.info("✅ WebSocket connected successfully!")
-
         while True:
-            data = await websocket.receive_text()
-            await manager.broadcast(f"Message received: {data}")
+            # Keep connection alive; ignore client messages for now
+            await websocket.receive_text()
     except WebSocketDisconnect:
-        logger.info(f"WebSocket disconnected: {e}")
         manager.disconnect(websocket)
     except Exception as e:
-        logger.error(f"❌ WebSocket error: {type(e).__name__}: {e}")
+        logger.error(f"WebSocket error: {type(e).__name__}: {e}")
         if websocket in manager.active_connections:
             manager.disconnect(websocket)
-        raise
