@@ -20,8 +20,10 @@ from crud.ingredient_reference import (
     get_ingredient_by_normalized_name,
 )
 from crud.ingredient_alias import get_alias_by_text, create_ingredient_alias
+from crud.ingredient_substitution import create_substitution, get_substitution_by_pair
 
 from config.ingredient_aliases import INGREDIENT_ALIAS_SEEDS
+from config.ingredient_substitutions import INGREDIENT_SUBSTITUTION_SEEDS
 from config.fresh_weights import MANUAL_FRESH_WEIGHTS
 from api.services.recipe_parser import parse_recipe_from_url, normalize_ingredient_text
 from api.services.spoonacular import parse_ingredients_batch
@@ -201,6 +203,80 @@ async def seed_ingredient_aliases(db: AsyncSession = Depends(get_db)):
         "aliases_created": created_aliases,
         "aliases_skipped": skipped,
         "message": f"Seeded {created_aliases} aliases across {len(INGREDIENT_ALIAS_SEEDS)} canonical ingredients",
+    }
+
+
+@router.post("/seed-substitutions")
+async def seed_ingredient_substitutions(db: AsyncSession = Depends(get_db)):
+    """
+    Seed the ingredient substitution table with common cooking swaps.
+
+    Populates substitution rules from a curated dataset covering dairy, oils,
+    herbs, proteins, vegetables, and more. Bidirectional entries create both
+    directions automatically with inverted ratios.
+
+    Safe to run multiple times - skips pairs that already exist.
+    Creates canonical IngredientReference if it doesn't exist yet.
+    """
+    created = 0
+    skipped = 0
+    ingredients_created = 0
+
+    async def resolve_ingredient(name: str):
+        """Find or create a canonical IngredientReference by name."""
+        nonlocal ingredients_created
+        ingredient = await get_ingredient_by_name(db, name)
+        if not ingredient:
+            ingredient = await get_ingredient_by_normalized_name(db, name)
+        if not ingredient:
+            ingredient = await create_ingredient_reference(
+                db, name=name, normalized_name=name
+            )
+            ingredients_created += 1
+        return ingredient
+
+    for entry in INGREDIENT_SUBSTITUTION_SEEDS:
+        original = await resolve_ingredient(entry["original"])
+        substitute = await resolve_ingredient(entry["substitute"])
+
+        # Forward direction
+        existing = await get_substitution_by_pair(db, original.id, substitute.id)
+        if existing:
+            skipped += 1
+        else:
+            await create_substitution(
+                db,
+                original_ingredient_id=original.id,
+                substitute_ingredient_id=substitute.id,
+                ratio=entry["ratio"],
+                quality_score=entry["quality_score"],
+                notes=entry.get("notes"),
+            )
+            created += 1
+
+        # Reverse direction (if bidirectional)
+        if entry.get("bidirectional"):
+            existing_rev = await get_substitution_by_pair(db, substitute.id, original.id)
+            if existing_rev:
+                skipped += 1
+            else:
+                reverse_ratio = round(1.0 / entry["ratio"], 2)
+                reverse_notes = f"{entry.get('notes', '')} (reverse)".strip()
+                await create_substitution(
+                    db,
+                    original_ingredient_id=substitute.id,
+                    substitute_ingredient_id=original.id,
+                    ratio=reverse_ratio,
+                    quality_score=entry["quality_score"],
+                    notes=reverse_notes,
+                )
+                created += 1
+
+    return {
+        "created": created,
+        "skipped": skipped,
+        "ingredients_created": ingredients_created,
+        "message": f"Seeded {created} substitution rules from {len(INGREDIENT_SUBSTITUTION_SEEDS)} entries",
     }
 
 

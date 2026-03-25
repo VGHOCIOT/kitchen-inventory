@@ -14,6 +14,7 @@ from crud.item import (
     move_item,
     delete_item_by_composite_key,
 )
+from crud.stock_lot import get_lots_for_item
 from crud.product_reference import (
     get_product_by_barcode,
     get_product_by_name,
@@ -25,6 +26,7 @@ from api.services.unit_converter import convert_to_base_unit
 from api.services.cook_service import cook_recipe
 from schemas.item import (
     ItemOut,
+    StockLotOut,
     ScanIn,
     ScanOut,
     AdjustQuantityIn,
@@ -33,6 +35,7 @@ from schemas.item import (
 )
 from schemas.product_reference import CreateFreshItemIn
 from models.item import Locations
+from uuid import UUID as _UUID
 from models.product_reference import ProductType
 
 router = APIRouter()
@@ -44,6 +47,17 @@ router = APIRouter()
 async def list_items(db: AsyncSession = Depends(get_db)):
     """List all items in inventory"""
     return await get_all_items(db)
+
+
+@router.get("/lots/{product_reference_id}/{location}", response_model=list[StockLotOut])
+async def list_lots_for_item(
+    product_reference_id: str,
+    location: Locations,
+    db: AsyncSession = Depends(get_db),
+):
+    """List all active stock lots for a product at a location, ordered FIFO."""
+    lots = await get_lots_for_item(db, _UUID(product_reference_id), location)
+    return lots
 
 
 @router.get("/location/{location}", response_model=list[ItemOut])

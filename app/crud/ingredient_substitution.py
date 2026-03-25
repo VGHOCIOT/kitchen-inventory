@@ -52,6 +52,27 @@ async def get_substitution_by_id(
     return result.scalar_one_or_none()
 
 
+async def get_substitution_by_pair(
+    db: AsyncSession,
+    original_ingredient_id: UUID,
+    substitute_ingredient_id: UUID,
+) -> IngredientSubstitution | None:
+    """Get substitution by original+substitute pair (for idempotent seeding)"""
+    result = await db.execute(
+        select(IngredientSubstitution).where(
+            IngredientSubstitution.original_ingredient_id == original_ingredient_id,
+            IngredientSubstitution.substitute_ingredient_id == substitute_ingredient_id,
+        )
+    )
+    return result.scalar_one_or_none()
+
+
+async def get_all_substitutions(db: AsyncSession) -> list[IngredientSubstitution]:
+    """Get all substitution rules"""
+    result = await db.execute(select(IngredientSubstitution))
+    return list(result.scalars().all())
+
+
 async def delete_substitution(
     db: AsyncSession,
     substitution_id: UUID

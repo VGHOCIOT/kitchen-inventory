@@ -203,7 +203,9 @@ async def match_recipe_to_inventory(
             substitution = await find_substitution_for_ingredient(
                 db,
                 recipe_ing.canonical_ingredient_id,
-                inventory
+                inventory,
+                required_quantity=required_conversion["quantity"],
+                required_unit=required_conversion["base_unit"],
             )
 
             if substitution:
@@ -246,38 +248,60 @@ async def match_recipe_to_inventory(
 async def find_substitution_for_ingredient(
     db: AsyncSession,
     ingredient_id: UUID,
-    inventory: dict[UUID, InventoryIngredient]
+    inventory: dict[UUID, InventoryIngredient],
+    required_quantity: float = 0.0,
+    required_unit: str = "g",
 ) -> SubstitutionSuggestion | None:
     """
-    Find best substitution for a missing ingredient.
+    Find best substitution for a missing ingredient, ranked by inventory availability.
 
-    Returns substitution if:
-    - Substitute ingredient is in inventory
-    - Sufficient quantity available (accounting for ratio)
-    - Quality score >= 5
+    Ranking priority:
+    1. Has sufficient quantity in inventory (adjusted by ratio)
+    2. Highest quality_score
+
+    Only considers substitutes with quality_score >= 5 that are in inventory.
     """
     substitutions = await get_substitutions_for_ingredient(db, ingredient_id)
 
+    # Filter to viable candidates: quality >= 5 and present in inventory
+    candidates = []
     for sub in substitutions:
         if sub.quality_score < 5:
             continue
+        if sub.substitute_ingredient_id not in inventory:
+            continue
 
-        if sub.substitute_ingredient_id in inventory:
-            substitute_ing = await get_ingredient_by_id(db, sub.substitute_ingredient_id)
-            original_ing = await get_ingredient_by_id(db, ingredient_id)
+        inv_data = inventory[sub.substitute_ingredient_id]
+        needed = required_quantity * sub.ratio
+        has_enough = (
+            inv_data.base_unit == required_unit
+            and inv_data.total_quantity >= needed
+        ) if required_quantity > 0 else False
 
-            if substitute_ing and original_ing:
-                return SubstitutionSuggestion(
-                    original_ingredient_id=ingredient_id,
-                    original_ingredient_name=original_ing.name,
-                    substitute_ingredient_id=sub.substitute_ingredient_id,
-                    substitute_ingredient_name=substitute_ing.name,
-                    ratio=sub.ratio,
-                    quality_score=sub.quality_score,
-                    notes=sub.notes
-                )
+        candidates.append((sub, has_enough))
 
-    return None
+    if not candidates:
+        return None
+
+    # Sort: sufficient quantity first, then by quality_score descending
+    candidates.sort(key=lambda c: (c[1], c[0].quality_score), reverse=True)
+    best_sub, _ = candidates[0]
+
+    substitute_ing = await get_ingredient_by_id(db, best_sub.substitute_ingredient_id)
+    original_ing = await get_ingredient_by_id(db, ingredient_id)
+
+    if not substitute_ing or not original_ing:
+        return None
+
+    return SubstitutionSuggestion(
+        original_ingredient_id=ingredient_id,
+        original_ingredient_name=original_ing.name,
+        substitute_ingredient_id=best_sub.substitute_ingredient_id,
+        substitute_ingredient_name=substitute_ing.name,
+        ratio=best_sub.ratio,
+        quality_score=best_sub.quality_score,
+        notes=best_sub.notes,
+    )
 
 
 async def match_all_recipes(db: AsyncSession) -> RecipeMatchResponse:
