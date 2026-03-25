@@ -20,10 +20,10 @@ from crud.ingredient_reference import (
     get_ingredient_by_normalized_name,
 )
 from crud.ingredient_alias import get_alias_by_text, create_ingredient_alias
-from crud.ingredient_substitution import create_substitution, get_substitution_by_pair
 
 from config.ingredient_aliases import INGREDIENT_ALIAS_SEEDS
 from config.ingredient_substitutions import INGREDIENT_SUBSTITUTION_SEEDS
+from db.seed import seed_aliases, seed_substitutions
 from config.fresh_weights import MANUAL_FRESH_WEIGHTS
 from api.services.recipe_parser import parse_recipe_from_url, normalize_ingredient_text
 from api.services.spoonacular import parse_ingredients_batch
@@ -165,44 +165,14 @@ async def get_recipe(
 async def seed_ingredient_aliases(db: AsyncSession = Depends(get_db)):
     """
     Seed the ingredient alias table with known variations.
-
-    Handles cases plural/singular logic can't resolve automatically:
-    - Regional names: scallions → green onion, capsicum → bell pepper
-    - Synonyms: cilantro → coriander
-    - Modifier variants: boneless skinless chicken breast → chicken breast
-
     Safe to run multiple times - skips aliases that already exist.
-    Creates canonical IngredientReference if it doesn't exist yet.
+    Also runs automatically on app startup.
     """
-    created_ingredients = 0
-    created_aliases = 0
-    skipped = 0
-
-    for canonical_name, aliases in INGREDIENT_ALIAS_SEEDS.items():
-        # Find or create the canonical ingredient
-        ingredient = await get_ingredient_by_name(db, canonical_name)
-        if not ingredient:
-            ingredient = await get_ingredient_by_normalized_name(db, canonical_name)
-        if not ingredient:
-            ingredient = await create_ingredient_reference(
-                db, name=canonical_name, normalized_name=canonical_name
-            )
-            created_ingredients += 1
-
-        # Create each alias if it doesn't already exist
-        for alias_text in aliases:
-            existing = await get_alias_by_text(db, alias_text)
-            if existing:
-                skipped += 1
-            else:
-                await create_ingredient_alias(db, alias=alias_text, ingredient_id=ingredient.id)
-                created_aliases += 1
-
+    result = await seed_aliases(db)
     return {
-        "ingredients_created": created_ingredients,
-        "aliases_created": created_aliases,
-        "aliases_skipped": skipped,
-        "message": f"Seeded {created_aliases} aliases across {len(INGREDIENT_ALIAS_SEEDS)} canonical ingredients",
+        "aliases_created": result["aliases_created"],
+        "aliases_skipped": result["skipped"],
+        "message": f"Seeded {result['aliases_created']} aliases across {len(INGREDIENT_ALIAS_SEEDS)} canonical ingredients",
     }
 
 
@@ -210,73 +180,14 @@ async def seed_ingredient_aliases(db: AsyncSession = Depends(get_db)):
 async def seed_ingredient_substitutions(db: AsyncSession = Depends(get_db)):
     """
     Seed the ingredient substitution table with common cooking swaps.
-
-    Populates substitution rules from a curated dataset covering dairy, oils,
-    herbs, proteins, vegetables, and more. Bidirectional entries create both
-    directions automatically with inverted ratios.
-
     Safe to run multiple times - skips pairs that already exist.
-    Creates canonical IngredientReference if it doesn't exist yet.
+    Also runs automatically on app startup.
     """
-    created = 0
-    skipped = 0
-    ingredients_created = 0
-
-    async def resolve_ingredient(name: str):
-        """Find or create a canonical IngredientReference by name."""
-        nonlocal ingredients_created
-        ingredient = await get_ingredient_by_name(db, name)
-        if not ingredient:
-            ingredient = await get_ingredient_by_normalized_name(db, name)
-        if not ingredient:
-            ingredient = await create_ingredient_reference(
-                db, name=name, normalized_name=name
-            )
-            ingredients_created += 1
-        return ingredient
-
-    for entry in INGREDIENT_SUBSTITUTION_SEEDS:
-        original = await resolve_ingredient(entry["original"])
-        substitute = await resolve_ingredient(entry["substitute"])
-
-        # Forward direction
-        existing = await get_substitution_by_pair(db, original.id, substitute.id)
-        if existing:
-            skipped += 1
-        else:
-            await create_substitution(
-                db,
-                original_ingredient_id=original.id,
-                substitute_ingredient_id=substitute.id,
-                ratio=entry["ratio"],
-                quality_score=entry["quality_score"],
-                notes=entry.get("notes"),
-            )
-            created += 1
-
-        # Reverse direction (if bidirectional)
-        if entry.get("bidirectional"):
-            existing_rev = await get_substitution_by_pair(db, substitute.id, original.id)
-            if existing_rev:
-                skipped += 1
-            else:
-                reverse_ratio = round(1.0 / entry["ratio"], 2)
-                reverse_notes = f"{entry.get('notes', '')} (reverse)".strip()
-                await create_substitution(
-                    db,
-                    original_ingredient_id=substitute.id,
-                    substitute_ingredient_id=original.id,
-                    ratio=reverse_ratio,
-                    quality_score=entry["quality_score"],
-                    notes=reverse_notes,
-                )
-                created += 1
-
+    result = await seed_substitutions(db)
     return {
-        "created": created,
-        "skipped": skipped,
-        "ingredients_created": ingredients_created,
-        "message": f"Seeded {created} substitution rules from {len(INGREDIENT_SUBSTITUTION_SEEDS)} entries",
+        "created": result["created"],
+        "skipped": result["skipped"],
+        "message": f"Seeded {result['created']} substitution rules from {len(INGREDIENT_SUBSTITUTION_SEEDS)} entries",
     }
 
 

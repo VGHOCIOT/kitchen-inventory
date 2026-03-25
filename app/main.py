@@ -1,3 +1,6 @@
+from contextlib import asynccontextmanager
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.v1.endpoints_items import router as items_router
@@ -6,8 +9,24 @@ from api.v1.endpoints_receipt import router as receipt_router
 from api.v1.endpoints_shopping_list import router as shopping_list_router
 from api.v1.endpoints_substitutions import router as substitutions_router
 from api.v1.websocket import router as websocket_router
+from db.session import SessionLocal
+from db.seed import run_all_seeds
 
-app = FastAPI(title="Kitchen Inventory API")
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: run seeds
+    async with SessionLocal() as db:
+        try:
+            await run_all_seeds(db)
+        except Exception as e:
+            logger.error(f"[STARTUP] Seed failed: {e}")
+    yield
+
+
+app = FastAPI(title="Kitchen Inventory API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
