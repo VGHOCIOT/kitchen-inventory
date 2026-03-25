@@ -305,7 +305,11 @@ async def cook(
     if not recipe_id:
         raise HTTPException(status_code=400, detail="recipe_id is required")
 
-    result = await cook_recipe(db, recipe_id)
+    result = await cook_recipe(
+        db,
+        recipe_id,
+        substitutions=payload.get("substitutions"),
+    )
 
     if result is None:
         raise HTTPException(status_code=404, detail="Recipe not found")

@@ -10,9 +10,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from crud.recipe import get_recipe_by_id
 from crud.recipe_ingredient import get_recipe_ingredients
 from crud.ingredient_reference import get_ingredient_by_id
-from api.services.recipe_matcher import aggregate_inventory_by_ingredient
+from api.services.recipe_matcher import (
+    aggregate_inventory_by_ingredient,
+    find_substitution_for_ingredient,
+)
 from api.services.unit_converter import convert_to_base_unit
-from schemas.shopping_list import ShoppingListItem, ShoppingListResponse
+from schemas.shopping_list import ShoppingListItem, ShoppingListResponse, SubstitutionAvailable
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +85,25 @@ async def generate_shopping_list(
         if to_buy <= 0:
             fully_stocked.append(entry["ingredient_name"])
         else:
+            # Check if a substitute is available in inventory
+            sub_info = None
+            sub_suggestion = await find_substitution_for_ingredient(
+                db, ing_id, inventory,
+                required_quantity=to_buy,
+                required_unit=entry["unit"],
+            )
+            if sub_suggestion:
+                sub_inv = inventory.get(sub_suggestion.substitute_ingredient_id)
+                if sub_inv:
+                    sub_info = SubstitutionAvailable(
+                        substitute_ingredient_id=sub_suggestion.substitute_ingredient_id,
+                        substitute_ingredient_name=sub_suggestion.substitute_ingredient_name,
+                        ratio=sub_suggestion.ratio,
+                        quality_score=sub_suggestion.quality_score,
+                        available_quantity=sub_inv.total_quantity,
+                        unit=sub_inv.base_unit,
+                    )
+
             items.append(ShoppingListItem(
                 ingredient_id=ing_id,
                 ingredient_name=entry["ingredient_name"],
@@ -90,6 +112,7 @@ async def generate_shopping_list(
                 to_buy_quantity=to_buy,
                 unit=entry["unit"],
                 from_recipes=entry["from_recipes"],
+                substitution_available=sub_info,
             ))
 
     items.sort(key=lambda x: x.ingredient_name)
