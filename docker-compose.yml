@@ -25,22 +25,18 @@ services:
       - ${RECEIPTS_HOST_PATH:-./data/receipts}:/data/receipts
 
   magicmirror:
-    image: karsten13/magicmirror:latest
+    build:
+      context: ./magicmirror
+      dockerfile: Dockerfile
     depends_on:
       - api
     ports:
       - "8080:8080"
     volumes:
-      - ./magicmirror/MMM-KitchenInventory:/opt/magic_mirror/modules/MMM-KitchenInventory
       - ./magicmirror/config:/opt/magic_mirror/config
-      - mm_modules:/opt/magic_mirror/modules/MMM-KitchenInventory/node_modules
     environment:
       - TZ=${TZ:-America/New_York}
-    entrypoint: >
-      sh -c "npm install --prefix /opt/magic_mirror/modules/MMM-KitchenInventory --production
-             && node /opt/magic_mirror/serveronly.js"
     restart: unless-stopped
 
 volumes:
   postgres_data:
-  mm_modules:
