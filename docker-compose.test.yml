@@ -1,0 +1,38 @@
+services:
+  test-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: test_admin
+      POSTGRES_PASSWORD: test_secret
+      POSTGRES_DB: test_inventory
+    ports:
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  test-runner:
+    build: .
+    environment:
+      DATABASE_URL: "postgresql+asyncpg://test_admin:test_secret@test-db:5432/test_inventory"
+      POSTGRES_USER: test_admin
+      POSTGRES_PASSWORD: test_secret
+      POSTGRES_DB: test_inventory
+      SPOONACULAR_API_KEY: "test_key"
+      USDA_API_KEY: "test_key"
+      ANTHROPIC_API_KEY: "test_key"
+    depends_on:
+      - test-db
+    command: >
+      bash -c "
+        echo 'Waiting for test DB...' &&
+        until pg_isready -h test-db -p 5432; do sleep 1; done &&
+        echo 'Running tests...' &&
+        # Set PYTHONPATH to the directory containing the 'app' folder
+        export PYTHONPATH=/app &&
+        cd /app && 
+        python3 -m pytest tests/ -v --tb=short
+      "
+    volumes:
+      - ./app:/app
+      - ./tests:/app/tests
+      - ./pyproject.toml:/app/pyproject.toml
