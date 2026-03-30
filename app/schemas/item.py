@@ -66,3 +66,11 @@ class DeleteItemIn(BaseModel):
 # Import here to avoid circular dependency
 from schemas.product_reference import ProductReferenceOut
 ScanOut.model_rebuild()
+
+
+class ItemWithProductOut(BaseModel):
+    item: ItemOut
+    product: ProductReferenceOut
+
+    class Config:
+        from_attributes = True

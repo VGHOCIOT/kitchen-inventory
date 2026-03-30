@@ -24,18 +24,17 @@ services:
       - ./app:/app
       - ${RECEIPTS_HOST_PATH:-./data/receipts}:/data/receipts
 
-  magicmirror:
+  frontend:
     build:
-      context: ./magicmirror
+      context: ./frontend
       dockerfile: Dockerfile
     depends_on:
       - api
     ports:
-      - "8080:8080"
+      - "3000:3000"
     volumes:
-      - ./magicmirror/config:/opt/magic_mirror/config
-    environment:
-      - TZ=${TZ:-America/New_York}
+      - ./frontend:/app
+      - /app/node_modules
     restart: unless-stopped
 
 volumes:

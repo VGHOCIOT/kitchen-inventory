@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 from crud.item import (
     get_all_items,
+    get_all_items_with_products,
     get_items_by_location,
     get_item_by_product_and_location,
     add_stock,
@@ -26,6 +27,7 @@ from api.services.unit_converter import convert_to_base_unit
 from api.services.cook_service import cook_recipe
 from schemas.item import (
     ItemOut,
+    ItemWithProductOut,
     StockLotOut,
     ScanIn,
     ScanOut,
@@ -44,10 +46,10 @@ router = APIRouter(tags=["Inventory"])
 
 # ============== READ OPERATIONS ==============
 
-@router.get("/", response_model=list[ItemOut])
+@router.get("/", response_model=list[ItemWithProductOut])
 async def list_items(db: AsyncSession = Depends(get_db)):
-    """List all items in inventory"""
-    return await get_all_items(db)
+    """List all items in inventory with product details"""
+    return await get_all_items_with_products(db)
 
 
 @router.get("/lots/{product_reference_id}/{location}", response_model=list[StockLotOut])

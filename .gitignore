@@ -8,5 +8,7 @@ docker-compose.override.yml
 
 .DS_Store
 
+frontend/node_modules/
+
 # Claude Code AI instructions (local only)
 .claude/
