@@ -18,7 +18,7 @@ class Item(Base):
         ForeignKey("product_references.id"),
         nullable=True
     )
-    location = Column(SAEnum(Locations), default=Locations.FRIDGE)
+    location = Column(SAEnum(Locations, values_callable=lambda obj: [e.value for e in obj]), default=Locations.FRIDGE)
     qty = Column(Float, nullable=False)
     unit = Column(String, nullable=False)
     expires_at = Column(DateTime, nullable=True)

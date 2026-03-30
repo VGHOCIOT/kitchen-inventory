@@ -17,7 +17,7 @@ class StockLot(Base):
         nullable=False,
         index=True,
     )
-    location = Column(SAEnum(Locations), nullable=False)
+    location = Column(SAEnum(Locations, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
     initial_quantity = Column(Float, nullable=False)
     remaining_quantity = Column(Float, nullable=False)
     unit = Column(String, nullable=False)  # "g", "ml", or "unit"
