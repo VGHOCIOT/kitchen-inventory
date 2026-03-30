@@ -1,0 +1,17 @@
+{
+  "name": "MMM-KitchenInventory",
+  "version": "1.0.0",
+  "description": "MagicMirror module for kitchen inventory management",
+  "main": "MMM-KitchenInventory.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "echo \"No tests configured yet\""
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  }
+}

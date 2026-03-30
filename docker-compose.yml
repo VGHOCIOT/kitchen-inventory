@@ -24,5 +24,19 @@ services:
       - ./app:/app
       - ${RECEIPTS_HOST_PATH:-./data/receipts}:/data/receipts
 
+  magicmirror:
+    image: karsten13/magicmirror:latest
+    depends_on:
+      - api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./magicmirror/MMM-KitchenInventory:/opt/magic_mirror/modules/MMM-KitchenInventory
+      - mm_config:/opt/magic_mirror/config
+    environment:
+      - TZ=${TZ:-America/New_York}
+    restart: unless-stopped
+
 volumes:
   postgres_data:
+  mm_config:
