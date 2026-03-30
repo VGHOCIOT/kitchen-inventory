@@ -32,11 +32,10 @@ services:
       - "8080:8080"
     volumes:
       - ./magicmirror/MMM-KitchenInventory:/opt/magic_mirror/modules/MMM-KitchenInventory
-      - mm_config:/opt/magic_mirror/config
+      - ./magicmirror/config:/opt/magic_mirror/config
     environment:
       - TZ=${TZ:-America/New_York}
     restart: unless-stopped
 
 volumes:
   postgres_data:
-  mm_config:
