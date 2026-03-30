@@ -5,9 +5,9 @@ import uuid
 from db.base import Base
 
 class Locations(str, Enum):
-    FRIDGE = "Fridge"
-    FREEZER = "Freezer"
-    CUPBOARD = "Cupboard"
+    FRIDGE = "fridge"
+    FREEZER = "freezer"
+    CUPBOARD = "cupboard"
 
 class Item(Base):
     __tablename__ = "items"

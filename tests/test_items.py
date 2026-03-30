@@ -16,7 +16,8 @@ class TestListItems:
         resp = await client.get("/api/v1/items/")
         data = resp.json()
         assert len(data) == 1
-        assert data[0]["qty"] == 500.0
+        assert data[0]["item"]["qty"] == 500.0
+        assert data[0]["product"]["name"] == "Carrots"
 
     async def test_by_location(self, client, make_product, make_stock):
         from models.item import Locations
@@ -24,11 +25,11 @@ class TestListItems:
         product = await make_product(name="Milk", package_quantity=1000, package_unit="ml")
         await make_stock(product.id, Locations.FRIDGE, 1000.0, "ml")
 
-        resp = await client.get("/api/v1/items/location/Fridge")
+        resp = await client.get("/api/v1/items/location/fridge")
         assert resp.status_code == 200
         assert len(resp.json()) == 1
 
-        resp = await client.get("/api/v1/items/location/Cupboard")
+        resp = await client.get("/api/v1/items/location/cupboard")
         assert resp.status_code == 200
         assert len(resp.json()) == 0
 
@@ -36,7 +37,7 @@ class TestListItems:
 class TestAddFresh:
     async def test_add_fresh_item(self, client):
         resp = await client.post(
-            "/api/v1/items/add-fresh?location=Fridge",
+            "/api/v1/items/add-fresh?location=fridge",
             json={"name": "Bananas", "weight_grams": 300.0},
         )
         assert resp.status_code == 200
@@ -47,11 +48,11 @@ class TestAddFresh:
 
     async def test_add_fresh_twice_sums_qty(self, client):
         await client.post(
-            "/api/v1/items/add-fresh?location=Fridge",
+            "/api/v1/items/add-fresh?location=fridge",
             json={"name": "Apples", "weight_grams": 200.0},
         )
         resp = await client.post(
-            "/api/v1/items/add-fresh?location=Fridge",
+            "/api/v1/items/add-fresh?location=fridge",
             json={"name": "Apples", "weight_grams": 150.0},
         )
         assert resp.status_code == 200
@@ -66,7 +67,7 @@ class TestLotsForItem:
         await make_stock(product.id, Locations.CUPBOARD, 500.0, "g")
         await make_stock(product.id, Locations.CUPBOARD, 300.0, "g")
 
-        resp = await client.get(f"/api/v1/items/lots/{product.id}/Cupboard")
+        resp = await client.get(f"/api/v1/items/lots/{product.id}/cupboard")
         assert resp.status_code == 200
         lots = resp.json()
         assert len(lots) == 2
@@ -84,7 +85,7 @@ class TestAdjustQuantity:
             "/api/v1/items/adjust",
             json={
                 "product_reference_id": str(product.id),
-                "location": "Fridge",
+                "location": "fridge",
                 "delta": 200.0,
             },
         )
@@ -99,7 +100,7 @@ class TestAdjustQuantity:
             "/api/v1/items/adjust",
             json={
                 "product_reference_id": str(product.id),
-                "location": "Fridge",
+                "location": "fridge",
                 "delta": -200.0,
             },
         )
@@ -114,7 +115,7 @@ class TestAdjustQuantity:
             "/api/v1/items/adjust",
             json={
                 "product_reference_id": str(product.id),
-                "location": "Fridge",
+                "location": "fridge",
                 "delta": 0,
             },
         )
@@ -128,7 +129,7 @@ class TestAdjustQuantity:
             "/api/v1/items/adjust",
             json={
                 "product_reference_id": str(product.id),
-                "location": "Fridge",
+                "location": "fridge",
                 "delta": -227.0,
             },
         )
@@ -140,7 +141,7 @@ class TestAdjustQuantity:
             "/api/v1/items/adjust",
             json={
                 "product_reference_id": str(uuid.uuid4()),
-                "location": "Fridge",
+                "location": "fridge",
                 "delta": -100.0,
             },
         )
@@ -158,14 +159,14 @@ class TestMoveItem:
             "/api/v1/items/move",
             json={
                 "product_reference_id": str(product.id),
-                "from_location": "Fridge",
-                "to_location": "Freezer",
+                "from_location": "fridge",
+                "to_location": "freezer",
                 "quantity": 300.0,
             },
         )
         assert resp.status_code == 200
         # Returns the destination item
-        assert resp.json()["location"] == "Freezer"
+        assert resp.json()["location"] == "freezer"
         assert resp.json()["qty"] == 300.0
 
     async def test_move_not_found(self, client):
@@ -173,8 +174,8 @@ class TestMoveItem:
             "/api/v1/items/move",
             json={
                 "product_reference_id": str(uuid.uuid4()),
-                "from_location": "Fridge",
-                "to_location": "Freezer",
+                "from_location": "fridge",
+                "to_location": "freezer",
                 "quantity": 100.0,
             },
         )
@@ -191,7 +192,7 @@ class TestDeleteItem:
             "/api/v1/items/",
             json={
                 "product_reference_id": str(product.id),
-                "location": "Fridge",
+                "location": "fridge",
             },
         )
         assert resp.status_code == 204
@@ -206,7 +207,7 @@ class TestDeleteItem:
             "/api/v1/items/",
             json={
                 "product_reference_id": str(uuid.uuid4()),
-                "location": "Fridge",
+                "location": "fridge",
             },
         )
         assert resp.status_code == 404

@@ -27,7 +27,7 @@ export async function deleteItem({ product_reference_id, location }) {
   if (!res.ok) throw new Error(`Failed to delete item: ${res.status}`)
 }
 
-export async function addFreshItem({ name, weight_grams, location = 'FRIDGE' }) {
+export async function addFreshItem({ name, weight_grams, location = 'fridge' }) {
   const res = await fetch(`/api/v1/items/add-fresh?location=${location}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

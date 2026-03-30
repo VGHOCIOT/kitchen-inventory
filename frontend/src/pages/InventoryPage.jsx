@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { fetchItems } from '../api/items'
 
-const LOCATIONS = ['FRIDGE', 'FREEZER', 'CUPBOARD']
+const LOCATIONS = ['fridge', 'freezer', 'cupboard']
 
 function formatQty(qty, unit) {
   if (unit === 'g' && qty >= 1000) return `${(qty / 1000).toFixed(2).replace(/\.?0+$/, '')} kg`
@@ -13,7 +13,7 @@ export default function InventoryPage() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [activeLocation, setActiveLocation] = useState('FRIDGE')
+  const [activeLocation, setActiveLocation] = useState('fridge')
 
   useEffect(() => {
     fetchItems()
@@ -44,7 +44,7 @@ export default function InventoryPage() {
               background: 'var(--bg)',
             }}
           >
-            {loc.charAt(0) + loc.slice(1).toLowerCase()}
+            {loc.charAt(0).toUpperCase() + loc.slice(1)}
           </button>
         ))}
       </div>
@@ -63,7 +63,7 @@ export default function InventoryPage() {
         )}
         {!loading && !error && locationItems.length === 0 && (
           <p style={{ padding: '24px', color: 'var(--text-muted)', textAlign: 'center' }}>
-            Nothing in {activeLocation.charAt(0) + activeLocation.slice(1).toLowerCase()}
+            Nothing in {activeLocation.charAt(0).toUpperCase() + activeLocation.slice(1)}
           </p>
         )}
         {locationItems.map(({ item, product }) => (
