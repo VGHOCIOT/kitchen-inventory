@@ -5,7 +5,7 @@ from db.session import get_db
 from schemas.shopping_list import ShoppingListRequest, ShoppingListResponse
 from api.services.shopping_list_service import generate_shopping_list
 
-router = APIRouter()
+router = APIRouter(tags=["Shopping List"])
 
 
 @router.post("/from-recipes", response_model=ShoppingListResponse)

@@ -33,9 +33,12 @@ from schemas.recipe import (
     RecipeCreateFromURL,
     RecipeOut,
     RecipeWithIngredientsOut,
+    SeedAliasesResponse,
+    SeedSubstitutionsResponse,
 )
+from schemas.recipe_match import RecipeMatchResponse
 
-router = APIRouter()
+router = APIRouter(tags=["Recipes"])
 
 
 @router.post("/from-url", response_model=RecipeOut)
@@ -127,7 +130,7 @@ async def list_recipes(db: AsyncSession = Depends(get_db)):
     return await get_all_recipes(db)
 
 
-@router.get("/match-inventory")
+@router.get("/match-inventory", response_model=RecipeMatchResponse)
 async def match_recipes_to_inventory(
     db: AsyncSession = Depends(get_db)
 ):
@@ -161,11 +164,11 @@ async def get_recipe(
     )
 
 
-@router.post("/seed-aliases")
+@router.post("/seed-aliases", response_model=SeedAliasesResponse)
 async def seed_ingredient_aliases(db: AsyncSession = Depends(get_db)):
     """
     Seed the ingredient alias table with known variations.
-    Safe to run multiple times - skips aliases that already exist.
+    Safe to run multiple times — skips aliases that already exist.
     Also runs automatically on app startup.
     """
     result = await seed_aliases(db)
@@ -176,11 +179,11 @@ async def seed_ingredient_aliases(db: AsyncSession = Depends(get_db)):
     }
 
 
-@router.post("/seed-substitutions")
+@router.post("/seed-substitutions", response_model=SeedSubstitutionsResponse)
 async def seed_ingredient_substitutions(db: AsyncSession = Depends(get_db)):
     """
     Seed the ingredient substitution table with common cooking swaps.
-    Safe to run multiple times - skips pairs that already exist.
+    Safe to run multiple times — skips pairs that already exist.
     Also runs automatically on app startup.
     """
     result = await seed_substitutions(db)

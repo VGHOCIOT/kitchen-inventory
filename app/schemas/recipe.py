@@ -32,3 +32,15 @@ class RecipeIngredientOut(BaseModel):
 class RecipeWithIngredientsOut(BaseModel):
     recipe: RecipeOut
     ingredients: list[RecipeIngredientOut]
+
+
+class SeedAliasesResponse(BaseModel):
+    aliases_created: int
+    aliases_skipped: int
+    message: str
+
+
+class SeedSubstitutionsResponse(BaseModel):
+    created: int
+    skipped: int
+    message: str

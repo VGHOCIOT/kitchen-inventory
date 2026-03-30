@@ -12,7 +12,7 @@ from crud.ingredient_substitution import (
 from crud.ingredient_reference import get_ingredient_by_id
 from schemas.ingredient_substitution import SubstitutionCreate, SubstitutionOut
 
-router = APIRouter()
+router = APIRouter(tags=["Substitutions"])
 
 
 async def _resolve_substitution_out(db: AsyncSession, sub) -> SubstitutionOut:

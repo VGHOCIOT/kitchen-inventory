@@ -24,7 +24,7 @@ from crud.product_reference import get_product_by_name, create_product
 from crud.item import add_stock
 
 logger = logging.getLogger(__name__)
-router = APIRouter()
+router = APIRouter(tags=["Receipt"])
 
 @router.post("/scan", response_model=ReceiptScanOut)
 async def scan_receipt(

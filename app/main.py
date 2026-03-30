@@ -26,7 +26,27 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Kitchen Inventory API", lifespan=lifespan)
+app = FastAPI(
+    title="Kitchen Inventory API",
+    description=(
+        "Self-hosted kitchen inventory and recipe management system.\n\n"
+        "**Core features:**\n"
+        "- Barcode & receipt scanning to track groceries\n"
+        "- Recipe parsing from URLs with ingredient normalization\n"
+        "- Inventory-to-recipe matching with substitution support\n"
+        "- Shopping list generation from selected recipes\n"
+        "- FIFO stock lot tracking with location management"
+    ),
+    version="1.0.0",
+    lifespan=lifespan,
+    openapi_tags=[
+        {"name": "Inventory", "description": "Manage inventory items, scan barcodes, adjust quantities, cook recipes"},
+        {"name": "Recipes", "description": "Parse recipes from URLs, match against inventory, manage recipe data"},
+        {"name": "Receipt", "description": "Scan grocery receipts to bulk-add items"},
+        {"name": "Shopping List", "description": "Generate shopping lists from selected recipes"},
+        {"name": "Substitutions", "description": "Manage ingredient substitution rules"},
+    ],
+)
 
 app.add_middleware(
     CORSMiddleware,

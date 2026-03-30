@@ -34,11 +34,12 @@ from schemas.item import (
     DeleteItemIn,
 )
 from schemas.product_reference import CreateFreshItemIn
+from schemas.cook import CookRequest, CookResponse
 from models.item import Locations
 from uuid import UUID as _UUID
 from models.product_reference import ProductType
 
-router = APIRouter()
+router = APIRouter(tags=["Inventory"])
 
 
 # ============== READ OPERATIONS ==============
@@ -292,23 +293,22 @@ async def delete_item(
 
 # ============== COOKING ==============
 
-@router.post("/cook")
+@router.post("/cook", response_model=CookResponse)
 async def cook(
-    payload: dict,
+    payload: CookRequest,
     db: AsyncSession = Depends(get_db)
 ):
     """
     Cook a recipe — deducts all ingredient quantities from inventory.
     Walks lots FIFO per ingredient. Returns what was deducted and what was insufficient.
-    """
-    recipe_id = payload.get("recipe_id")
-    if not recipe_id:
-        raise HTTPException(status_code=400, detail="recipe_id is required")
 
+    Optionally pass `substitutions` as a mapping of original ingredient name to
+    substitute ingredient name to force specific swaps.
+    """
     result = await cook_recipe(
         db,
-        recipe_id,
-        substitutions=payload.get("substitutions"),
+        str(payload.recipe_id),
+        substitutions=payload.substitutions,
     )
 
     if result is None:
