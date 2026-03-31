@@ -68,8 +68,20 @@ async def create_recipe_from_url(
 
     # Process each ingredient
     for parsed in parsed_ingredients:
-        # Normalize ingredient name for matching
-        normalized = normalize_ingredient_text(parsed["name"])
+        spoonacular_name = parsed.get("name", "").strip()
+
+        if spoonacular_name:
+            normalized = normalize_ingredient_text(spoonacular_name)
+        else:
+            # Spoonacular couldn't identify the ingredient (common for optional/garnish lines).
+            # Fall back to normalizing the original scraped text ourselves.
+            normalized = normalize_ingredient_text(parsed.get("original", ""))
+            if normalized:
+                logger.info(f"[RECIPE] Spoonacular returned no name, fell back to normalizing original: {parsed.get('original', '')!r} -> {normalized!r}")
+
+        if not normalized:
+            logger.warning(f"Skipping ingredient, could not extract name from: {parsed.get('original', '')!r}")
+            continue
 
         # Find or create ingredient (business logic in endpoint)
         ingredient_ref = await find_or_create_ingredient(db, normalized)

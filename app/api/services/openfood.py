@@ -12,13 +12,20 @@ async def lookup_barcode(barcode: str):
                 product = data.get("product", {})
                 quantity_data = parse_quantity(product)
                 return {
-                    "name": product.get("product_name"),
+                    "name": strip_package_size(product.get("product_name") or ""),
                     "brands": arrayify(product.get("brands")),
                     "categories": arrayify(product.get("categories")),
                     "package_quantity": quantity_data.get("quantity"),
                     "package_unit": quantity_data.get("unit")
                 }
     return None
+
+def strip_package_size(name: str) -> str:
+    """Remove trailing package size suffixes that OpenFoodFacts appends to product names.
+    e.g. 'Beef broth 400 g' -> 'Beef broth', 'Tomato Soup 2x300ml' -> 'Tomato Soup'
+    """
+    return re.sub(r'\s+\d+[\d.,x\s]*(g|ml|kg|l|oz|lb|cl)\s*$', '', name, flags=re.IGNORECASE).strip()
+
 
 def arrayify(arg: str | None) -> list[str]:
     if not arg:

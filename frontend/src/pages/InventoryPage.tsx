@@ -1,24 +1,26 @@
 import { useState, useEffect } from 'react'
 import { fetchItems } from '../api/items'
+import type { ItemWithProduct } from '../interfaces/Inventory'
 
-const LOCATIONS = ['fridge', 'freezer', 'cupboard']
+const LOCATIONS = ['fridge', 'freezer', 'cupboard'] as const
+type Location = typeof LOCATIONS[number]
 
-function formatQty(qty, unit) {
+function formatQty(qty: number, unit: string): string {
   if (unit === 'g' && qty >= 1000) return `${(qty / 1000).toFixed(2).replace(/\.?0+$/, '')} kg`
   if (unit === 'ml' && qty >= 1000) return `${(qty / 1000).toFixed(2).replace(/\.?0+$/, '')} L`
   return `${qty % 1 === 0 ? qty : qty.toFixed(1)} ${unit}`
 }
 
 export default function InventoryPage() {
-  const [items, setItems] = useState([])
+  const [items, setItems] = useState<ItemWithProduct[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [activeLocation, setActiveLocation] = useState('fridge')
+  const [error, setError] = useState<string | null>(null)
+  const [activeLocation, setActiveLocation] = useState<Location>('fridge')
 
   useEffect(() => {
     fetchItems()
-      .then(setItems)
-      .catch(e => setError(e.message))
+      .then((data: ItemWithProduct[]) => setItems(data))
+      .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false))
   }, [])
 
