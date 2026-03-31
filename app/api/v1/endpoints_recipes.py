@@ -2,6 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.session import get_db
 from uuid import UUID
+import logging
+
+logger = logging.getLogger(__name__)
 
 from crud.recipe import (
     create_recipe,
