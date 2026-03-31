@@ -1,24 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  /* Core palette — use as bg-bg, bg-surface, border-border, etc. */
+  --color-bg:      #111111;
+  --color-surface: #1e1e1e;
+  --color-raised:  #272727;
+  --color-border:  #333333;
+
+  /* Text */
+  --color-text:    #f0f0f0;
+  --color-muted:   #888888;
+  --color-subtle:  #555555;
+
+  /* Brand */
+  --color-accent:        #4caf8a;
+  --color-accent-hover:  #5dc99f;
+  --color-accent-dim:    #1e3d30;
+
+  /* Status */
+  --color-danger:  #e05555;
+  --color-warn:    #d4a017;
+  --color-warn-dim:#3a2e0a;
+
+  /* Typography */
+  --font-sans: system-ui, sans-serif;
+
+  /* Radius */
+  --radius-card: 0.75rem;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-:root {
-  --bg: #111;
-  --surface: #1e1e1e;
-  --border: #333;
-  --text: #f0f0f0;
-  --text-muted: #888;
-  --accent: #4caf8a;
-  --danger: #e05555;
-}
-
 html, body, #root {
   height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
   font-size: 16px;
   -webkit-tap-highlight-color: transparent;
 }
