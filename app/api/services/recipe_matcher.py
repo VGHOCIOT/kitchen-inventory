@@ -209,7 +209,11 @@ async def match_recipe_to_inventory(
             )
 
             if substitution:
+                # Substitution available counts as covered
                 suggested_substitutions.append(substitution)
+                available_count += 1
+            else:
+                missing_ingredients.append(ingredient.name)
 
             ingredient_availability.append(IngredientAvailability(
                 ingredient_id=ingredient.id,
@@ -217,26 +221,26 @@ async def match_recipe_to_inventory(
                 required_quantity=required_conversion["quantity"],
                 available_quantity=0.0,
                 unit=required_conversion["base_unit"],
-                is_sufficient=False
+                is_sufficient=substitution is not None
             ))
-            missing_ingredients.append(ingredient.name)
 
-    # Calculate availability percentage
+    # availability_percent counts substitutions as covered
     availability_percent = (available_count / total_ingredients * 100) if total_ingredients > 0 else 0
 
-    logger.info(f"[MATCH] Result: {availability_percent:.0f}% available ({available_count}/{total_ingredients}), missing: {missing_ingredients}")
-
-    # Determine match type
     if availability_percent == 100:
-        match_type = "exact"
-    elif len(suggested_substitutions) > 0:
-        match_type = "with_substitutions"
+        match_type = "unlocked"
+    elif availability_percent >= 70:
+        match_type = "almost"
     else:
-        match_type = "missing_ingredients"
+        match_type = "locked"
+
+    logger.info(f"[MATCH] Result: {match_type} ({availability_percent:.0f}%), missing: {missing_ingredients}")
 
     return RecipeMatchResult(
         recipe_id=recipe.id,
         recipe_title=recipe.title,
+        recipe_description=recipe.description,
+        recipe_image_url=recipe.image_url,
         match_type=match_type,
         availability_percent=availability_percent,
         ingredient_availability=ingredient_availability,
@@ -319,31 +323,24 @@ async def match_all_recipes(db: AsyncSession) -> RecipeMatchResponse:
         match_result = await match_recipe_to_inventory(db, recipe, inventory)
         all_matches.append(match_result)
 
-    can_make_now = []
-    missing_one = []
-    missing_few = []
-    with_substitutions = []
+    unlocked = []
+    almost = []
+    locked = []
 
     for match in all_matches:
-        missing_count = len(match.missing_ingredients)
+        if match.match_type == "unlocked":
+            unlocked.append(match)
+        elif match.match_type == "almost":
+            almost.append(match)
+        else:
+            locked.append(match)
 
-        if match.availability_percent == 100:
-            can_make_now.append(match)
-        elif missing_count == 1:
-            missing_one.append(match)
-        elif 2 <= missing_count <= 3:
-            missing_few.append(match)
-        elif len(match.suggested_substitutions) > 0:
-            with_substitutions.append(match)
-
-    logger.info(f"Recipe matching complete: {len(can_make_now)} can make now, "
-                f"{len(missing_one)} missing one, {len(missing_few)} missing few, "
-                f"{len(with_substitutions)} with substitutions")
+    logger.info(f"Recipe matching complete: {len(unlocked)} unlocked, "
+                f"{len(almost)} almost, {len(locked)} locked")
 
     return RecipeMatchResponse(
-        can_make_now=can_make_now,
-        missing_one=missing_one,
-        missing_few=missing_few,
-        with_substitutions=with_substitutions,
+        unlocked=unlocked,
+        almost=almost,
+        locked=locked,
         total_recipes_checked=len(recipes)
     )

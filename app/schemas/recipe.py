@@ -10,6 +10,8 @@ class RecipeCreateFromURL(BaseModel):
 class RecipeOut(BaseModel):
     id: UUID
     title: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
     instructions: list[str]
     source_url: Optional[str] = None
 

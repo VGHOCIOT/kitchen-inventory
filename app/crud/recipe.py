@@ -11,13 +11,17 @@ async def create_recipe(
     db: AsyncSession,
     title: str,
     instructions: list[str],
-    source_url: str | None = None
+    source_url: str | None = None,
+    description: str | None = None,
+    image_url: str | None = None,
 ) -> Recipe:
     """Create a new recipe"""
     recipe = Recipe(
         title=title,
+        description=description,
+        image_url=image_url,
         instructions=instructions,
-        source_url=source_url
+        source_url=source_url,
     )
     db.add(recipe)
     await db.commit()

@@ -34,8 +34,10 @@ class RecipeMatchResult(BaseModel):
     """Match result for a single recipe"""
     recipe_id: UUID
     recipe_title: str
-    match_type: str  # "exact", "missing_ingredients", "with_substitutions"
-    availability_percent: float  # 0-100
+    recipe_description: Optional[str] = None
+    recipe_image_url: Optional[str] = None
+    match_type: str  # "unlocked", "almost", "locked"
+    availability_percent: float  # 0-100, substitutions count as covered
     ingredient_availability: list[IngredientAvailability]
     missing_ingredients: list[str]
     suggested_substitutions: list[SubstitutionSuggestion]
@@ -45,11 +47,16 @@ class RecipeMatchResult(BaseModel):
 
 
 class RecipeMatchResponse(BaseModel):
-    """Complete recipe matching response with categorized results"""
-    can_make_now: list[RecipeMatchResult]
-    missing_one: list[RecipeMatchResult]
-    missing_few: list[RecipeMatchResult]
-    with_substitutions: list[RecipeMatchResult]
+    """Complete recipe matching response with gamified lock states.
+
+    availability_percent counts substitutions as covered ingredients.
+      unlocked: 100%
+      almost:   >= 70%
+      locked:   < 70%
+    """
+    unlocked: list[RecipeMatchResult]
+    almost: list[RecipeMatchResult]
+    locked: list[RecipeMatchResult]
     total_recipes_checked: int
 
     class Config:

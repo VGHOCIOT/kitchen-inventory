@@ -19,6 +19,7 @@ async def parse_recipe_from_url(url: str) -> Optional[dict]:
         # Extract recipe data
         return {
             "title": scraper.title(),
+            "description": scraper.description() if hasattr(scraper, 'description') else None,
             "ingredients": scraper.ingredients(),
             "instructions": scraper.instructions_list() or [scraper.instructions()],
             "source_url": url,

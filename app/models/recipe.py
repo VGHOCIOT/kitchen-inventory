@@ -7,5 +7,7 @@ class Recipe(Base):
     __tablename__ = "recipes"
     id = Column(PGUUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     title = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    image_url = Column(String, nullable=True)
     instructions = Column(ARRAY(String), default=list)
     source_url = Column(String, nullable=True)

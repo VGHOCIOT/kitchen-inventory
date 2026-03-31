@@ -20,17 +20,18 @@ export interface SubstitutionSuggestion {
 export interface RecipeMatchResult {
   recipe_id: string
   recipe_title: string
-  match_type: string
-  availability_percent: number
+  recipe_description: string | null
+  recipe_image_url: string | null
+  match_type: 'unlocked' | 'almost' | 'locked'
+  availability_percent: number  // substitutions count as covered
   ingredient_availability: IngredientAvailability[]
-  missing_ingredients: string[]
+  missing_ingredients: string[]  // only ingredients with no inventory and no substitution
   suggested_substitutions: SubstitutionSuggestion[]
 }
 
 export interface RecipeMatchResponse {
-  can_make_now: RecipeMatchResult[]
-  missing_one: RecipeMatchResult[]
-  missing_few: RecipeMatchResult[]
-  with_substitutions: RecipeMatchResult[]
+  unlocked: RecipeMatchResult[]   // 100%
+  almost: RecipeMatchResult[]     // >= 70%, substitutions count
+  locked: RecipeMatchResult[]     // < 70%
   total_recipes_checked: number
 }

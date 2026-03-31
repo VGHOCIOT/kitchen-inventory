@@ -60,18 +60,21 @@ class TestMatchInventory:
         resp = await client.get("/api/v1/recipes/match-inventory")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["can_make_now"] == []
+        assert data["unlocked"] == []
+        assert data["almost"] == []
+        assert data["locked"] == []
         assert data["total_recipes_checked"] == 0
 
-    async def test_can_make_now(self, client, populated_inventory):
-        """All ingredients in stock — recipe should appear in can_make_now."""
+    async def test_unlocked(self, client, populated_inventory):
+        """All ingredients in stock — recipe should be unlocked at 100%."""
         resp = await client.get("/api/v1/recipes/match-inventory")
         data = resp.json()
-        assert len(data["can_make_now"]) == 1
-        assert data["can_make_now"][0]["recipe_title"] == "Simple Cookies"
-        assert data["can_make_now"][0]["availability_percent"] == 100.0
+        assert len(data["unlocked"]) == 1
+        assert data["unlocked"][0]["recipe_title"] == "Simple Cookies"
+        assert data["unlocked"][0]["availability_percent"] == 100.0
 
-    async def test_missing_one(self, client, make_product, make_ingredient, make_alias, make_stock, make_recipe):
+    async def test_locked_missing_ingredient(self, client, make_product, make_ingredient, make_alias, make_stock, make_recipe):
+        """2/3 ingredients in stock (66.7%) — below 70% threshold, goes to locked."""
         from models.item import Locations
 
         butter = await make_ingredient(name="butter")
@@ -96,11 +99,13 @@ class TestMatchInventory:
 
         resp = await client.get("/api/v1/recipes/match-inventory")
         data = resp.json()
-        assert len(data["missing_one"]) == 1
+        assert len(data["locked"]) == 1
+        assert data["locked"][0]["missing_ingredients"] == ["egg"]
 
-    async def test_with_substitutions(
+    async def test_substitution_counts_as_unlocked(
         self, client, make_product, make_ingredient, make_alias, make_stock, make_recipe, make_substitution
     ):
+        """Substitution covers a missing ingredient — counts as 100%, goes to unlocked."""
         from models.item import Locations
 
         butter = await make_ingredient(name="butter")
@@ -126,11 +131,47 @@ class TestMatchInventory:
 
         resp = await client.get("/api/v1/recipes/match-inventory")
         data = resp.json()
-        # 1 missing ingredient → goes to missing_one, with substitution attached
-        assert len(data["missing_one"]) == 1
-        subs = data["missing_one"][0]["suggested_substitutions"]
+        # Substitution covers butter → 2/2 = 100% → unlocked
+        assert len(data["unlocked"]) == 1
+        subs = data["unlocked"][0]["suggested_substitutions"]
         assert len(subs) == 1
         assert subs[0]["substitute_ingredient_name"] == "margarine"
+        # butter not in missing_ingredients since substitution covers it
+        assert "butter" not in data["unlocked"][0]["missing_ingredients"]
+
+    async def test_almost(self, client, make_product, make_ingredient, make_alias, make_stock, make_recipe):
+        """3/4 ingredients in stock (75%) — above 70%, goes to almost."""
+        from models.item import Locations
+
+        butter = await make_ingredient(name="butter")
+        flour = await make_ingredient(name="flour")
+        sugar = await make_ingredient(name="sugar")
+        egg = await make_ingredient(name="egg")
+
+        p_butter = await make_product(name="Butter Block", package_quantity=227, package_unit="g")
+        p_flour = await make_product(name="Bread Flour", package_quantity=1000, package_unit="g")
+        p_sugar = await make_product(name="White Sugar", package_quantity=500, package_unit="g")
+        await make_alias("Butter Block", butter.id)
+        await make_alias("Bread Flour", flour.id)
+        await make_alias("White Sugar", sugar.id)
+        await make_stock(p_butter.id, Locations.FRIDGE, 227.0, "g")
+        await make_stock(p_flour.id, Locations.CUPBOARD, 1000.0, "g")
+        await make_stock(p_sugar.id, Locations.CUPBOARD, 500.0, "g")
+
+        await make_recipe(
+            title="Egg Cookies",
+            ingredients=[
+                {"text": "butter", "ingredient_id": butter.id, "quantity": 113.0, "unit": "g"},
+                {"text": "flour", "ingredient_id": flour.id, "quantity": 240.0, "unit": "g"},
+                {"text": "sugar", "ingredient_id": sugar.id, "quantity": 100.0, "unit": "g"},
+                {"text": "egg", "ingredient_id": egg.id, "quantity": 1.0, "unit": "unit"},
+            ],
+        )
+
+        resp = await client.get("/api/v1/recipes/match-inventory")
+        data = resp.json()
+        assert len(data["almost"]) == 1
+        assert data["almost"][0]["missing_ingredients"] == ["egg"]
 
 
 class TestSeedEndpoints:

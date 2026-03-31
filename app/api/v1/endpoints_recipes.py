@@ -63,7 +63,9 @@ async def create_recipe_from_url(
         db,
         title=recipe_data["title"],
         instructions=recipe_data["instructions"],
-        source_url=recipe_data["source_url"]
+        source_url=recipe_data["source_url"],
+        description=recipe_data.get("description"),
+        image_url=recipe_data.get("image_url"),
     )
 
     # Parse all ingredients with Spoonacular

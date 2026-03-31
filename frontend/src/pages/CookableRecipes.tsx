@@ -1,22 +1,7 @@
 import { useState, useEffect } from 'react'
+import { Lock } from 'lucide-react'
+import { fetchMatchedRecipes } from '../api/recipes'
 import type { RecipeMatchResponse, RecipeMatchResult } from '../interfaces/Recipes'
-
-async function fetchMatchedRecipes(): Promise<RecipeMatchResponse> {
-  const res = await fetch('/api/v1/recipes/match-inventory')
-  if (!res.ok) throw new Error(`Failed to fetch recipes: ${res.status}`)
-  return res.json()
-}
-
-const CATEGORY_LABELS: Record<keyof Omit<RecipeMatchResponse, 'total_recipes_checked'>, string> = {
-  can_make_now: 'Ready to Cook',
-  missing_one: 'Missing One Ingredient',
-  missing_few: 'Missing a Few',
-  with_substitutions: 'With Substitutions',
-}
-
-const CATEGORY_KEYS = Object.keys(CATEGORY_LABELS) as Array<
-  keyof Omit<RecipeMatchResponse, 'total_recipes_checked'>
->
 
 export default function CookableRecipes() {
   const [data, setData] = useState<RecipeMatchResponse | null>(null)
@@ -30,73 +15,67 @@ export default function CookableRecipes() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) {
-    return (
-      <p style={{ padding: '24px', color: 'var(--text-muted)', textAlign: 'center' }}>
-        Loading recipes...
-      </p>
-    )
-  }
-
-  if (error) {
-    return (
-      <p style={{ padding: '24px', color: 'var(--danger)', textAlign: 'center' }}>
-        {error}
-      </p>
-    )
-  }
-
+  if (loading) return <p>Loading...</p>
+  if (error) return <p>{error}</p>
   if (!data) return null
 
+  // TODO: render recipe cards grouped by unlock state
+  // two cards per row, with image, title, description, and lock overlay if not 100% available
+  // unlocked recipes have hyperlinks to the cook page (not implemented yet)
+  // title of this page should align with the title in the navigation bar ("Cookable Recipes")
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflowY: 'auto' }}>
-      {CATEGORY_KEYS.map(key => {
-        const recipes: RecipeMatchResult[] = data[key]
-        if (recipes.length === 0) return null
-        return (
-          <section key={key} style={{ padding: '16px 0' }}>
-            <h2 style={{
-              padding: '8px 20px',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              color: 'var(--text-muted)',
-            }}>
-              {CATEGORY_LABELS[key].toUpperCase()} ({recipes.length})
-            </h2>
-            {recipes.map(recipe => (
-              <RecipeCard key={recipe.recipe_id} recipe={recipe} />
-            ))}
-          </section>
-        )
-      })}
-      {data.total_recipes_checked === 0 && (
-        <p style={{ padding: '24px', color: 'var(--text-muted)', textAlign: 'center' }}>
-          No recipes saved yet.
-        </p>
-      )}
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Cookable Recipes</h1>
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Unlocked Recipes</h2>
+        <div className="flex flex-wrap">
+          {data.unlocked.map(recipe => (
+            <RecipeCard key={recipe.recipe_id} recipe={recipe} />
+          ))}
+        </div>
+
+        <h2 className="text-xl font-semibold mt-6 mb-2">Almost Unlocked Recipes</h2>
+        <div className="flex flex-wrap">
+          {data.almost.map(recipe => (
+            <RecipeCard key={recipe.recipe_id} recipe={recipe} />
+          ))}
+        </div>
+
+        <h2 className="text-xl font-semibold mt-6 mb-2">Locked Recipes</h2>
+        <div className="flex flex-wrap">
+          {data.locked.map(recipe => (
+            <RecipeCard key={recipe.recipe_id} recipe={recipe} />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
 
-function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
+// Skeleton for a single recipe card — you'll flesh this out
+export function RecipeCard({ recipe: _recipe }: { recipe: RecipeMatchResult }) {
+  // _recipe.match_type            — 'unlocked' | 'almost' | 'locked'
+  // _recipe.availability_percent  — 0-100, substitutions count as covered
+  // _recipe.recipe_image_url      — card artwork (silhouette when locked)
+  // _recipe.recipe_description    — teaser text
+  // _recipe.missing_ingredients   — hint text on locked/almost cards (no inventory, no sub)
+  // _recipe.suggested_substitutions — swap hints for almost cards
   return (
-    <div style={{
-      padding: '14px 20px',
-      borderBottom: '1px solid var(--border)',
-      minHeight: '56px',
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '1rem' }}>{recipe.recipe_title}</span>
-        <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', flexShrink: 0, marginLeft: '12px' }}>
-          {Math.round(recipe.availability_percent)}%
-        </span>
-      </div>
-      {recipe.missing_ingredients.length > 0 && (
-        <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          Missing: {recipe.missing_ingredients.join(', ')}
-        </p>
-      )}
+    <div className={`relative w-[300px] border border-gray-300 rounded-lg p-4 m-2 cursor-${_recipe.match_type === 'locked' ? 'not-allowed' : 'pointer'}`}>
+        <div>
+            <img src={_recipe.recipe_image_url || 'placeholder.jpg'} alt={_recipe.recipe_title} className={`recipe-image ${_recipe.match_type}`} />
+            <h3>{_recipe.recipe_title}</h3>
+            <p>{_recipe.recipe_description}</p>
+            <button disabled={_recipe.match_type !== 'unlocked'}>Cook</button>
+        </div>
+
+        {_recipe.match_type === 'locked' && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-lg font-bold">
+                <div className="bg-white p-3 rounded-full shadow-lg">
+                    <Lock size={24} className="text-slate-500" />
+                </div>
+            </div>
+        )}
     </div>
   )
 }
