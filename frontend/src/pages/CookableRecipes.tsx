@@ -35,7 +35,7 @@ export default function CookableRecipes() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white">
-      <h1 className="text-3xl font-bold text-text mb-8 text-black">Cookable Recipes</h1>
+      <h1 className="text-3xl font-bold mb-8 text-black">Cookable Recipes</h1>
       <Section title="Unlocked" recipes={data.unlocked} />
       <Section title="Almost There" recipes={data.almost} />
       <Section title="Locked" recipes={data.locked} />
@@ -55,7 +55,7 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
     : 'bg-accent-dim text-accent'
 
   return (
-    <div className={`relative rounded overflow-hidden bg-surface border border-border bg-white flex flex-col ${isLocked ? 'opacity-60' : ''}`}>
+    <div className={`relative rounded overflow-hidden bg-surface border border-edge bg-white flex flex-col ${isLocked ? 'opacity-60' : ''}`}>
       {/* Image */}
       <div className="relative h-48">
         {recipe.recipe_image_url ? (
@@ -71,7 +71,7 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
         {/* Lock overlay */}
         {isLocked && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <div className="bg-bg/80 p-3 rounded-full">
+            <div className="bg-canvas/80 p-3 rounded-full">
               <Lock size={28} className="text-muted" />
             </div>
           </div>
@@ -85,7 +85,7 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
 
       {/* Content */}
       <div className="p-4 flex flex-col gap-2 flex-1">
-        <h3 className="text-text font-semibold text-base leading-snug text-black">{recipe.recipe_title}</h3>
+        <h3 className="font-semibold text-base leading-snug text-black">{recipe.recipe_title}</h3>
 
         {recipe.recipe_description && (
           <p className="text-muted text-sm line-clamp-2">{recipe.recipe_description}</p>
@@ -111,7 +111,7 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
               className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${
                 isAlmost
                   ? 'bg-raised text-subtle cursor-not-allowed'
-                  : 'bg-accent hover:bg-accent-hover text-bg cursor-pointer'
+                  : 'bg-accent hover:bg-accent-hover text-canvas cursor-pointer'
               }`}
             >
               Cook

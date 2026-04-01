@@ -4,11 +4,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg:           '#111111',
+        canvas:       '#111111',
         surface:      '#1e1e1e',
         raised:       '#272727',
-        border:       '#333333',
-        text:         '#f0f0f0',
+        edge:         '#333333',
+        foreground:   '#f0f0f0',
         muted:        '#888888',
         subtle:       '#555555',
         accent:       '#4caf8a',
