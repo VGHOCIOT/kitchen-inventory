@@ -18,6 +18,7 @@ from crud.recipe_ingredient import (
 )
 from crud.ingredient_reference import (
     create_ingredient_reference,
+    find_ingredient_fuzzy,
     get_ingredient_by_id,
     get_ingredient_by_name,
     get_ingredient_by_normalized_name,
@@ -289,7 +290,8 @@ async def find_or_create_ingredient(db: AsyncSession, normalized_name: str):
     5. Singularize + check existing DB ingredient
        e.g. "carrots" → "carrot" already in DB from a previous recipe
     6. Name itself is in manual weights (create canonical as-is)
-    7. Create new IngredientReference (unknown ingredient)
+    7. Fuzzy match — catches ingredients created by other paths (substitution seeds, auto-mapper)
+    8. Create new IngredientReference (unknown ingredient)
 
     When an alias is resolved (steps 3-5), it's saved to the DB so subsequent
     lookups for the same name skip all this and hit step 2 instantly.
@@ -337,7 +339,14 @@ async def find_or_create_ingredient(db: AsyncSession, normalized_name: str):
             db, name=normalized_name, normalized_name=normalized_name
         )
 
-    # 7. Unknown ingredient - create as-is
+    # 7. Fuzzy match — catches ingredients created by substitution seeds or
+    #    auto-mapper that steps 1-6 missed (e.g. "butter" created by seed_substitutions)
+    ingredient = await find_ingredient_fuzzy(db, normalized_name)
+    if ingredient:
+        await create_ingredient_alias(db, alias=normalized_name, ingredient_id=ingredient.id)
+        return ingredient
+
+    # 8. Unknown ingredient - create as-is
     return await create_ingredient_reference(
         db, name=normalized_name, normalized_name=normalized_name
     )

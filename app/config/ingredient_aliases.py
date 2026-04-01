@@ -157,4 +157,103 @@ INGREDIENT_ALIAS_SEEDS: dict[str, list[str]] = {
 
     # ── Plant-based ────────────────────────────────────────────────────────────
     "tofu": ["firm tofu", "extra firm tofu", "silken tofu", "soft tofu"],
+
+    # ── Dairy (CA store labels → US recipe names) ─────────────────────────────
+    "heavy cream": [
+        "whipping cream", "heavy whipping cream", "cooking cream", "single cream",
+    ],
+    "light cream": [
+        "table cream", "coffee cream",
+    ],
+    "half and half": [
+        "half and half cream", "half & half",
+    ],
+    "whole milk": [
+        "homogenized milk", "homo milk",
+    ],
+    "cream cheese": [
+        "brick cream cheese", "spreadable cream cheese",
+    ],
+    "buttermilk": ["cultured buttermilk"],
+    "butter": [
+        "unsalted butter", "salted butter",
+    ],
+
+    # ── Baking (CA store labels → US recipe names) ────────────────────────────
+    "powdered sugar": [
+        "icing sugar", "confectioners sugar", "confectioners' sugar",
+        "confectioner's sugar",
+    ],
+    "granulated sugar": [
+        "white sugar", "cane sugar", "sugar",
+    ],
+    "brown sugar": [
+        "golden brown sugar", "dark brown sugar",
+        "light brown sugar", "demerara sugar",
+    ],
+    "all-purpose flour": [
+        "all purpose flour", "all purpose flour white",
+        "white flour", "plain flour", "ap flour",
+    ],
+    "baking soda": [
+        "bicarbonate of soda", "bicarb", "sodium bicarbonate",
+    ],
+    "cornstarch": [
+        "corn starch", "cornflour", "corn flour",
+    ],
+    "vanilla extract": [
+        "vanilla", "pure vanilla extract", "vanilla essence",
+    ],
+    "cocoa powder": [
+        "cocoa", "unsweetened cocoa", "unsweetened cocoa powder",
+        "dutch process cocoa", "dutch cocoa",
+    ],
+
+    # ── Oils ──────────────────────────────────────────────────────────────────
+    "olive oil": [
+        "extra virgin olive oil", "evoo", "virgin olive oil",
+    ],
+    "vegetable oil": [
+        "canola oil", "rapeseed oil", "cooking oil",
+    ],
+
+    # ── Salt & Seasoning ──────────────────────────────────────────────────────
+    "salt": [
+        "table salt", "iodized salt", "iodized table salt",
+        "kosher salt", "sea salt", "fine salt", "coarse salt",
+    ],
+    "black pepper": [
+        "pepper", "ground black pepper", "cracked black pepper",
+        "freshly ground black pepper", "ground pepper",
+    ],
+
+    # ── Produce (CA/UK names → US recipe names) ──────────────────────────────
+    "zucchini": ["courgette", "courgettes", "zucchinis"],
+    "eggplant": ["aubergine", "aubergines", "eggplants"],
+    "arugula": ["rocket", "roquette", "garden rocket"],
+    "green bean": [
+        "green beans", "string bean", "string beans",
+        "french bean", "french beans", "haricot vert", "haricots verts",
+    ],
+    "corn": ["sweet corn", "corn on the cob", "corn kernels"],
+
+    # ── Meat (CA store labels → US recipe names) ──────────────────────────────
+    "ground beef": [
+        "minced beef", "beef mince", "hamburger meat",
+        "lean ground beef", "extra lean ground beef", "medium ground beef",
+    ],
+    "ground pork": ["minced pork", "pork mince"],
+    "ground turkey": ["minced turkey", "turkey mince"],
+    "bacon": ["streaky bacon", "side bacon", "strip bacon"],
+    "canadian bacon": ["back bacon", "peameal bacon"],
+
+    # ── Legumes ───────────────────────────────────────────────────────────────
+    "chickpea": ["chickpeas", "garbanzo bean", "garbanzo beans", "garbanzo"],
+    "fava bean": ["fava beans", "broad bean", "broad beans"],
+    "lentil": ["lentils", "red lentil", "red lentils", "green lentil", "green lentils"],
+
+    # ── Pantry / Condiments ───────────────────────────────────────────────────
+    "soy sauce": ["soya sauce"],
+    "molasses": ["treacle", "blackstrap molasses"],
+    "maple syrup": ["pure maple syrup"],
 }

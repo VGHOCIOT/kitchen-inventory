@@ -34,8 +34,8 @@ export default function CookableRecipes() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold text-text mb-8">Cookable Recipes</h1>
+    <div className="p-6 max-w-4xl mx-auto bg-white">
+      <h1 className="text-3xl font-bold text-text mb-8 text-black">Cookable Recipes</h1>
       <Section title="Unlocked" recipes={data.unlocked} />
       <Section title="Almost There" recipes={data.almost} />
       <Section title="Locked" recipes={data.locked} />
@@ -44,6 +44,7 @@ export default function CookableRecipes() {
 }
 
 export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
+  const [isExpanded, setIsExpanded] = useState(false)
   const isLocked = recipe.match_type === 'locked'
   const isAlmost = recipe.match_type === 'almost'
 
@@ -54,9 +55,9 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
     : 'bg-accent-dim text-accent'
 
   return (
-    <div className={`relative rounded-[var(--radius-card)] overflow-hidden bg-surface border border-border flex flex-col ${isLocked ? 'opacity-60' : ''}`}>
+    <div className={`relative rounded overflow-hidden bg-surface border border-border bg-white flex flex-col ${isLocked ? 'opacity-60' : ''}`}>
       {/* Image */}
-      <div className="relative h-48 bg-raised">
+      <div className="relative h-48">
         {recipe.recipe_image_url ? (
           <img
             src={recipe.recipe_image_url}
@@ -78,29 +79,33 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
 
         {/* Availability badge */}
         <span className={`absolute top-2 right-2 text-xs font-semibold px-2 py-1 rounded-full ${badgeClass}`}>
-          {recipe.availability_percent}%
+          {Math.round(recipe.availability_percent)}%
         </span>
       </div>
 
       {/* Content */}
       <div className="p-4 flex flex-col gap-2 flex-1">
-        <h3 className="text-text font-semibold text-base leading-snug">{recipe.recipe_title}</h3>
+        <h3 className="text-text font-semibold text-base leading-snug text-black">{recipe.recipe_title}</h3>
 
         {recipe.recipe_description && (
           <p className="text-muted text-sm line-clamp-2">{recipe.recipe_description}</p>
         )}
 
-        {/* Missing ingredients hint */}
         {(isLocked || isAlmost) && recipe.missing_ingredients.length > 0 && (
-          <p className="text-xs text-subtle mt-1">
-            Missing: {recipe.missing_ingredients.slice(0, 3).join(', ')}
-            {recipe.missing_ingredients.length > 3 && ` +${recipe.missing_ingredients.length - 3} more`}
-          </p>
+          <div className={`relative mt-auto ${recipe.missing_ingredients.length > 3 ? 'cursor-pointer' : ''}`} onClick={() => recipe.missing_ingredients.length > 3 && setIsExpanded(v => !v)}>
+            <p className="text-xs invisible">Missing: {recipe.missing_ingredients.join(', ')}</p>
+            <p className="text-xs text-subtle absolute bottom-0 left-0 right-0">
+              Missing: {
+                isExpanded || recipe.missing_ingredients.length <= 3
+                  ? recipe.missing_ingredients.join(', ')
+                  : `${recipe.missing_ingredients.slice(0, 3).join(', ')} +${recipe.missing_ingredients.length - 3} more`
+              }
+            </p>
+          </div>
         )}
 
-        {/* Cook button */}
         {!isLocked && (
-          <div className="mt-auto pt-2">
+          <div className="pt-2">
             <button
               disabled={isAlmost}
               className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${
