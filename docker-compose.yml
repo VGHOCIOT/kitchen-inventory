@@ -24,6 +24,14 @@ services:
       - ./app:/app
       - ${RECEIPTS_HOST_PATH:-./data/receipts}:/data/receipts
 
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    environment:
+      - LOG_LEVEL=info
+    ports:
+      - "8191:8191"
+    restart: unless-stopped
+
   frontend:
     build:
       context: ./frontend

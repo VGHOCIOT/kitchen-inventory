@@ -1,35 +1,67 @@
 import asyncio
-from recipe_scrapers import scrape_me
+import os
+import httpx
+from recipe_scrapers import scrape_me, scrape_html
 from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
 
+FLARESOLVERR_URL = os.getenv("FLARESOLVERR_URL", "http://flaresolverr:8191/v1")
+
+
+async def _fetch_via_flaresolverr(url: str) -> Optional[str]:
+    """Fetch page HTML through FlareSolverr to bypass Cloudflare."""
+    try:
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.post(
+                FLARESOLVERR_URL,
+                json={"cmd": "request.get", "url": url, "maxTimeout": 30000},
+            )
+            data = resp.json()
+            if data.get("status") == "ok":
+                return data["solution"]["response"]
+    except Exception as e:
+        logger.warning(f"FlareSolverr failed for {url}: {e}")
+    return None
+
 
 async def parse_recipe_from_url(url: str) -> Optional[dict]:
     """
     Parse recipe from URL using recipe-scrapers library.
-    Runs in executor to avoid blocking async event loop.
+    Tries a direct fetch first; falls back to FlareSolverr if blocked.
     """
     try:
-        # Run the synchronous scraper in a thread pool
         loop = asyncio.get_event_loop()
         scraper = await loop.run_in_executor(None, scrape_me, url)
-
-        # Extract recipe data
-        return {
-            "title": scraper.title(),
-            "description": scraper.description() if hasattr(scraper, 'description') else None,
-            "ingredients": scraper.ingredients(),
-            "instructions": scraper.instructions_list() or [scraper.instructions()],
-            "source_url": url,
-            "image_url": scraper.image() if hasattr(scraper, 'image') else None,
-            "yields": scraper.yields() if hasattr(scraper, 'yields') else None,
-            "total_time": scraper.total_time() if hasattr(scraper, 'total_time') else None,
-        }
+        return _extract(scraper, url)
     except Exception as e:
-        logger.error(f"Failed to parse recipe from {url}: {e}")
-        return None
+        logger.info(f"Direct scrape failed for {url} ({e}), trying FlareSolverr")
+
+    html = await _fetch_via_flaresolverr(url)
+    if html:
+        try:
+            loop = asyncio.get_event_loop()
+            scraper = await loop.run_in_executor(None, lambda: scrape_html(html=html, org_url=url))
+            return _extract(scraper, url)
+        except Exception as e:
+            logger.error(f"FlareSolverr HTML parse failed for {url}: {e}")
+
+    return None
+
+
+def _extract(scraper, url: str) -> dict:
+    """Extract recipe data from a scraper instance."""
+    return {
+        "title": scraper.title(),
+        "description": scraper.description() if hasattr(scraper, 'description') else None,
+        "ingredients": scraper.ingredients(),
+        "instructions": scraper.instructions_list() or [scraper.instructions()],
+        "source_url": url,
+        "image_url": scraper.image() if hasattr(scraper, 'image') else None,
+        "yields": scraper.yields() if hasattr(scraper, 'yields') else None,
+        "total_time": scraper.total_time() if hasattr(scraper, 'total_time') else None,
+    }
 
 
 def normalize_ingredient_text(ingredient_text: str) -> str:
