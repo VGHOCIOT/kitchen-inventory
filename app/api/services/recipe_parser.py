@@ -33,7 +33,7 @@ async def parse_recipe_from_url(url: str) -> Optional[dict]:
     """
     try:
         loop = asyncio.get_event_loop()
-        scraper = await loop.run_in_executor(None, scrape_me, url)
+        scraper = await loop.run_in_executor(None, lambda: scrape_me(url, supported_only=False))
         return _extract(scraper, url)
     except Exception as e:
         logger.info(f"Direct scrape failed for {url} ({e}), trying FlareSolverr")
@@ -42,7 +42,7 @@ async def parse_recipe_from_url(url: str) -> Optional[dict]:
     if html:
         try:
             loop = asyncio.get_event_loop()
-            scraper = await loop.run_in_executor(None, lambda: scrape_html(html=html, org_url=url))
+            scraper = await loop.run_in_executor(None, lambda: scrape_html(html=html, org_url=url, supported_only=False))
             return _extract(scraper, url)
         except Exception as e:
             logger.error(f"FlareSolverr HTML parse failed for {url}: {e}")
