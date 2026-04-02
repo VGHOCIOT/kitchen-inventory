@@ -35,3 +35,55 @@ export interface RecipeMatchResponse {
   locked: RecipeMatchResult[]     // < 70%
   total_recipes_checked: number
 }
+
+export interface RecipeOut {
+  id: string
+  title: string
+  description: string | null
+  image_url: string | null
+  instructions: string[]
+  source_url: string | null
+}
+
+export interface RecipeIngredient {
+  id: string
+  recipe_id: string
+  ingredient_text: string
+  canonical_ingredient_id: string | null
+  quantity: number | null
+  unit: string | null
+}
+
+export interface RecipeResponse {
+  recipe: RecipeOut
+  ingredients: RecipeIngredient[]
+}
+
+export interface DeductedItem {
+  ingredient: string
+  amount: number
+  unit: string
+}
+
+export interface SubstitutedItem {
+  original: string
+  substitute: string
+  amount: number
+  unit: string
+}
+
+export interface InsufficientItem {
+  ingredient: string
+  needed: number
+  available: number
+  unit: string
+}
+
+export interface CookResponse {
+  recipe_title: string
+  deducted: DeductedItem[]
+  substituted: SubstitutedItem[]
+  insufficient: InsufficientItem[]
+  unmapped: string[]
+}
+

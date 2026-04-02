@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Lock } from 'lucide-react'
+import { Lock, ArrowRightLeft } from 'lucide-react'
 import { fetchMatchedRecipes } from '../api/recipes'
 import type { RecipeMatchResponse, RecipeMatchResult } from '../interfaces/Recipes'
 
@@ -47,6 +47,7 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const isLocked = recipe.match_type === 'locked'
   const isAlmost = recipe.match_type === 'almost'
+  const hasSubs = recipe.suggested_substitutions.length > 0
 
   const badgeClass = isLocked
     ? 'bg-surface text-muted'
@@ -56,7 +57,6 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
 
   return (
     <div className={`relative rounded overflow-hidden bg-surface border border-edge bg-white flex flex-col ${isLocked ? 'opacity-60' : ''}`}>
-      {/* Image */}
       <div className="relative h-48">
         {recipe.recipe_image_url ? (
           <img
@@ -68,7 +68,6 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
           <div className="w-full h-full flex items-center justify-center text-subtle text-sm">No image</div>
         )}
 
-        {/* Lock overlay */}
         {isLocked && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
             <div className="bg-canvas/80 p-3 rounded-full">
@@ -77,18 +76,27 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
           </div>
         )}
 
-        {/* Availability badge */}
         <span className={`absolute top-2 right-2 text-xs font-semibold px-2 py-1 rounded-full ${badgeClass}`}>
           {Math.round(recipe.availability_percent)}%
         </span>
       </div>
 
-      {/* Content */}
       <div className="p-4 flex flex-col gap-2 flex-1">
         <h3 className="font-semibold text-base leading-snug text-black">{recipe.recipe_title}</h3>
 
         {recipe.recipe_description && (
           <p className="text-muted text-sm line-clamp-2">{recipe.recipe_description}</p>
+        )}
+
+        {hasSubs && (
+          <div className="flex flex-col gap-1 mt-1">
+            {recipe.suggested_substitutions.map(sub => (
+              <div key={sub.original_ingredient_id} className="flex items-center gap-1.5 text-xs text-accent">
+                <ArrowRightLeft size={12} className="shrink-0" />
+                <span>{sub.original_ingredient_name} → {sub.substitute_ingredient_name}</span>
+              </div>
+            ))}
+          </div>
         )}
 
         {(isLocked || isAlmost) && recipe.missing_ingredients.length > 0 && (
@@ -107,12 +115,8 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
         {!isLocked && (
           <div className="pt-2">
             <button
-              disabled={isAlmost}
-              className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${
-                isAlmost
-                  ? 'bg-raised text-subtle cursor-not-allowed'
-                  : 'bg-accent hover:bg-accent-hover text-canvas cursor-pointer'
-              }`}
+              className="w-full py-2 rounded-lg text-sm font-medium transition-colors bg-accent hover:bg-accent-hover text-canvas cursor-pointer"
+              onClick={() => window.location.href = `/recipes/${recipe.recipe_id}`}
             >
               Cook
             </button>

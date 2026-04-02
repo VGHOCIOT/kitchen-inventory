@@ -13,9 +13,14 @@ const pages = {
     navigable: true,
   },
   cookableRecipes: {
-    title: 'Recipes',
-    path: '/recipes',
+    title: 'Cookable Recipes',
+    path: '/cookable-recipes',
     navigable: true,
+  },
+  recipeInstructions: {
+    title: 'Recipe Instructions',
+    path: '/recipes/:id',
+    navigable: false,
   },
 } satisfies Pages
 

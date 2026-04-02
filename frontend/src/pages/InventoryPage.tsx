@@ -27,67 +27,47 @@ export default function InventoryPage() {
   const locationItems = items.filter(({ item }) => item.location === activeLocation)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
-
-      {/* Location tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
+    <div className="flex flex-col h-dvh bg-white">
+      <div className="flex border-b border-edge">
         {LOCATIONS.map(loc => (
           <button
             key={loc}
             onClick={() => setActiveLocation(loc)}
-            style={{
-              flex: 1,
-              padding: '16px',
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              letterSpacing: '0.05em',
-              color: activeLocation === loc ? 'var(--accent)' : 'var(--text-muted)',
-              borderBottom: activeLocation === loc ? '2px solid var(--accent)' : '2px solid transparent',
-              background: 'var(--bg)',
-            }}
+            className={`flex-1 py-4 text-sm font-semibold tracking-wide ${
+              activeLocation === loc
+                ? 'text-accent border-b-2 border-accent'
+                : 'text-muted border-b-2 border-transparent'
+            }`}
           >
             {loc.charAt(0).toUpperCase() + loc.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* List */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+      <div className="flex-1 overflow-y-auto py-2">
         {loading && (
-          <p style={{ padding: '24px', color: 'var(--text-muted)', textAlign: 'center' }}>
-            Loading...
-          </p>
+          <p className="p-6 text-muted text-center">Loading...</p>
         )}
         {error && (
-          <p style={{ padding: '24px', color: 'var(--danger)', textAlign: 'center' }}>
-            {error}
-          </p>
+          <p className="p-6 text-danger text-center">{error}</p>
         )}
         {!loading && !error && locationItems.length === 0 && (
-          <p style={{ padding: '24px', color: 'var(--text-muted)', textAlign: 'center' }}>
+          <p className="p-6 text-muted text-center">
             Nothing in {activeLocation.charAt(0).toUpperCase() + activeLocation.slice(1)}
           </p>
         )}
         {locationItems.map(({ item, product }) => (
           <div
             key={item.id}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '14px 20px',
-              borderBottom: '1px solid var(--border)',
-              minHeight: '56px',
-            }}
+            className="flex justify-between items-center px-5 py-3.5 border-b border-edge min-h-14"
           >
-            <span style={{ fontSize: '1rem' }}>{product.name}</span>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', flexShrink: 0, marginLeft: '12px' }}>
+            <span className="text-base text-black">{product.name}</span>
+            <span className="text-muted text-sm shrink-0 ml-3">
               {formatQty(item.qty, item.unit)}
             </span>
           </div>
         ))}
       </div>
-
     </div>
   )
 }
