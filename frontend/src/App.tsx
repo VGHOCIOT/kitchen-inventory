@@ -41,7 +41,7 @@ function AppWithStore(): ReactElement {
 
     ws.onmessage = (event) => {
       const msg = JSON.parse(event.data)
-      if (msg.event === 'item_added' || msg.event === 'item_deleted') {
+      if (msg.event === 'item_added' || msg.event === 'item_deleted' || msg.event === 'recipe_added' || msg.event === 'recipe_deleted' ) {
         dispatch(InventoryActions.fetchInventory())
         dispatch(RecipeActions.fetchRecipeMatches())
       }
