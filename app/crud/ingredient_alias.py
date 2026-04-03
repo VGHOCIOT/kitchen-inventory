@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from models.ingredient_alias import IngredientAlias
 from uuid import UUID
 
@@ -21,12 +21,11 @@ async def create_ingredient_alias(
 
 
 async def get_alias_by_text(db: AsyncSession, alias_text: str) -> IngredientAlias | None:
-    """Get alias by text (case-insensitive)"""
-    from sqlalchemy import func
+    """Get alias by text (case-insensitive, returns first match if duplicates exist)"""
     result = await db.execute(
         select(IngredientAlias).where(func.lower(IngredientAlias.alias) == alias_text.lower())
     )
-    return result.scalar_one_or_none()
+    return result.scalars().first()
 
 
 async def get_aliases_for_ingredient(db: AsyncSession, ingredient_id: UUID) -> list[IngredientAlias]:
