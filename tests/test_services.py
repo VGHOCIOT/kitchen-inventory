@@ -6,6 +6,76 @@ from models.item import Locations
 
 # ── ingredient_mapper ─────────────────────────────────────────────────────────
 
+class TestOpenfoodHelpers:
+    def test_strip_package_size_grams(self):
+        from api.services.openfood import strip_package_size
+        assert strip_package_size("Beef Broth 400 g") == "Beef Broth"
+
+    def test_strip_package_size_ml(self):
+        from api.services.openfood import strip_package_size
+        assert strip_package_size("Tomato Soup 2x300ml") == "Tomato Soup"
+
+    def test_strip_package_size_no_suffix(self):
+        from api.services.openfood import strip_package_size
+        assert strip_package_size("Peanut Butter") == "Peanut Butter"
+
+    def test_strip_package_size_empty(self):
+        from api.services.openfood import strip_package_size
+        assert strip_package_size("") == ""
+
+    def test_name_from_categories_skips_taxonomy_tags(self):
+        from api.services.openfood import _name_from_categories
+        categories = ["Farming products", "Eggs", "Chicken eggs", "en:large-eggs"]
+        assert _name_from_categories(categories) == "Chicken eggs"
+
+    def test_name_from_categories_all_taxonomy(self):
+        """All en: tags → returns empty string."""
+        from api.services.openfood import _name_from_categories
+        assert _name_from_categories(["en:eggs", "en:large-eggs"]) == ""
+
+    def test_name_from_categories_empty(self):
+        from api.services.openfood import _name_from_categories
+        assert _name_from_categories([]) == ""
+
+    def test_name_from_categories_mixed_case_tag(self):
+        """Tag detection is case-insensitive (EN: should also be excluded)."""
+        from api.services.openfood import _name_from_categories
+        result = _name_from_categories(["Dairy", "EN:whole-milk"])
+        assert result == "Dairy"
+
+
+class TestGetAliasByText:
+    async def test_case_insensitive_lookup(self, db_session, make_ingredient, make_alias):
+        from crud.ingredient_alias import get_alias_by_text
+
+        ing = await make_ingredient(name="butter")
+        await make_alias("Store Butter", ing.id)
+
+        assert await get_alias_by_text(db_session, "store butter") is not None
+        assert await get_alias_by_text(db_session, "STORE BUTTER") is not None
+        assert await get_alias_by_text(db_session, "Store Butter") is not None
+
+    async def test_returns_none_when_missing(self, db_session):
+        from crud.ingredient_alias import get_alias_by_text
+
+        assert await get_alias_by_text(db_session, "Nonexistent Product") is None
+
+    async def test_duplicate_aliases_returns_first_not_error(self, db_session, make_ingredient, make_alias):
+        """
+        If duplicate alias rows exist (possible via auto_map_product_to_ingredient),
+        get_alias_by_text must return one result rather than raising MultipleResultsFound.
+        """
+        from crud.ingredient_alias import get_alias_by_text
+
+        ing = await make_ingredient(name="sugar")
+        await make_alias("White Sugar", ing.id)
+        await make_alias("White Sugar", ing.id)  # intentional duplicate
+
+        result = await get_alias_by_text(db_session, "White Sugar")
+        assert result is not None
+        assert result.alias == "White Sugar"
+
+
 class TestAutoMapProduct:
     async def test_maps_via_fuzzy_match(self, db_session, make_ingredient):
         from api.services.ingredient_mapper import auto_map_product_to_ingredient

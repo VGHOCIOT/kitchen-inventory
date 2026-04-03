@@ -44,6 +44,11 @@ class TestStandardizeUnit:
         for variant in ["unit", "piece", "pieces", "clove", "medium", "large", "small", "whole"]:
             assert standardize_unit(variant) == "unit"
 
+    def test_egg_variants_are_discrete(self):
+        """'eggs'/'egg' must standardize to 'unit' — regression for barcode scan bug."""
+        for variant in ["egg", "eggs", "Eggs", "EGGS"]:
+            assert standardize_unit(variant) == "unit"
+
     def test_empty_and_none(self):
         assert standardize_unit("") == "unit"
         assert standardize_unit(None) == "unit"
@@ -126,6 +131,18 @@ class TestConvertToBaseUnit:
         result = await convert_to_base_unit(1.0, "cup", "mystery powder")
         assert result["base_unit"] == "g"
         assert result["conversion_confidence"] == "medium"
+
+    async def test_eggs_unit_returns_unit(self):
+        """'eggs' as a unit must return base_unit='unit', not pass through as 'eggs'."""
+        result = await convert_to_base_unit(12.0, "eggs", "Large eggs")
+        assert result["base_unit"] == "unit"
+        assert result["quantity"] == 12.0
+
+    async def test_unrecognized_unit_passthrough(self):
+        """Truly unrecognized units pass through with low confidence — not silently treated as count."""
+        result = await convert_to_base_unit(1.0, "flurble", "something")
+        assert result["base_unit"] == "flurble"
+        assert result["conversion_confidence"] == "low"
 
 
 # ── is_likely_liquid ──────────────────────────────────────────────────────────
