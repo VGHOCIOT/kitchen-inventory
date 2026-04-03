@@ -2,6 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { ChefHat, Minus, Plus, Timer, ExternalLink } from 'lucide-react'
 import { fetchRecipeInstructions, cookRecipe } from '../api/recipes'
 import type { RecipeOut, RecipeIngredient, CookResponse } from '../interfaces/Recipes'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../store'
+import RecipeActions from '../store/actions/recipeActions'
+import InventoryActions from '../store/actions/inventoryActions'
 
 function parseTimer(text: string): number | null {
   const patterns = [
@@ -33,6 +37,7 @@ function formatQty(qty: number, scale: number): string {
 }
 
 export default function RecipeInstructions() {
+  const dispatch = useDispatch<AppDispatch>()
   const [recipe, setRecipe] = useState<RecipeOut | null>(null)
   const [ingredients, setIngredients] = useState<RecipeIngredient[]>([])
   const [loading, setLoading] = useState(true)
@@ -78,6 +83,8 @@ export default function RecipeInstructions() {
     try {
       const result = await cookRecipe(recipeId)
       setCookResult(result)
+      dispatch(InventoryActions.fetchInventory())
+      dispatch(RecipeActions.fetchRecipeMatches())
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Cook failed')
     } finally {

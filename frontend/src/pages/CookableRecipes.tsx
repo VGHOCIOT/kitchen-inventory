@@ -1,23 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Lock, ArrowRightLeft } from 'lucide-react'
-import { fetchMatchedRecipes } from '../api/recipes'
-import type { RecipeMatchResponse, RecipeMatchResult } from '../interfaces/Recipes'
+import type { RecipeMatchResult } from '../interfaces/Recipes'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
 
 export default function CookableRecipes() {
-  const [data, setData] = useState<RecipeMatchResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetchMatchedRecipes()
-      .then(setData)
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false))
-  }, [])
-
-  if (loading) return <p className="p-6 text-muted">Loading recipes…</p>
-  if (error) return <p className="p-6 text-danger">{error}</p>
-  if (!data) return null
+  const recipeState = useSelector((state: RootState) => state.recipes)
 
   const Section = ({ title, recipes }: { title: string; recipes: RecipeMatchResult[] }) => {
     if (recipes.length === 0) return null
@@ -36,9 +24,9 @@ export default function CookableRecipes() {
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white">
       <h1 className="text-3xl font-bold mb-8 text-black">Cookable Recipes</h1>
-      <Section title="Unlocked" recipes={data.unlocked} />
-      <Section title="Almost There" recipes={data.almost} />
-      <Section title="Locked" recipes={data.locked} />
+      <Section title="Unlocked" recipes={recipeState.unlocked} />
+      <Section title="Almost There" recipes={recipeState.almost} />
+      <Section title="Locked" recipes={recipeState.locked} />
     </div>
   )
 }

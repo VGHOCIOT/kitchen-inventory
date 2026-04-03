@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { fetchItems } from '../api/items'
-import type { ItemWithProduct } from '../interfaces/Inventory'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
 
 const LOCATIONS = ['fridge', 'freezer', 'cupboard'] as const
 type Location = typeof LOCATIONS[number]
@@ -12,17 +12,8 @@ function formatQty(qty: number, unit: string): string {
 }
 
 export default function InventoryPage() {
-  const [items, setItems] = useState<ItemWithProduct[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const items = useSelector((state: RootState) => state.inventory)
   const [activeLocation, setActiveLocation] = useState<Location>('fridge')
-
-  useEffect(() => {
-    fetchItems()
-      .then((data: ItemWithProduct[]) => setItems(data))
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false))
-  }, [])
 
   const locationItems = items.filter(({ item }) => item.location === activeLocation)
 
@@ -45,13 +36,7 @@ export default function InventoryPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto py-2">
-        {loading && (
-          <p className="p-6 text-muted text-center">Loading...</p>
-        )}
-        {error && (
-          <p className="p-6 text-danger text-center">{error}</p>
-        )}
-        {!loading && !error && locationItems.length === 0 && (
+        {locationItems.length === 0 && (
           <p className="p-6 text-muted text-center">
             Nothing in {activeLocation.charAt(0).toUpperCase() + activeLocation.slice(1)}
           </p>
