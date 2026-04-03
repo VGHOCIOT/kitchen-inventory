@@ -171,6 +171,23 @@ INGREDIENT_ALIAS_SEEDS: dict[str, list[str]] = {
     "whole milk": [
         "homogenized milk", "homo milk",
     ],
+    "milk": [
+        "2% milk", "2 percent milk", "reduced fat milk",
+        "skim milk", "skimmed milk", "non-fat milk",
+        "low-fat milk", "1% milk",
+    ],
+    "chicken broth": [
+        "chicken stock", "chicken stock broth",
+        "low sodium chicken broth", "low sodium chicken stock",
+    ],
+    "beef broth": [
+        "beef stock", "beef stock broth",
+        "low sodium beef broth", "low sodium beef stock",
+    ],
+    "vegetable broth": [
+        "vegetable stock", "veggie broth", "veggie stock",
+        "low sodium vegetable broth", "low sodium vegetable stock",
+    ],
     "cream cheese": [
         "brick cream cheese", "spreadable cream cheese",
     ],
@@ -194,6 +211,17 @@ INGREDIENT_ALIAS_SEEDS: dict[str, list[str]] = {
     "all-purpose flour": [
         "all purpose flour", "all purpose flour white",
         "white flour", "plain flour", "ap flour",
+    ],
+    "whole wheat flour": [
+        "whole wheat", "whole grain flour", "wholemeal flour", "wholemeal",
+        "whole-wheat flour", "whole grain",
+    ],
+    "bread flour": [
+        "strong flour", "strong white flour", "high gluten flour",
+    ],
+    "bread crumbs": [
+        "breadcrumbs", "bread crumb", "panko", "panko bread crumbs",
+        "panko breadcrumbs", "dried bread crumbs",
     ],
     "baking soda": [
         "bicarbonate of soda", "bicarb", "sodium bicarbonate",

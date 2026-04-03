@@ -393,7 +393,85 @@ INGREDIENT_SUBSTITUTION_SEEDS: list[dict] = [
         "substitute": "whole wheat flour",
         "ratio": 1.0,
         "quality_score": 6,
-        "notes": "Denser result; may need slightly more liquid",
+        "notes": "Denser, nuttier result; may need slightly more liquid; not ideal for delicate bakes",
+        "bidirectional": False,
+    },
+    {
+        "original": "whole wheat flour",
+        "substitute": "all-purpose flour",
+        "ratio": 1.0,
+        "quality_score": 8,
+        "notes": "Lighter result; loses some fiber and nuttiness but otherwise a clean swap",
+        "bidirectional": False,
+    },
+    {
+        "original": "all-purpose flour",
+        "substitute": "bread flour",
+        "ratio": 1.0,
+        "quality_score": 7,
+        "notes": "Higher gluten; slightly chewier result; works well in most recipes",
         "bidirectional": True,
+    },
+
+    # ── Dairy (plant-based swaps) ─────────────────────────────────────────────
+    {
+        "original": "milk",
+        "substitute": "oat milk",
+        "ratio": 1.0,
+        "quality_score": 8,
+        "notes": "Closest plant-based swap; works in baking and cooking",
+        "bidirectional": True,
+    },
+    {
+        "original": "milk",
+        "substitute": "almond milk",
+        "ratio": 1.0,
+        "quality_score": 7,
+        "notes": "Thinner and slightly nutty; works in most recipes",
+        "bidirectional": True,
+    },
+    {
+        "original": "buttermilk",
+        "substitute": "milk",
+        "ratio": 1.0,
+        "quality_score": 7,
+        "notes": "Add 1 tbsp vinegar or lemon juice per cup of milk; let sit 5 min",
+        "bidirectional": False,
+    },
+    {
+        "original": "sour cream",
+        "substitute": "cream cheese",
+        "ratio": 1.0,
+        "quality_score": 6,
+        "notes": "Richer and less tangy; works in dips and spreads",
+        "bidirectional": True,
+    },
+
+    # ── Acids ────────────────────────────────────────────────────────────────
+    {
+        "original": "lemon",
+        "substitute": "white vinegar",
+        "ratio": 0.5,
+        "quality_score": 6,
+        "notes": "Use half the amount; provides acidity without citrus flavor",
+        "bidirectional": False,
+    },
+
+    # ── Broths ───────────────────────────────────────────────────────────────
+    {
+        "original": "chicken broth",
+        "substitute": "vegetable broth",
+        "ratio": 1.0,
+        "quality_score": 8,
+        "notes": "Works in most soups, stews, and sauces",
+        "bidirectional": True,
+    },
+    {
+        "original": "beef broth",
+        "substitute": "chicken broth",
+        "ratio": 1.0,
+        "quality_score": 6,
+        "notes": "Lighter flavor; works in stews and braises",
+        "bidirectional": False,
     },
 ]
