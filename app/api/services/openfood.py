@@ -11,14 +11,27 @@ async def lookup_barcode(barcode: str):
             if data.get("status") == 1:
                 product = data.get("product", {})
                 quantity_data = parse_quantity(product)
+                raw_name = strip_package_size(product.get("product_name") or "")
+                if not raw_name:
+                    raw_name = _name_from_categories(arrayify(product.get("categories")))
                 return {
-                    "name": strip_package_size(product.get("product_name") or ""),
+                    "name": raw_name,
                     "brands": arrayify(product.get("brands")),
                     "categories": arrayify(product.get("categories")),
                     "package_quantity": quantity_data.get("quantity"),
                     "package_unit": quantity_data.get("unit")
                 }
     return None
+
+def _name_from_categories(categories: list[str]) -> str:
+    """
+    Derive a product name from OpenFoodFacts categories when the product has no name.
+    Picks the last category that isn't a raw taxonomy tag (i.e. doesn't start with 'en:').
+    e.g. ["Farming products", "Eggs", "Chicken eggs", "en:large-eggs"] -> "Chicken eggs"
+    """
+    readable = [c for c in categories if not c.lower().startswith("en:")]
+    return readable[-1] if readable else ""
+
 
 def strip_package_size(name: str) -> str:
     """Remove trailing package size suffixes that OpenFoodFacts appends to product names.

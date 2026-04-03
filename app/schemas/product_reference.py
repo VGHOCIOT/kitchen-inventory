@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from uuid import UUID
 from typing import Optional
 from models.product_reference import ProductType
+from models.item import Locations
 
 
 class ProductReferenceOut(BaseModel):
@@ -23,5 +24,6 @@ class CreateFreshItemIn(BaseModel):
     """Schema for adding fresh/weight-based items (PLU) without barcode"""
     name: str
     weight_grams: float
+    location: Locations = Locations.FRIDGE
     categories: Optional[list[str]] = None
     brands: Optional[list[str]] = None

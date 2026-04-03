@@ -21,9 +21,10 @@ async def create_ingredient_alias(
 
 
 async def get_alias_by_text(db: AsyncSession, alias_text: str) -> IngredientAlias | None:
-    """Get alias by text"""
+    """Get alias by text (case-insensitive)"""
+    from sqlalchemy import func
     result = await db.execute(
-        select(IngredientAlias).where(IngredientAlias.alias == alias_text)
+        select(IngredientAlias).where(func.lower(IngredientAlias.alias) == alias_text.lower())
     )
     return result.scalar_one_or_none()
 

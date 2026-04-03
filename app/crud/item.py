@@ -2,6 +2,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from models.item import Item, Locations
 from models.product_reference import ProductReference
+from models.stock_lot import StockLot
+from models.ingredient_alias import IngredientAlias
 from uuid import UUID
 import events
 import logging
@@ -140,8 +142,7 @@ async def delete_item_by_composite_key(
     product_reference_id: UUID,
     location: Locations,
 ) -> bool:
-    """Delete item and all its lots by composite key."""
-    from models.stock_lot import StockLot
+    """Delete item, its lots, and orphaned ProductReference + aliases."""
 
     # Delete all lots for this product+location
     result = await db.execute(
@@ -156,15 +157,42 @@ async def delete_item_by_composite_key(
 
     # Delete the item cache row
     item = await get_item_by_product_and_location(db, product_reference_id, location)
-    if item:
-        await db.delete(item)
+    if not item:
         await db.commit()
-        events.emit("item_deleted", {
-            "id": str(item.id),
-            "product_reference_id": str(item.product_reference_id),
-            "location": item.location.value,
-        })
-        return True
+        return False
+
+    await db.delete(item)
+
+    # If no other Items or lots reference this product, clean up ProductReference and aliases
+    other_items = await db.execute(
+        select(Item).where(
+            Item.product_reference_id == product_reference_id,
+            Item.id != item.id,
+        )
+    )
+    other_lots = await db.execute(
+        select(StockLot).where(
+            StockLot.product_reference_id == product_reference_id,
+        )
+    )
+
+    if not other_items.scalars().first() and not other_lots.scalars().first():
+        product = await db.execute(
+            select(ProductReference).where(ProductReference.id == product_reference_id)
+        )
+        product_ref = product.scalar_one_or_none()
+        if product_ref:
+            aliases = await db.execute(
+                select(IngredientAlias).where(IngredientAlias.alias == product_ref.name)
+            )
+            for alias in aliases.scalars().all():
+                await db.delete(alias)
+            await db.delete(product_ref)
 
     await db.commit()
-    return False
+    events.emit("item_deleted", {
+        "id": str(item.id),
+        "product_reference_id": str(item.product_reference_id),
+        "location": item.location.value,
+    })
+    return True

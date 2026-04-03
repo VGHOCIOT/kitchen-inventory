@@ -15,7 +15,7 @@ class Item(Base):
     id = Column(PGUUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     product_reference_id = Column(
         PGUUID(as_uuid=True),
-        ForeignKey("product_references.id"),
+        ForeignKey("product_references.id", ondelete="CASCADE"),
         nullable=True
     )
     location = Column(SAEnum(Locations, values_callable=lambda obj: [e.value for e in obj]), default=Locations.FRIDGE)

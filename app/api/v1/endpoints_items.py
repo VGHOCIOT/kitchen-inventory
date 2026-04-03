@@ -155,7 +155,6 @@ async def scan_product(
 @router.post("/add-fresh", response_model=ScanOut)
 async def add_fresh_item(
     payload: CreateFreshItemIn,
-    location: Locations = Locations.FRIDGE,
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -182,7 +181,7 @@ async def add_fresh_item(
     item = await add_stock(
         db,
         product_reference_id=product_ref.id,
-        location=location,
+        location=payload.location,
         quantity=payload.weight_grams,
         unit="g",
     )

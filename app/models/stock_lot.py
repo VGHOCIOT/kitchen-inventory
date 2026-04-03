@@ -13,7 +13,7 @@ class StockLot(Base):
     id = Column(PGUUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     product_reference_id = Column(
         PGUUID(as_uuid=True),
-        ForeignKey("product_references.id"),
+        ForeignKey("product_references.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
