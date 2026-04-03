@@ -57,7 +57,8 @@ def standardize_unit(unit: str) -> str:
                 "clove", "cloves", "packet", "packets", "serving", "servings", "bag", "bags",
                 "can", "cans", "jar", "jars", "bottle", "bottles", "box", "boxes",
                 "small", "medium", "large", "head", "heads", "bunch", "bunches",
-                "slice", "slices", "stalk", "stalks", "sprig", "sprigs", "leaf", "leaves"]:
+                "slice", "slices", "stalk", "stalks", "sprig", "sprigs", "leaf", "leaves",
+                "egg", "eggs"]:
         return "unit"
 
     # Dozen is special - keep it separate for 12x conversion
