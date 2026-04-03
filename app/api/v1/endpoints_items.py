@@ -25,6 +25,9 @@ from api.services.openfood import lookup_barcode
 from api.services.ingredient_mapper import auto_map_product_to_ingredient
 from api.services.unit_converter import convert_to_base_unit
 from api.services.cook_service import cook_recipe
+from crud.ingredient_alias import get_alias_by_text
+from crud.ingredient_reference import get_ingredient_by_id
+from config.fresh_weights import get_manual_weight
 from schemas.item import (
     ItemOut,
     ItemWithProductOut,
@@ -127,6 +130,26 @@ async def scan_product(
         )
         lot_qty = conversion["quantity"]
         lot_unit = conversion["base_unit"]
+
+        # If conversion returned "unit" (count-based), try to convert to grams
+        # using the ingredient's avg_weight_grams so inventory matches recipe units.
+        if lot_unit == "unit":
+            weight_per_unit = None
+            alias = await get_alias_by_text(db, product_ref.name)
+            if alias:
+                ingredient = await get_ingredient_by_id(db, alias.ingredient_id)
+                if ingredient and ingredient.avg_weight_grams:
+                    weight_per_unit = ingredient.avg_weight_grams
+                elif ingredient:
+                    weight_per_unit = get_manual_weight(ingredient.name)
+
+            if weight_per_unit:
+                lot_qty = product_ref.package_quantity * weight_per_unit
+                lot_unit = "g"
+                logger.info(
+                    f"[SCAN] Converted {product_ref.package_quantity} units to "
+                    f"{lot_qty}g using avg_weight={weight_per_unit}g/unit"
+                )
     else:
         # Degraded mode: no package data, track as count
         lot_qty = 1.0
