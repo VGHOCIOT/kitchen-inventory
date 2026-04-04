@@ -1,4 +1,4 @@
-"""add uniqueness constraints for aliases, substitutions, and recipe source_url
+"""add uniqueness constraints for aliases, substitutions, recipe source_url, and recipe_ingredients
 
 Revision ID: e4f5a6b7c8d9
 Revises: d3e4f5a6b7c8
@@ -40,8 +40,16 @@ def upgrade() -> None:
         postgresql_where='source_url IS NOT NULL',
     )
 
+    # recipe_ingredients — composite unique on (recipe_id, ingredient_text)
+    op.create_unique_constraint(
+        '_recipe_ingredient_text_uc',
+        'recipe_ingredients',
+        ['recipe_id', 'ingredient_text'],
+    )
+
 
 def downgrade() -> None:
+    op.drop_constraint('_recipe_ingredient_text_uc', 'recipe_ingredients', type_='unique')
     op.drop_index('ix_recipes_source_url_unique', table_name='recipes')
     op.drop_constraint('_substitution_pair_uc', 'ingredient_substitutions', type_='unique')
     op.drop_index('ix_ingredient_aliases_alias', table_name='ingredient_aliases')

@@ -4,6 +4,21 @@ from models.recipe_ingredient import RecipeIngredient
 from uuid import UUID
 
 
+async def get_recipe_ingredient_by_text(
+    db: AsyncSession,
+    recipe_id: UUID,
+    ingredient_text: str,
+) -> RecipeIngredient | None:
+    """Get a recipe ingredient by recipe + raw ingredient text."""
+    result = await db.execute(
+        select(RecipeIngredient).where(
+            RecipeIngredient.recipe_id == recipe_id,
+            RecipeIngredient.ingredient_text == ingredient_text,
+        )
+    )
+    return result.scalar_one_or_none()
+
+
 async def create_recipe_ingredient(
     db: AsyncSession,
     recipe_id: UUID,

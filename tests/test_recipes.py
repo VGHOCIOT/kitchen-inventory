@@ -55,6 +55,66 @@ class TestDeleteRecipe:
         assert resp.status_code == 404
 
 
+class TestRecipeDuplicatePrevention:
+    async def test_duplicate_recipe_ingredient_text_raises_integrity_error(self, db_session, make_recipe, make_ingredient):
+        """
+        The (recipe_id, ingredient_text) unique constraint prevents the same raw
+        ingredient line from being linked to a recipe twice. A direct double-insert
+        must raise IntegrityError — this is the DB-level last line of defence.
+        """
+        import pytest
+        from sqlalchemy.exc import IntegrityError
+        from models.recipe_ingredient import RecipeIngredient
+
+        ing = await make_ingredient(name="butter")
+        recipe = await make_recipe(title="Constraint Test")
+
+        db_session.add(RecipeIngredient(
+            recipe_id=recipe.id,
+            ingredient_text="2 tbsp butter",
+            canonical_ingredient_id=ing.id,
+            quantity=28.0,
+            unit="g",
+        ))
+        await db_session.commit()
+
+        db_session.add(RecipeIngredient(
+            recipe_id=recipe.id,
+            ingredient_text="2 tbsp butter",
+            canonical_ingredient_id=ing.id,
+            quantity=28.0,
+            unit="g",
+        ))
+        with pytest.raises(IntegrityError):
+            await db_session.commit()
+
+    async def test_get_recipe_ingredient_by_text_returns_existing(self, db_session, make_recipe, make_ingredient):
+        """
+        get_recipe_ingredient_by_text returns the row when it exists, None when not.
+        Used by the recipe endpoint to skip duplicate ingredient lines.
+        """
+        from crud.recipe_ingredient import create_recipe_ingredient, get_recipe_ingredient_by_text
+
+        ing = await make_ingredient(name="butter")
+        recipe = await make_recipe(title="Text Lookup Test")
+
+        await create_recipe_ingredient(
+            db_session,
+            recipe_id=recipe.id,
+            ingredient_text="2 tbsp butter",
+            canonical_ingredient_id=ing.id,
+            quantity=28.0,
+            unit="g",
+        )
+
+        found = await get_recipe_ingredient_by_text(db_session, recipe.id, "2 tbsp butter")
+        assert found is not None
+        assert found.ingredient_text == "2 tbsp butter"
+
+        not_found = await get_recipe_ingredient_by_text(db_session, recipe.id, "1 cup flour")
+        assert not_found is None
+
+
 class TestMatchInventory:
     async def test_no_recipes(self, client):
         resp = await client.get("/api/v1/recipes/match-inventory")

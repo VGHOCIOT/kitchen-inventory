@@ -15,15 +15,7 @@ async def create_recipe(
     description: str | None = None,
     image_url: str | None = None,
 ) -> Recipe:
-    """Create a new recipe. Returns existing if source_url or title already exists."""
-    if source_url:
-        existing = await get_recipe_by_source_url(db, source_url)
-        if existing:
-            return existing
-    else:
-        existing = await get_recipe_by_title(db, title)
-        if existing:
-            return existing
+    """Create a new recipe."""
     recipe = Recipe(
         title=title,
         description=description,

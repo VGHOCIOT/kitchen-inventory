@@ -60,20 +60,23 @@ class TestGetAliasByText:
 
         assert await get_alias_by_text(db_session, "Nonexistent Product") is None
 
-    async def test_duplicate_aliases_returns_first_not_error(self, db_session, make_ingredient, make_alias):
+    async def test_unique_constraint_on_alias(self, db_session, make_ingredient):
         """
-        If duplicate alias rows exist (possible via auto_map_product_to_ingredient),
-        get_alias_by_text must return one result rather than raising MultipleResultsFound.
+        The alias column has a unique constraint — a second insert of the same alias
+        text must raise an IntegrityError from the DB. This is the last line of
+        defence; callers (seeding, auto_map) check for existence before inserting.
         """
-        from crud.ingredient_alias import get_alias_by_text
+        import pytest
+        from sqlalchemy.exc import IntegrityError
+        from models.ingredient_alias import IngredientAlias
 
         ing = await make_ingredient(name="sugar")
-        await make_alias("White Sugar", ing.id)
-        await make_alias("White Sugar", ing.id)  # intentional duplicate
+        db_session.add(IngredientAlias(alias="White Sugar", ingredient_id=ing.id))
+        await db_session.commit()
 
-        result = await get_alias_by_text(db_session, "White Sugar")
-        assert result is not None
-        assert result.alias == "White Sugar"
+        db_session.add(IngredientAlias(alias="White Sugar", ingredient_id=ing.id))
+        with pytest.raises(IntegrityError):
+            await db_session.commit()
 
 
 class TestAutoMapProduct:
@@ -95,6 +98,27 @@ class TestAutoMapProduct:
 
         # Should not raise or create duplicates
         await auto_map_product_to_ingredient(db_session, "Store Butter")
+
+    async def test_maps_via_normalized_alias_before_fuzzy(self, db_session, make_ingredient, make_alias):
+        """
+        Step 3 of the pipeline: if the normalized product name resolves through an
+        existing alias, the product name is mapped to that ingredient — fuzzy match
+        (step 4) must NOT fire.
+        """
+        from api.services.ingredient_mapper import auto_map_product_to_ingredient
+        from crud.ingredient_alias import get_alias_by_text
+
+        # "whole grain flour" is the normalized form of the product name
+        # "whole wheat flour" is the canonical ingredient
+        # We pre-seed an alias so normalized lookup (step 3) can find it
+        wheat_flour = await make_ingredient(name="whole wheat flour")
+        await make_alias("whole grain flour", wheat_flour.id)
+
+        await auto_map_product_to_ingredient(db_session, "Organic Whole Grain Flour")
+
+        alias = await get_alias_by_text(db_session, "Organic Whole Grain Flour")
+        assert alias is not None
+        assert alias.ingredient_id == wheat_flour.id
 
     async def test_no_match_no_alias(self, db_session):
         from api.services.ingredient_mapper import auto_map_product_to_ingredient

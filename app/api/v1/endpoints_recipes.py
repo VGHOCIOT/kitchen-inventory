@@ -9,11 +9,14 @@ logger = logging.getLogger(__name__)
 from crud.recipe import (
     create_recipe,
     get_recipe_by_id,
+    get_recipe_by_source_url,
+    get_recipe_by_title,
     get_all_recipes,
     delete_recipe,
 )
 from crud.recipe_ingredient import (
     create_recipe_ingredient,
+    get_recipe_ingredient_by_text,
     get_recipe_ingredients,
 )
 from crud.ingredient_reference import (
@@ -59,12 +62,20 @@ async def create_recipe_from_url(
     if not recipe_data:
         raise HTTPException(status_code=400, detail="Failed to parse recipe from URL")
 
-    # Create the recipe (create_recipe is idempotent — returns existing on duplicate)
+    # Reject duplicate recipes before doing any work
+    source_url = recipe_data.get("source_url")
+    if source_url:
+        existing = await get_recipe_by_source_url(db, source_url)
+    else:
+        existing = await get_recipe_by_title(db, recipe_data["title"])
+    if existing:
+        raise HTTPException(status_code=409, detail="Recipe already exists")
+
     recipe = await create_recipe(
         db,
         title=recipe_data["title"],
         instructions=recipe_data["instructions"],
-        source_url=recipe_data["source_url"],
+        source_url=source_url,
         description=recipe_data.get("description"),
         image_url=recipe_data.get("image_url"),
     )
@@ -129,7 +140,10 @@ async def create_recipe_from_url(
             quantity = float(parsed["amount"])
             unit = parsed["unit"]
 
-        # Link ingredient to recipe with parsed quantity and unit
+        # Link ingredient to recipe — skip if this exact text line was already linked
+        if await get_recipe_ingredient_by_text(db, recipe.id, parsed["original"]):
+            logger.warning(f"[RECIPE] Skipping duplicate ingredient line: {parsed['original']!r}")
+            continue
         await create_recipe_ingredient(
             db,
             recipe_id=recipe.id,
