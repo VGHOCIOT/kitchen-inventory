@@ -1,6 +1,7 @@
 import httpx
 import re
 from api.services.unit_converter import standardize_unit
+from config.canadian_brands import CANADIAN_GROCERY_BRANDS
 
 async def lookup_barcode(barcode: str):
     url = f"https://world.openfoodfacts.org/api/v0/product/{barcode}.json"
@@ -11,12 +12,14 @@ async def lookup_barcode(barcode: str):
             if data.get("status") == 1:
                 product = data.get("product", {})
                 quantity_data = parse_quantity(product)
+                brands = arrayify(product.get("brands"))
                 raw_name = strip_package_size(product.get("product_name") or "")
                 if not raw_name:
                     raw_name = _name_from_categories(arrayify(product.get("categories")))
+                raw_name = strip_brand_from_name(raw_name, brands)
                 return {
                     "name": raw_name,
-                    "brands": arrayify(product.get("brands")),
+                    "brands": brands,
                     "categories": arrayify(product.get("categories")),
                     "package_quantity": quantity_data.get("quantity"),
                     "package_unit": quantity_data.get("unit")
@@ -31,6 +34,39 @@ def _name_from_categories(categories: list[str]) -> str:
     """
     readable = [c for c in categories if not c.lower().startswith("en:")]
     return readable[-1] if readable else ""
+
+
+def strip_brand_from_name(name: str, off_brands: list[str]) -> str:
+    """
+    Remove brand tokens from a product name so ingredient matching works correctly.
+    e.g. "Butterball Turkey Bacon" -> "Turkey Bacon"
+
+    Two sources are combined:
+    - off_brands: the `brands` field returned by OpenFoodFacts (unreliable, crowd-sourced)
+    - CANADIAN_GROCERY_BRANDS: predefined config list of known Canadian grocery brands
+
+    Each brand is tested as a whole phrase match (word-boundary aware) so that a brand
+    like "PC" doesn't strip "PC" from ingredient words mid-string.
+    """
+    if not name:
+        return name
+
+    # Build combined set of brand tokens to try, normalised to lowercase
+    brand_tokens: set[str] = set(CANADIAN_GROCERY_BRANDS)
+    for b in off_brands:
+        brand_tokens.add(b.lower().strip())
+
+    cleaned = name
+    for brand in brand_tokens:
+        if not brand:
+            continue
+        # Word-boundary match, case-insensitive, strip surrounding whitespace
+        pattern = r'(?i)\b' + re.escape(brand) + r'\b'
+        cleaned = re.sub(pattern, '', cleaned).strip()
+        # Collapse multiple spaces left behind
+        cleaned = re.sub(r'\s{2,}', ' ', cleaned).strip()
+
+    return cleaned or name  # fall back to original if we stripped everything
 
 
 def strip_package_size(name: str) -> str:

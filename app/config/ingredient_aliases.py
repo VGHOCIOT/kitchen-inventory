@@ -47,6 +47,24 @@ INGREDIENT_ALIAS_SEEDS: dict[str, list[str]] = {
         "boneless skinless chicken thigh", "boneless skinless chicken thighs",
     ],
     "chicken leg": ["chicken legs", "drumstick", "drumsticks"],
+    "ground chicken": ["minced chicken", "chicken mince"],
+    "chicken wing": ["chicken wings", "chicken wingette", "chicken wingettes", "party wings"],
+    "whole chicken": ["roasting chicken", "broiler chicken", "fryer chicken"],
+    "turkey breast": ["turkey breast roast", "boneless turkey breast", "sliced turkey breast"],
+    "ground turkey": ["minced turkey", "turkey mince", "lean ground turkey"],
+    "pork chop": ["pork chops", "boneless pork chop", "boneless pork chops", "pork loin chop", "pork loin chops"],
+    "pork tenderloin": ["pork tenderloin roast", "pork loin"],
+    "pork belly": ["pork belly slices", "uncured pork belly"],
+    "italian sausage": ["italian sausages", "mild italian sausage", "hot italian sausage", "sweet italian sausage"],
+    "breakfast sausage": ["breakfast sausages", "pork breakfast sausage", "maple breakfast sausage"],
+    "chorizo": ["chorizo sausage", "spanish chorizo", "mexican chorizo"],
+    "kielbasa": ["kielbasa sausage", "polish sausage", "smoked kielbasa"],
+    "hot dog": ["hot dogs", "frankfurter", "frankfurters", "wiener", "wieners"],
+    "steak": ["beef steak", "grilling steak"],
+    "ribeye steak": ["ribeye", "rib eye steak", "rib eye", "rib-eye steak", "rib-eye"],
+    "sirloin steak": ["sirloin", "top sirloin steak", "top sirloin"],
+    "flank steak": ["flank", "london broil"],
+    "ground lamb": ["minced lamb", "lamb mince"],
 
     # ── Peppers ────────────────────────────────────────────────────────────────
     "bell pepper": [
@@ -272,7 +290,18 @@ INGREDIENT_ALIAS_SEEDS: dict[str, list[str]] = {
     ],
     "ground pork": ["minced pork", "pork mince"],
     "ground turkey": ["minced turkey", "turkey mince"],
-    "bacon": ["streaky bacon", "side bacon", "strip bacon"],
+    "bacon": ["streaky bacon", "side bacon", "strip bacon", "pork bacon"],
+    "turkey bacon": [
+        "turkey bacon strips",
+        "butterball turkey bacon",
+        "lean turkey bacon",
+        "smoked turkey bacon",
+    ],
+    "chicken bacon": [
+        "chicken bacon strips",
+        "halal chicken bacon",
+        "smoked chicken bacon",
+    ],
     "canadian bacon": ["back bacon", "peameal bacon"],
 
     # ── Legumes ───────────────────────────────────────────────────────────────
