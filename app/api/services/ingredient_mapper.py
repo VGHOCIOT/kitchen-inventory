@@ -9,7 +9,7 @@ import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crud.ingredient_alias import get_alias_by_text, create_ingredient_alias
-from crud.ingredient_reference import get_ingredient_by_normalized_name, find_ingredient_fuzzy
+from crud.ingredient_reference import get_ingredient_by_id, get_ingredient_by_normalized_name, find_ingredient_fuzzy
 from api.services.recipe_parser import normalize_product_name
 
 logger = logging.getLogger(__name__)
@@ -20,12 +20,12 @@ async def auto_map_product_to_ingredient(db: AsyncSession, product_name: str):
     Automatically map a product to a canonical ingredient.
 
     Process:
-    1. Check if alias already exists
-    2. Normalize product name (e.g., "Land O'Lakes Butter" → "butter")
-    3. Find ingredient with exact normalized name match
-    4. If no exact match, try fuzzy matching (substring matching)
-    5. Create aliases for both product_name AND normalized_name → ingredient_id
-       (this allows future similar products to match without fuzzy matching)
+    1. Check if alias already exists for the full product name
+    2. Normalize product name (strip brand/quality qualifiers)
+    3. Check if normalized name is a known alias (e.g. "whole grain flour" → "whole wheat flour")
+    4. Fuzzy match against existing ingredient normalized names (longest match wins)
+    5. Exact normalized name match fallback
+    6. Create alias for product_name → ingredient, and normalized_name if different
     """
     logger.info(f"[AUTO_MAP] Attempting to map product: '{product_name}'")
 
@@ -39,6 +39,15 @@ async def auto_map_product_to_ingredient(db: AsyncSession, product_name: str):
     if not normalized:
         logger.warning(f"[AUTO_MAP] Failed to normalize product name: '{product_name}'")
         return
+
+    # Check if the normalized name itself is a known alias (e.g. "whole grain flour" → "whole wheat flour")
+    normalized_alias = await get_alias_by_text(db, normalized)
+    if normalized_alias:
+        ingredient_from_alias = await get_ingredient_by_id(db, normalized_alias.ingredient_id)
+        if ingredient_from_alias:
+            await create_ingredient_alias(db, alias=product_name, ingredient_id=ingredient_from_alias.id)
+            logger.info(f"[AUTO_MAP] ✓ Created alias via normalized alias lookup: '{product_name}' → '{ingredient_from_alias.name}'")
+            return
 
     # Try fuzzy match first — prefers existing ingredients over creating new ones.
     # e.g. "virgin olive oil" fuzzy-matches existing "olive oil" rather than
