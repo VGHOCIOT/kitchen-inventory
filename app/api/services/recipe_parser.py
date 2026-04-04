@@ -64,6 +64,36 @@ def _extract(scraper, url: str) -> dict:
     }
 
 
+def normalize_product_name(product_name: str) -> str:
+    """
+    Normalize a scanned product name for ingredient matching.
+
+    Lighter touch than normalize_ingredient_text — only strips brand/quality
+    qualifiers that are never part of an ingredient's identity. Preserves
+    descriptor words like "whole", "grain", "light", "dark", "plain" that
+    form compound ingredient names (e.g. "whole grain flour", "dark chocolate").
+
+    Example: "Organic Whole Grain Flour" -> "whole grain flour"
+    """
+    text = product_name.lower().strip()
+
+    remove_words = {
+        # Brand/quality qualifiers
+        'organic', 'natural', 'pure', 'premium', 'fancy', 'select', 'choice',
+        'grade', 'quality', 'unbleached', 'enriched',
+        # Certifications
+        'certified', 'non-gmo', 'gmo', 'fair', 'trade', 'kosher', 'halal',
+        # Store brand noise
+        'brand', 'original', 'classic',
+    }
+
+    words = text.split()
+    filtered = [w for w in words if w not in remove_words]
+    normalized = ' '.join(filtered).strip()
+    logger.info(f"[NORMALIZE_PRODUCT] '{product_name}' -> '{normalized}'")
+    return normalized
+
+
 def normalize_ingredient_text(ingredient_text: str) -> str:
     """
     Normalize ingredient text for matching.

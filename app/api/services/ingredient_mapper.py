@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from crud.ingredient_alias import get_alias_by_text, create_ingredient_alias
 from crud.ingredient_reference import get_ingredient_by_normalized_name, find_ingredient_fuzzy
-from api.services.recipe_parser import normalize_ingredient_text
+from api.services.recipe_parser import normalize_product_name
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ async def auto_map_product_to_ingredient(db: AsyncSession, product_name: str):
         logger.info(f"[AUTO_MAP] Product '{product_name}' already has alias")
         return
 
-    normalized = normalize_ingredient_text(product_name)
+    normalized = normalize_product_name(product_name)
 
     if not normalized:
         logger.warning(f"[AUTO_MAP] Failed to normalize product name: '{product_name}'")
