@@ -12,7 +12,6 @@ from config.ingredient_aliases import INGREDIENT_ALIAS_SEEDS
 from config.ingredient_substitutions import INGREDIENT_SUBSTITUTION_SEEDS
 from crud.ingredient_reference import (
     create_ingredient_reference,
-    get_ingredient_by_name,
     get_ingredient_by_normalized_name,
 )
 from crud.ingredient_alias import create_ingredient_alias, get_alias_by_text
@@ -23,9 +22,7 @@ logger = logging.getLogger(__name__)
 
 async def _resolve_ingredient(db: AsyncSession, name: str):
     """Find or create a canonical IngredientReference by name."""
-    ingredient = await get_ingredient_by_name(db, name)
-    if not ingredient:
-        ingredient = await get_ingredient_by_normalized_name(db, name)
+    ingredient = await get_ingredient_by_normalized_name(db, name)
     if not ingredient:
         ingredient = await create_ingredient_reference(
             db, name=name, normalized_name=name
@@ -36,7 +33,6 @@ async def _resolve_ingredient(db: AsyncSession, name: str):
 async def seed_aliases(db: AsyncSession) -> dict:
     """Seed ingredient aliases from config. Idempotent."""
     created_aliases = 0
-    created_ingredients = 0
     skipped = 0
 
     for canonical_name, aliases in INGREDIENT_ALIAS_SEEDS.items():
@@ -46,9 +42,9 @@ async def seed_aliases(db: AsyncSession) -> dict:
             existing = await get_alias_by_text(db, alias_text)
             if existing:
                 skipped += 1
-            else:
-                await create_ingredient_alias(db, alias=alias_text, ingredient_id=ingredient.id)
-                created_aliases += 1
+                continue
+            await create_ingredient_alias(db, alias=alias_text, ingredient_id=ingredient.id)
+            created_aliases += 1
 
     logger.info(f"[SEED] Aliases: {created_aliases} created, {skipped} skipped")
     return {"aliases_created": created_aliases, "skipped": skipped}
@@ -64,8 +60,7 @@ async def seed_substitutions(db: AsyncSession) -> dict:
         substitute = await _resolve_ingredient(db, entry["substitute"])
 
         # Forward direction
-        existing = await get_substitution_by_pair(db, original.id, substitute.id)
-        if existing:
+        if await get_substitution_by_pair(db, original.id, substitute.id):
             skipped += 1
         else:
             await create_substitution(
@@ -80,8 +75,7 @@ async def seed_substitutions(db: AsyncSession) -> dict:
 
         # Reverse direction (if bidirectional)
         if entry.get("bidirectional"):
-            existing_rev = await get_substitution_by_pair(db, substitute.id, original.id)
-            if existing_rev:
+            if await get_substitution_by_pair(db, substitute.id, original.id):
                 skipped += 1
             else:
                 reverse_ratio = round(1.0 / entry["ratio"], 2)

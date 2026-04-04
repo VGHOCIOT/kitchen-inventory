@@ -25,7 +25,10 @@ async def create_substitution(
     quality_score: int = 5,
     notes: str | None = None
 ) -> IngredientSubstitution:
-    """Create new substitution rule"""
+    """Create new substitution rule. Returns existing if pair already defined."""
+    existing = await get_substitution_by_pair(db, original_ingredient_id, substitute_ingredient_id)
+    if existing:
+        return existing
     substitution = IngredientSubstitution(
         original_ingredient_id=original_ingredient_id,
         substitute_ingredient_id=substitute_ingredient_id,

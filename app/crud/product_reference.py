@@ -41,7 +41,11 @@ async def create_product(
     package_unit: str | None = None,
     product_data: dict | None = None
 ) -> ProductReference:
-    """Create a new product reference (UPC with barcode or PLU without)"""
+    """Create a new product reference (UPC with barcode or PLU without). Returns existing if barcode already exists."""
+    if barcode:
+        existing = await get_product_by_barcode(db, barcode)
+        if existing:
+            return existing
     new_prod_ref = ProductReference(
         product_type=product_type,
         barcode=barcode,

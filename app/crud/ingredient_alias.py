@@ -9,7 +9,10 @@ async def create_ingredient_alias(
     alias: str,
     ingredient_id: UUID
 ) -> IngredientAlias:
-    """Create a new ingredient alias"""
+    """Create a new ingredient alias. Returns existing if alias already mapped."""
+    existing = await get_alias_by_text(db, alias)
+    if existing:
+        return existing
     ingredient_alias = IngredientAlias(
         alias=alias,
         ingredient_id=ingredient_id

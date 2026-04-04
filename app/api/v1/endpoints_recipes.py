@@ -59,7 +59,7 @@ async def create_recipe_from_url(
     if not recipe_data:
         raise HTTPException(status_code=400, detail="Failed to parse recipe from URL")
 
-    # Create the recipe
+    # Create the recipe (create_recipe is idempotent — returns existing on duplicate)
     recipe = await create_recipe(
         db,
         title=recipe_data["title"],

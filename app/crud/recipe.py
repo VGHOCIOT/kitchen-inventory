@@ -15,7 +15,15 @@ async def create_recipe(
     description: str | None = None,
     image_url: str | None = None,
 ) -> Recipe:
-    """Create a new recipe"""
+    """Create a new recipe. Returns existing if source_url or title already exists."""
+    if source_url:
+        existing = await get_recipe_by_source_url(db, source_url)
+        if existing:
+            return existing
+    else:
+        existing = await get_recipe_by_title(db, title)
+        if existing:
+            return existing
     recipe = Recipe(
         title=title,
         description=description,
@@ -37,6 +45,20 @@ async def create_recipe(
     })
     logger.info(f"Created recipe: {title}")
     return recipe
+
+
+async def get_recipe_by_source_url(db: AsyncSession, source_url: str) -> Recipe | None:
+    """Get recipe by source URL"""
+    result = await db.execute(select(Recipe).where(Recipe.source_url == source_url))
+    return result.scalar_one_or_none()
+
+
+async def get_recipe_by_title(db: AsyncSession, title: str) -> Recipe | None:
+    """Get recipe by exact title (case-insensitive)"""
+    result = await db.execute(
+        select(Recipe).where(Recipe.title.ilike(title))
+    )
+    return result.scalar_one_or_none()
 
 
 async def get_recipe_by_id(db: AsyncSession, recipe_id: UUID) -> Recipe | None:

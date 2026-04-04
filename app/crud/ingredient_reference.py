@@ -10,7 +10,10 @@ async def create_ingredient_reference(
     normalized_name: str | None = None,
     meta_data: dict | None = None
 ) -> IngredientReference:
-    """Create a new ingredient reference"""
+    """Create a new ingredient reference. Returns existing if name already exists."""
+    existing = await get_ingredient_by_name(db, name)
+    if existing:
+        return existing
     ingredient = IngredientReference(
         name=name,
         normalized_name=normalized_name or name.lower(),

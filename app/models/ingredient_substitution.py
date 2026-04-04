@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, ForeignKey, Float, Integer
+from sqlalchemy import Column, String, ForeignKey, Float, Integer, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from db.base import Base
 import uuid
@@ -6,6 +6,9 @@ import uuid
 class IngredientSubstitution(Base):
     """Defines ingredient substitution rules"""
     __tablename__ = "ingredient_substitutions"
+    __table_args__ = (
+        UniqueConstraint('original_ingredient_id', 'substitute_ingredient_id', name='_substitution_pair_uc'),
+    )
 
     id = Column(PGUUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
 
