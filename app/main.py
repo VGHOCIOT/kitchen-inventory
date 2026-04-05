@@ -12,6 +12,11 @@ from api.v1.websocket import router as websocket_router
 from db.session import SessionLocal
 from db.seed import run_all_seeds
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s:%(name)s:%(message)s",
+)
+
 logger = logging.getLogger(__name__)
 
 
