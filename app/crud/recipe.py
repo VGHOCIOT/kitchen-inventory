@@ -26,15 +26,6 @@ async def create_recipe(
     db.add(recipe)
     await db.commit()
     await db.refresh(recipe)
-
-    events.emit('recipe_added', { 
-        'id': str(recipe.id),
-        'title': recipe.title,
-        'description': recipe.description,
-        'image_url': recipe.image_url,
-        'instructions': recipe.instructions,
-        'source_url': recipe.source_url
-    })
     logger.info(f"Created recipe: {title}")
     return recipe
 

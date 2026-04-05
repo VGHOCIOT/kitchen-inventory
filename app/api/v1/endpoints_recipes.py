@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.session import get_db
 from uuid import UUID
 import logging
+import events
 
 logger = logging.getLogger(__name__)
 
@@ -152,6 +153,15 @@ async def create_recipe_from_url(
             quantity=quantity,
             unit=unit
         )
+
+    events.emit('recipe_added', {
+        'id': str(recipe.id),
+        'title': recipe.title,
+        'description': recipe.description,
+        'image_url': recipe.image_url,
+        'instructions': recipe.instructions,
+        'source_url': recipe.source_url
+    })
 
     return recipe
 
