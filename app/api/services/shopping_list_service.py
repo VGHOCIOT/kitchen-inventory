@@ -12,7 +12,7 @@ from crud.recipe_ingredient import get_recipe_ingredients
 from crud.ingredient_reference import get_ingredient_by_id
 from api.services.recipe_matcher import (
     aggregate_inventory_by_ingredient,
-    find_substitution_for_ingredient,
+    find_substitutions_for_ingredient,
 )
 from api.services.unit_converter import convert_to_base_unit
 from schemas.shopping_list import ShoppingListItem, ShoppingListResponse, SubstitutionAvailable
@@ -87,11 +87,12 @@ async def generate_shopping_list(
         else:
             # Check if a substitute is available in inventory
             sub_info = None
-            sub_suggestion = await find_substitution_for_ingredient(
+            subs = await find_substitutions_for_ingredient(
                 db, ing_id, inventory,
                 required_quantity=to_buy,
                 required_unit=entry["unit"],
             )
+            sub_suggestion = subs[0] if subs else None
             if sub_suggestion:
                 sub_inv = inventory.get(sub_suggestion.substitute_ingredient_id)
                 if sub_inv:

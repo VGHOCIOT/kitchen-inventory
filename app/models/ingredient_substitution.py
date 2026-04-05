@@ -29,8 +29,8 @@ class IngredientSubstitution(Base):
     # Conversion ratio (1.0 = same amount, 1.5 = use 50% more substitute)
     ratio = Column(Float, default=1.0, nullable=False)
 
-    # Optional: quality/preference score (1-10, how good is this substitution?)
-    quality_score = Column(Integer, default=5, nullable=True)
+    # Optional: quality/preference score (1-5, how good is this substitution?)
+    quality_score = Column(Integer, default=3, nullable=True)
 
     # Optional: notes like "works better for baking than frying"
     notes = Column(String, nullable=True)

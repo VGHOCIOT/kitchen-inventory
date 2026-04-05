@@ -7,7 +7,7 @@ class SubstitutionCreate(BaseModel):
     original_ingredient_id: UUID
     substitute_ingredient_id: UUID
     ratio: float = 1.0
-    quality_score: int = 5
+    quality_score: int = 3
     notes: Optional[str] = None
 
 

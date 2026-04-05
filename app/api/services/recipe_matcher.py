@@ -18,6 +18,7 @@ from crud.ingredient_substitution import get_substitutions_for_ingredient
 from crud.recipe import get_all_recipes
 from crud.recipe_ingredient import get_recipe_ingredients
 from api.services.unit_converter import convert_to_base_unit
+from config.fresh_weights import get_manual_weight
 from schemas.recipe_match import (
     RecipeMatchResponse,
     RecipeMatchResult,
@@ -148,6 +149,10 @@ async def match_recipe_to_inventory(
     total_ingredients = len(recipe_ingredients)
     available_count = 0
 
+    def bridge_to_grams(qty: float, ing) -> float | None:
+        weight = (ing.avg_weight_grams or get_manual_weight(ing.name))
+        return qty * weight if weight else None
+
     for recipe_ing in recipe_ingredients:
         ingredient = await get_ingredient_by_id(db, recipe_ing.canonical_ingredient_id)
         if not ingredient:
@@ -165,52 +170,109 @@ async def match_recipe_to_inventory(
 
         logger.info(f"[MATCH] Required (converted): {required_conversion['quantity']} {required_conversion['base_unit']}")
 
+        req_qty = required_conversion["quantity"]
+        req_unit = required_conversion["base_unit"]
+
         # Check if ingredient is in inventory
         if recipe_ing.canonical_ingredient_id in inventory:
             logger.info(f"[MATCH] Ingredient '{ingredient.name}' found in inventory")
             inv_data = inventory[recipe_ing.canonical_ingredient_id]
 
-            if inv_data.base_unit == required_conversion["base_unit"]:
-                is_sufficient = inv_data.total_quantity >= required_conversion["quantity"]
+            # Resolve units for comparison
+            cmp_req_qty = req_qty
+            cmp_inv_qty = inv_data.total_quantity
+            cmp_unit = req_unit
+
+            if inv_data.base_unit != req_unit:
+                # Inventory is g, recipe wants unit → convert recipe units to grams
+                if inv_data.base_unit == "g" and req_unit == "unit":
+                    converted = bridge_to_grams(req_qty, ingredient)
+                    if converted is not None:
+                        cmp_req_qty = converted
+                        cmp_unit = "g"
+                        logger.info(f"[MATCH] Bridged recipe unit→g: need {cmp_req_qty}g")
+                    else:
+                        logger.warning(f"[MATCH] No per-unit weight for '{ingredient.name}', cannot bridge unit→g")
+                        cmp_unit = None  # force mismatch below
+                # Inventory is unit, recipe wants g → convert inventory units to grams
+                elif inv_data.base_unit == "unit" and req_unit == "g":
+                    converted = bridge_to_grams(inv_data.total_quantity, ingredient)
+                    if converted is not None:
+                        cmp_inv_qty = converted
+                        cmp_unit = "g"
+                        logger.info(f"[MATCH] Bridged inventory unit→g: have {cmp_inv_qty}g")
+                    else:
+                        logger.warning(f"[MATCH] No per-unit weight for '{ingredient.name}', cannot bridge unit→g")
+                        cmp_unit = None  # force mismatch below
+                else:
+                    cmp_unit = None  # incompatible dimensions (e.g. g vs ml)
+
+            if cmp_unit is not None:
+                is_sufficient = cmp_inv_qty >= cmp_req_qty
+
+                # Always fetch substitutions so the user can choose even when sufficient
+                substitutions_for_ing = await find_substitutions_for_ingredient(
+                    db,
+                    recipe_ing.canonical_ingredient_id,
+                    inventory,
+                    required_quantity=cmp_req_qty,
+                    required_unit=cmp_unit,
+                )
+                suggested_substitutions.extend(substitutions_for_ing)
 
                 ingredient_availability.append(IngredientAvailability(
                     ingredient_id=ingredient.id,
                     ingredient_name=ingredient.name,
-                    required_quantity=required_conversion["quantity"],
-                    available_quantity=inv_data.total_quantity,
-                    unit=required_conversion["base_unit"],
+                    required_quantity=cmp_req_qty,
+                    available_quantity=cmp_inv_qty,
+                    unit=cmp_unit,
                     is_sufficient=is_sufficient
                 ))
 
                 if is_sufficient:
                     available_count += 1
                 else:
-                    missing_ingredients.append(ingredient.name)
+                    logger.warning(f"[MATCH] Insufficient '{ingredient.name}': have {cmp_inv_qty} {cmp_unit}, need {cmp_req_qty} {cmp_unit}")
+                    if substitutions_for_ing:
+                        available_count += 1
+                    else:
+                        missing_ingredients.append(ingredient.name)
             else:
-                # Incompatible units - treat as missing
+                # Incompatible dimensions — treat as missing, still surface substitutions
+                logger.warning(f"[MATCH] Unit dimension mismatch for '{ingredient.name}': inv={inv_data.base_unit} vs req={req_unit}")
+                substitutions_for_ing = await find_substitutions_for_ingredient(
+                    db,
+                    recipe_ing.canonical_ingredient_id,
+                    inventory,
+                    required_quantity=req_qty,
+                    required_unit=req_unit,
+                )
+                suggested_substitutions.extend(substitutions_for_ing)
                 ingredient_availability.append(IngredientAvailability(
                     ingredient_id=ingredient.id,
                     ingredient_name=ingredient.name,
-                    required_quantity=required_conversion["quantity"],
+                    required_quantity=req_qty,
                     available_quantity=0.0,
-                    unit=required_conversion["base_unit"],
+                    unit=req_unit,
                     is_sufficient=False
                 ))
-                missing_ingredients.append(ingredient.name)
+                if substitutions_for_ing:
+                    available_count += 1
+                else:
+                    missing_ingredients.append(ingredient.name)
         else:
-            # Ingredient not in inventory - check for substitutions
+            # Ingredient not in inventory — surface substitutions for user choice
             logger.warning(f"[MATCH] Ingredient '{ingredient.name}' NOT in inventory")
-            substitution = await find_substitution_for_ingredient(
+            substitutions_for_ing = await find_substitutions_for_ingredient(
                 db,
                 recipe_ing.canonical_ingredient_id,
                 inventory,
-                required_quantity=required_conversion["quantity"],
-                required_unit=required_conversion["base_unit"],
+                required_quantity=req_qty,
+                required_unit=req_unit,
             )
+            suggested_substitutions.extend(substitutions_for_ing)
 
-            if substitution:
-                # Substitution available counts as covered
-                suggested_substitutions.append(substitution)
+            if substitutions_for_ing:
                 available_count += 1
             else:
                 missing_ingredients.append(ingredient.name)
@@ -218,10 +280,10 @@ async def match_recipe_to_inventory(
             ingredient_availability.append(IngredientAvailability(
                 ingredient_id=ingredient.id,
                 ingredient_name=ingredient.name,
-                required_quantity=required_conversion["quantity"],
+                required_quantity=req_qty,
                 available_quantity=0.0,
-                unit=required_conversion["base_unit"],
-                is_sufficient=substitution is not None
+                unit=req_unit,
+                is_sufficient=False
             ))
 
     # availability_percent counts substitutions as covered
@@ -249,63 +311,57 @@ async def match_recipe_to_inventory(
     )
 
 
-async def find_substitution_for_ingredient(
+async def find_substitutions_for_ingredient(
     db: AsyncSession,
     ingredient_id: UUID,
     inventory: dict[UUID, InventoryIngredient],
     required_quantity: float = 0.0,
     required_unit: str = "g",
-) -> SubstitutionSuggestion | None:
+) -> list[SubstitutionSuggestion]:
     """
-    Find best substitution for a missing ingredient, ranked by inventory availability.
+    Find all viable substitutions for an ingredient, sorted by quality_score descending.
 
-    Ranking priority:
-    1. Has sufficient quantity in inventory (adjusted by ratio)
-    2. Highest quality_score
-
-    Only considers substitutes with quality_score >= 5 that are in inventory.
+    Viable = present in inventory with sufficient quantity (adjusted by ratio).
+    Returns all options so the caller can surface them as user choices.
     """
     substitutions = await get_substitutions_for_ingredient(db, ingredient_id)
+    original_ing = await get_ingredient_by_id(db, ingredient_id)
+    if not original_ing:
+        return []
 
-    # Filter to viable candidates: quality >= 5 and present in inventory
     candidates = []
     for sub in substitutions:
-        if sub.quality_score < 5:
-            continue
         if sub.substitute_ingredient_id not in inventory:
             continue
 
         inv_data = inventory[sub.substitute_ingredient_id]
-        needed = required_quantity * sub.ratio
-        has_enough = (
-            inv_data.base_unit == required_unit
-            and inv_data.total_quantity >= needed
-        ) if required_quantity > 0 else False
 
-        candidates.append((sub, has_enough))
+        if required_quantity > 0:
+            if inv_data.base_unit != required_unit:
+                continue  # incompatible units — skip
+            if inv_data.total_quantity < required_quantity * sub.ratio:
+                continue  # not enough inventory of the substitute
 
-    if not candidates:
-        return None
+        candidates.append(sub)
 
-    # Sort: sufficient quantity first, then by quality_score descending
-    candidates.sort(key=lambda c: (c[1], c[0].quality_score), reverse=True)
-    best_sub, _ = candidates[0]
+    candidates.sort(key=lambda s: s.quality_score, reverse=True)
 
-    substitute_ing = await get_ingredient_by_id(db, best_sub.substitute_ingredient_id)
-    original_ing = await get_ingredient_by_id(db, ingredient_id)
+    results = []
+    for sub in candidates:
+        substitute_ing = await get_ingredient_by_id(db, sub.substitute_ingredient_id)
+        if not substitute_ing:
+            continue
+        results.append(SubstitutionSuggestion(
+            original_ingredient_id=ingredient_id,
+            original_ingredient_name=original_ing.name,
+            substitute_ingredient_id=sub.substitute_ingredient_id,
+            substitute_ingredient_name=substitute_ing.name,
+            ratio=sub.ratio,
+            quality_score=sub.quality_score,
+            notes=sub.notes,
+        ))
 
-    if not substitute_ing or not original_ing:
-        return None
-
-    return SubstitutionSuggestion(
-        original_ingredient_id=ingredient_id,
-        original_ingredient_name=original_ing.name,
-        substitute_ingredient_id=best_sub.substitute_ingredient_id,
-        substitute_ingredient_name=substitute_ing.name,
-        ratio=best_sub.ratio,
-        quality_score=best_sub.quality_score,
-        notes=best_sub.notes,
-    )
+    return results
 
 
 async def match_all_recipes(db: AsyncSession) -> RecipeMatchResponse:

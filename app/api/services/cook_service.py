@@ -17,7 +17,7 @@ from crud.recipe_ingredient import get_recipe_ingredients
 from crud.ingredient_substitution import get_substitutions_for_ingredient
 from api.services.recipe_matcher import (
     aggregate_inventory_by_ingredient,
-    find_substitution_for_ingredient,
+    find_substitutions_for_ingredient,
 )
 from api.services.unit_converter import convert_to_base_unit
 
@@ -205,11 +205,12 @@ async def cook_recipe(
                 continue
 
         # Ingredient missing or insufficient — try auto-substitution
-        sub_suggestion = await find_substitution_for_ingredient(
+        subs = await find_substitutions_for_ingredient(
             db, ing_id, inventory,
             required_quantity=needed,
             required_unit=needed_unit,
         )
+        sub_suggestion = subs[0] if subs else None
 
         if sub_suggestion:
             adjusted_amount = needed * sub_suggestion.ratio

@@ -18,7 +18,7 @@ MANUAL_FRESH_WEIGHTS = {
     "ground beef": 450,     # 1 lb (common package)
     "ground turkey": 450,   # 1 lb (common package)
     "ground chicken": 450,  # 1 lb (common package)
-    "bacon": 450,           # 1 package (usually ~12 slices)
+    "bacon": 28,            # 1 slice (~28g, typical Canadian cut)
     "sausage": 75,          # 1 link
 
     # Seafood
