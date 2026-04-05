@@ -115,10 +115,10 @@ async def scan_product(
             product_data=product_info or {},
         )
 
-        if has_quantity and has_unit:
-            await auto_map_product_to_ingredient(db, product_ref.name)
-        else:
-            logger.warning(f"[SCAN] Skipping ingredient mapping for '{product_ref.name}' - incomplete data")
+    if product_ref.package_quantity and product_ref.package_unit:
+        await auto_map_product_to_ingredient(db, product_ref.name)
+    else:
+        logger.warning(f"[SCAN] Skipping ingredient mapping for '{product_ref.name}' - incomplete data")
 
     # Compute lot weight in base units
     data_warning = None
@@ -199,7 +199,7 @@ async def add_fresh_item(
             product_data={"entry_method": "manual"},
         )
 
-        await auto_map_product_to_ingredient(db, product_ref.name)
+    await auto_map_product_to_ingredient(db, product_ref.name)
 
     item = await add_stock(
         db,
