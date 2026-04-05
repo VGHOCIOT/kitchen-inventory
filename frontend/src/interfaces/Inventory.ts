@@ -20,3 +20,9 @@ export interface ItemWithProduct {
   item: ItemOut
   product: ProductReferenceOut
 }
+
+export interface ScanOut {
+  product_reference: ProductReferenceOut
+  item: ItemOut
+  data_quality_warning: string | null
+}
