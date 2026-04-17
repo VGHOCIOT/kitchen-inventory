@@ -18,11 +18,60 @@ from crud.ingredient_substitution import get_substitutions_for_ingredient
 from api.services.recipe_matcher import (
     aggregate_inventory_by_ingredient,
     find_substitutions_for_ingredient,
+    bridge_to_grams,
+    InventoryIngredient,
 )
 from api.services.unit_converter import convert_to_base_unit
 from schemas.cook import CookPlan, CookPlanIngredient
 
 logger = logging.getLogger(__name__)
+
+
+async def _resolve_ingredient_status(
+    db: AsyncSession,
+    ingredient,
+    needed: float,
+    needed_unit: str,
+    inventory: dict[UUID, InventoryIngredient],
+) -> tuple[float, str, float, str, list]:
+    """
+    Resolve availability and substitutes for one ingredient.
+
+    Bridges unit mismatches (e.g. recipe in slices→unit, inventory in g)
+    before checking sufficiency and finding substitutes.
+
+    Returns (cmp_needed, cmp_unit, available_qty, status, substitutes).
+    """
+    inv_data = inventory.get(ingredient.id)
+    available_qty = inv_data.total_quantity if inv_data else 0.0
+
+    cmp_needed = needed
+    cmp_unit = needed_unit
+    cmp_available = available_qty
+
+    if inv_data and inv_data.base_unit != needed_unit:
+        if inv_data.base_unit == "g" and needed_unit == "unit":
+            converted = bridge_to_grams(needed, ingredient)
+            if converted is not None:
+                cmp_needed = converted
+                cmp_unit = "g"
+                cmp_available = inv_data.total_quantity
+        elif inv_data.base_unit == "unit" and needed_unit == "g":
+            converted = bridge_to_grams(inv_data.total_quantity, ingredient)
+            if converted is not None:
+                cmp_available = converted
+                cmp_unit = "g"
+
+    if inv_data and cmp_unit and cmp_available >= cmp_needed:
+        return cmp_needed, cmp_unit, available_qty, 'available', []
+
+    status = 'missing' if not inv_data else 'insufficient'
+    substitutes = await find_substitutions_for_ingredient(
+        db, ingredient.id, inventory,
+        required_quantity=cmp_needed,
+        required_unit=cmp_unit,
+    )
+    return cmp_needed, cmp_unit, available_qty, status, substitutes
 
 
 async def _build_ingredient_to_items_map(db: AsyncSession) -> dict[UUID, list[dict]]:
@@ -106,19 +155,9 @@ async def get_cook_plan(db: AsyncSession, recipe_id: UUID) -> CookPlan | None:
         needed = required["quantity"]
         needed_unit = required["base_unit"]
 
-        inv_data = inventory.get(recipe_ing.canonical_ingredient_id)
-        available_qty = inv_data.total_quantity if inv_data else 0.0
-
-        if inv_data and inv_data.base_unit == needed_unit and available_qty >= needed:
-            status = 'available'
-            substitutes = []
-        else:
-            status = 'missing' if not inv_data else 'insufficient'
-            substitutes = await find_substitutions_for_ingredient(
-                db, recipe_ing.canonical_ingredient_id, inventory,
-                required_quantity=needed,
-                required_unit=needed_unit,
-            )
+        _, _, available_qty, status, substitutes = await _resolve_ingredient_status(
+            db, ingredient, needed, needed_unit, inventory
+        )
 
         plan_ingredients.append(CookPlanIngredient(
             recipe_ingredient_id=recipe_ing.id,
@@ -188,14 +227,22 @@ async def cook_recipe(
         needed_unit = required["base_unit"]
 
         resolve_id = sub_overrides.get(ing_id, ing_id)
-        inv_data = inventory.get(resolve_id)
-        if not inv_data or inv_data.base_unit != needed_unit or inv_data.total_quantity < needed:
-            if resolve_id == ing_id:
-                # Try auto-sub to see if anything covers it
-                subs = await find_substitutions_for_ingredient(db, ing_id, inventory, required_quantity=needed, required_unit=needed_unit)
-                if not subs:
-                    preflight_failed.append(ingredient.name)
-            else:
+        if resolve_id != ing_id:
+            # Manual override specified — check that substitute has sufficient stock directly
+            resolve_ing = await get_ingredient_by_id(db, resolve_id)
+            if not resolve_ing:
+                preflight_failed.append(ingredient.name)
+                continue
+            _, _, _, resolved_status, _ = await _resolve_ingredient_status(
+                db, resolve_ing, needed, needed_unit, inventory
+            )
+            if resolved_status != 'available':
+                preflight_failed.append(ingredient.name)
+        else:
+            _, _, _, status, subs = await _resolve_ingredient_status(
+                db, ingredient, needed, needed_unit, inventory
+            )
+            if status != 'available' and not subs:
                 preflight_failed.append(ingredient.name)
 
     if preflight_failed:
@@ -222,46 +269,42 @@ async def cook_recipe(
         if ing_id in skip_set:
             continue
 
+        cmp_needed, cmp_unit, _, status, subs = await _resolve_ingredient_status(
+            db, ingredient, needed, needed_unit, inventory
+        )
+
         # Manual override: use the specified substitute, don't fall through to auto-sub
         if ing_id in sub_overrides:
             sub_id = sub_overrides[ing_id]
-            subs = await get_substitutions_for_ingredient(db, ing_id)
-            ratio = next((s.ratio for s in subs if s.substitute_ingredient_id == sub_id), 1.0)
-            adjusted = needed * ratio
-            success = await _deduct_ingredient(db, sub_id, adjusted, needed_unit, ingredient_to_items)
+            subs_list = await get_substitutions_for_ingredient(db, ing_id)
+            ratio = next((s.ratio for s in subs_list if s.substitute_ingredient_id == sub_id), 1.0)
+            adjusted = cmp_needed * ratio
+            success = await _deduct_ingredient(db, sub_id, adjusted, cmp_unit, ingredient_to_items)
             if success:
                 sub_ingredient = await get_ingredient_by_id(db, sub_id)
-                deducted.append({"ingredient": sub_ingredient.name, "amount": adjusted, "unit": needed_unit})
-                logger.info(f"[COOK] Override: deducted {adjusted}{needed_unit} of '{sub_ingredient.name}' for '{ingredient.name}'")
+                deducted.append({"ingredient": sub_ingredient.name, "amount": adjusted, "unit": cmp_unit})
+                logger.info(f"[COOK] Override: deducted {adjusted}{cmp_unit} of '{sub_ingredient.name}' for '{ingredient.name}'")
             else:
                 failed.append(ingredient.name)
                 logger.warning(f"[COOK] Override substitute insufficient for '{ingredient.name}'")
             continue
 
-        # Direct deduction
-        inv_data = inventory.get(ing_id)
-        if inv_data and inv_data.base_unit == needed_unit and inv_data.total_quantity >= needed:
-            success = await _deduct_ingredient(db, ing_id, needed, needed_unit, ingredient_to_items)
+        if status == 'available':
+            success = await _deduct_ingredient(db, ing_id, cmp_needed, cmp_unit, ingredient_to_items)
             if success:
-                deducted.append({"ingredient": ingredient.name, "amount": needed, "unit": needed_unit})
-                logger.info(f"[COOK] Deducted {needed}{needed_unit} of '{ingredient.name}'")
+                deducted.append({"ingredient": ingredient.name, "amount": cmp_needed, "unit": cmp_unit})
+                logger.info(f"[COOK] Deducted {cmp_needed}{cmp_unit} of '{ingredient.name}'")
                 continue
 
-        # Auto-substitution
-        subs = await find_substitutions_for_ingredient(
-            db, ing_id, inventory,
-            required_quantity=needed,
-            required_unit=needed_unit,
-        )
         if subs:
             sub = subs[0]
-            adjusted = needed * sub.ratio
+            adjusted = cmp_needed * sub.ratio
             success = await _deduct_ingredient(
-                db, sub.substitute_ingredient_id, adjusted, needed_unit, ingredient_to_items
+                db, sub.substitute_ingredient_id, adjusted, cmp_unit, ingredient_to_items
             )
             if success:
-                deducted.append({"ingredient": sub.substitute_ingredient_name, "amount": adjusted, "unit": needed_unit})
-                logger.info(f"[COOK] Auto-sub: deducted {adjusted}{needed_unit} of '{sub.substitute_ingredient_name}' for '{ingredient.name}'")
+                deducted.append({"ingredient": sub.substitute_ingredient_name, "amount": adjusted, "unit": cmp_unit})
+                logger.info(f"[COOK] Auto-sub: deducted {adjusted}{cmp_unit} of '{sub.substitute_ingredient_name}' for '{ingredient.name}'")
                 continue
 
         failed.append(ingredient.name)

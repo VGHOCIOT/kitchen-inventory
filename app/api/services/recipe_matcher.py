@@ -29,6 +29,12 @@ from schemas.recipe_match import (
 logger = logging.getLogger(__name__)
 
 
+def bridge_to_grams(qty: float, ing) -> float | None:
+    """Convert a unit count to grams using per-unit weight. Returns None if weight unknown."""
+    weight = ing.avg_weight_grams or get_manual_weight(ing.name)
+    return qty * weight if weight else None
+
+
 @dataclass
 class InventoryIngredient:
     """Aggregated inventory data for a single ingredient"""
@@ -148,10 +154,6 @@ async def match_recipe_to_inventory(
     total_ingredients = len(recipe_ingredients)
     available_count = 0
 
-    def bridge_to_grams(qty: float, ing) -> float | None:
-        weight = (ing.avg_weight_grams or get_manual_weight(ing.name))
-        return qty * weight if weight else None
-
     for recipe_ing in recipe_ingredients:
         ingredient = await get_ingredient_by_id(db, recipe_ing.canonical_ingredient_id)
         if not ingredient:
@@ -182,7 +184,6 @@ async def match_recipe_to_inventory(
             cmp_unit = req_unit
 
             if inv_data.base_unit != req_unit:
-                # Inventory is g, recipe wants unit → convert recipe units to grams
                 if inv_data.base_unit == "g" and req_unit == "unit":
                     converted = bridge_to_grams(req_qty, ingredient)
                     if converted is not None:
@@ -191,8 +192,7 @@ async def match_recipe_to_inventory(
                         logger.info(f"[MATCH] Bridged recipe unit→g: need {cmp_req_qty}g")
                     else:
                         logger.warning(f"[MATCH] No per-unit weight for '{ingredient.name}', cannot bridge unit→g")
-                        cmp_unit = None  # force mismatch below
-                # Inventory is unit, recipe wants g → convert inventory units to grams
+                        cmp_unit = None
                 elif inv_data.base_unit == "unit" and req_unit == "g":
                     converted = bridge_to_grams(inv_data.total_quantity, ingredient)
                     if converted is not None:
@@ -201,7 +201,7 @@ async def match_recipe_to_inventory(
                         logger.info(f"[MATCH] Bridged inventory unit→g: have {cmp_inv_qty}g")
                     else:
                         logger.warning(f"[MATCH] No per-unit weight for '{ingredient.name}', cannot bridge unit→g")
-                        cmp_unit = None  # force mismatch below
+                        cmp_unit = None
                 else:
                     cmp_unit = None  # incompatible dimensions (e.g. g vs ml)
 
