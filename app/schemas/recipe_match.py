@@ -25,6 +25,7 @@ class SubstitutionSuggestion(BaseModel):
     ratio: float
     quality_score: int
     notes: Optional[str] = None
+    max_scale: Optional[float] = None
 
     class Config:
         from_attributes = True

@@ -22,11 +22,12 @@ export async function cookRecipe(
   recipeId: string,
   substitutions?: Record<string, string>,
   skipped?: string[],
+  scale?: number,
 ): Promise<CookResponse> {
   const res = await fetch('/api/v1/items/cook', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ recipe_id: recipeId, substitutions, skipped }),
+    body: JSON.stringify({ recipe_id: recipeId, substitutions, skipped, scale }),
   })
   if (!res.ok) throw new Error(`Failed to cook recipe: ${res.status}`)
   return res.json()

@@ -349,6 +349,12 @@ async def find_substitutions_for_ingredient(
         substitute_ing = await get_ingredient_by_id(db, sub.substitute_ingredient_id)
         if not substitute_ing:
             continue
+        inv_data = inventory[sub.substitute_ingredient_id]
+        sub_max_scale: float | None = (
+            inv_data.total_quantity / (required_quantity * sub.ratio)
+            if required_quantity > 0 and sub.ratio > 0
+            else None
+        )
         results.append(SubstitutionSuggestion(
             original_ingredient_id=ingredient_id,
             original_ingredient_name=original_ing.name,
@@ -357,6 +363,7 @@ async def find_substitutions_for_ingredient(
             ratio=sub.ratio,
             quality_score=sub.quality_score,
             notes=sub.notes,
+            max_scale=sub_max_scale,
         ))
 
     return results

@@ -334,6 +334,7 @@ async def cook(
         str(payload.recipe_id),
         substitutions=payload.substitutions,
         skipped=payload.skipped,
+        scale=payload.scale,
     )
 
     if result is None:

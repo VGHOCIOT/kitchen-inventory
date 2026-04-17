@@ -33,20 +33,22 @@ async def _resolve_ingredient_status(
     needed: float,
     needed_unit: str,
     inventory: dict[UUID, InventoryIngredient],
-) -> tuple[float, str, float, str, list]:
+) -> tuple[float, str | None, float, str, list, float | None]:
     """
     Resolve availability and substitutes for one ingredient.
 
     Bridges unit mismatches (e.g. recipe in slices→unit, inventory in g)
     before checking sufficiency and finding substitutes.
 
-    Returns (cmp_needed, cmp_unit, available_qty, status, substitutes).
+    Returns (cmp_needed, cmp_unit, available_qty, status, substitutes, max_scale).
+    max_scale is the largest scale factor the inventory can support (available / needed at 1×).
+    None when units are incompatible and comparison is impossible.
     """
     inv_data = inventory.get(ingredient.id)
     available_qty = inv_data.total_quantity if inv_data else 0.0
 
     cmp_needed = needed
-    cmp_unit = needed_unit
+    cmp_unit: str | None = needed_unit
     cmp_available = available_qty
 
     if inv_data and inv_data.base_unit != needed_unit:
@@ -56,22 +58,28 @@ async def _resolve_ingredient_status(
                 cmp_needed = converted
                 cmp_unit = "g"
                 cmp_available = inv_data.total_quantity
+            else:
+                cmp_unit = None  # can't bridge unit→g, treat as incompatible
         elif inv_data.base_unit == "unit" and needed_unit == "g":
             converted = bridge_to_grams(inv_data.total_quantity, ingredient)
             if converted is not None:
                 cmp_available = converted
                 cmp_unit = "g"
+            else:
+                cmp_unit = None  # can't bridge unit→g, treat as incompatible
+
+    max_scale: float | None = (cmp_available / cmp_needed) if (cmp_unit is not None and cmp_needed > 0) else None
 
     if inv_data and cmp_unit and cmp_available >= cmp_needed:
-        return cmp_needed, cmp_unit, available_qty, 'available', []
+        return cmp_needed, cmp_unit, available_qty, 'available', [], max_scale
 
     status = 'missing' if not inv_data else 'insufficient'
     substitutes = await find_substitutions_for_ingredient(
         db, ingredient.id, inventory,
-        required_quantity=cmp_needed,
-        required_unit=cmp_unit,
+        required_quantity=cmp_needed if cmp_unit else needed,
+        required_unit=cmp_unit if cmp_unit else needed_unit,
     )
-    return cmp_needed, cmp_unit, available_qty, status, substitutes
+    return cmp_needed, cmp_unit, available_qty, status, substitutes, max_scale
 
 
 async def _build_ingredient_to_items_map(db: AsyncSession) -> dict[UUID, list[dict]]:
@@ -155,7 +163,7 @@ async def get_cook_plan(db: AsyncSession, recipe_id: UUID) -> CookPlan | None:
         needed = required["quantity"]
         needed_unit = required["base_unit"]
 
-        _, _, available_qty, status, substitutes = await _resolve_ingredient_status(
+        _, _, available_qty, status, substitutes, max_scale = await _resolve_ingredient_status(
             db, ingredient, needed, needed_unit, inventory
         )
 
@@ -169,6 +177,7 @@ async def get_cook_plan(db: AsyncSession, recipe_id: UUID) -> CookPlan | None:
             status=status,
             available_quantity=available_qty,
             substitutes=substitutes,
+            max_scale=max_scale,
         ))
 
     return CookPlan(
@@ -183,6 +192,7 @@ async def cook_recipe(
     recipe_id: UUID,
     substitutions: dict[UUID, UUID] | None = None,
     skipped: list[UUID] | None = None,
+    scale: float = 1.0,
 ) -> dict | None:
     """
     Deduct all recipe ingredient quantities from inventory.
@@ -223,7 +233,7 @@ async def cook_recipe(
         if not ingredient:
             continue
         required = await convert_to_base_unit(recipe_ing.quantity, recipe_ing.unit, ingredient.name)
-        needed = required["quantity"]
+        needed = required["quantity"] * scale
         needed_unit = required["base_unit"]
 
         resolve_id = sub_overrides.get(ing_id, ing_id)
@@ -233,13 +243,13 @@ async def cook_recipe(
             if not resolve_ing:
                 preflight_failed.append(ingredient.name)
                 continue
-            _, _, _, resolved_status, _ = await _resolve_ingredient_status(
+            _, _, _, resolved_status, _, _ = await _resolve_ingredient_status(
                 db, resolve_ing, needed, needed_unit, inventory
             )
             if resolved_status != 'available':
                 preflight_failed.append(ingredient.name)
         else:
-            _, _, _, status, subs = await _resolve_ingredient_status(
+            _, _, _, status, subs, _ = await _resolve_ingredient_status(
                 db, ingredient, needed, needed_unit, inventory
             )
             if status == 'insufficient' and not subs:
@@ -262,14 +272,14 @@ async def cook_recipe(
             recipe_ing.unit,
             ingredient.name,
         )
-        needed = required["quantity"]
+        needed = required["quantity"] * scale
         needed_unit = required["base_unit"]
         ing_id = recipe_ing.canonical_ingredient_id
 
         if ing_id in skip_set:
             continue
 
-        cmp_needed, cmp_unit, _, status, subs = await _resolve_ingredient_status(
+        cmp_needed, cmp_unit, _, status, subs, _ = await _resolve_ingredient_status(
             db, ingredient, needed, needed_unit, inventory
         )
 

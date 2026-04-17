@@ -15,6 +15,7 @@ export interface SubstitutionSuggestion {
   ratio: number
   quality_score: number
   notes: string | null
+  max_scale: number | null
 }
 
 export interface RecipeMatchResult {
@@ -83,6 +84,7 @@ export interface CookPlanIngredient {
   status: CookPlanStatus
   available_quantity: number
   substitutes: SubstitutionSuggestion[]
+  max_scale: number | null
 }
 
 export interface CookPlan {

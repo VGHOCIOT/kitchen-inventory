@@ -119,6 +119,9 @@ MANUAL_FRESH_WEIGHTS = {
     "duck breast": 200,     # 1 breast half
     "scallop": 35,          # 1 large scallop
 
+    # Pantry sprays (per serving = 1/4-second spray, per FDA/USDA)
+    "cooking spray": 0.25,  # 1 serving spray (~0.25g aerosol mist)
+
     # Eggs & Dairy (if not packaged)
     "egg": 50,              # 1 large egg
 

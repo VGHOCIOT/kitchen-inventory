@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { ChefHat, Minus, Plus, Timer, ExternalLink, ArrowRightLeft, SkipForward } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { ChefHat, Minus, Plus, Timer, ExternalLink, ArrowRightLeft, Ban } from 'lucide-react'
 import { fetchRecipeInstructions, fetchCookPlan, cookRecipe } from '../api/recipes'
 import type { RecipeOut, CookResponse, CookPlan, CookPlanIngredient } from '../interfaces/Recipes'
 import { useDispatch } from 'react-redux'
@@ -102,7 +102,7 @@ export default function RecipeInstructions() {
       for (const [ingId, subId] of Object.entries(selectedSubs)) {
         if (subId) substitutions[ingId] = subId
       }
-      const result = await cookRecipe(recipeId, substitutions, Array.from(skipped))
+      const result = await cookRecipe(recipeId, substitutions, Array.from(skipped), scale)
       setCookResult(result)
       dispatch(InventoryActions.fetchInventory())
       dispatch(RecipeActions.fetchRecipeMatches())
@@ -198,21 +198,42 @@ function CookPlanView({
   onSubChange: (ingId: string, subId: string) => void
   onSkipToggle: (ingId: string) => void
 }) {
+  const globalMaxScale = useMemo(() => {
+    const limits = plan.ingredients
+      .filter(ing => !skipped.has(ing.ingredient_id))
+      .map(ing => {
+        const selectedSubId = selectedSubs[ing.ingredient_id]
+        if (selectedSubId) {
+          const sub = ing.substitutes.find(s => s.substitute_ingredient_id === selectedSubId)
+          if (sub && sub.max_scale !== null) return sub.max_scale
+        }
+        return ing.max_scale
+      })
+      .filter((v): v is number => v !== null)
+    return limits.length > 0 ? Math.min(...limits) : Infinity
+  }, [plan.ingredients, skipped, selectedSubs])
+
+  const atCap = scale + 0.5 > globalMaxScale
+
   return (
     <div className="rounded border border-edge p-4 bg-white mb-6">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-muted uppercase tracking-widest">Ingredients</h2>
         <div className="flex items-center gap-2">
+          {globalMaxScale !== Infinity && (
+            <span className="text-xs text-muted">max {globalMaxScale.toFixed(1)}×</span>
+          )}
           <button
             onClick={() => onScaleChange(Math.max(0.5, scale - 0.5))}
             className="p-1 rounded border border-edge text-muted hover:text-black"
           >
             <Minus size={14} />
           </button>
-          <span className="text-sm font-medium text-black w-10 text-center">{scale}x</span>
+          <span className="text-sm font-medium text-black w-10 text-center">{scale}×</span>
           <button
             onClick={() => onScaleChange(scale + 0.5)}
-            className="p-1 rounded border border-edge text-muted hover:text-black"
+            disabled={atCap}
+            className="p-1 rounded border border-edge text-muted hover:text-black disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Plus size={14} />
           </button>
@@ -256,10 +277,15 @@ function CookPlanRow({
     ? ing.substitutes.find(s => s.substitute_ingredient_id === selectedSubId)
     : null
 
+  const effectiveMaxScale = activeSub ? activeSub.max_scale : ing.max_scale
+  const isOverScale = !isSkipped && effectiveMaxScale !== null && scale > effectiveMaxScale
+
   const rowClass = isSkipped
     ? 'opacity-40 line-through'
-    : ing.status === 'available'
+    : ing.status === 'available' && !isOverScale
     ? ''
+    : ing.status === 'available' && isOverScale
+    ? 'text-warn'
     : activeSub
     ? 'text-warn'
     : 'text-danger'
@@ -277,6 +303,9 @@ function CookPlanRow({
           {ing.status !== 'available' && !activeSub && !isSkipped && (
             <span className="text-xs text-danger ml-1">({ing.status})</span>
           )}
+          {isOverScale && ing.status === 'available' && (
+            <span className="text-xs text-warn ml-1">(not enough at {scale}×)</span>
+          )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {ing.quantity != null && ing.unit && (
@@ -284,29 +313,40 @@ function CookPlanRow({
           )}
           <button
             onClick={onSkipToggle}
-            title={isSkipped ? 'Un-skip' : 'Skip ingredient'}
-            className="p-0.5 text-muted hover:text-black rounded"
+            title={isSkipped ? 'Include ingredient' : 'Do not use'}
+            className={`p-0.5 rounded transition-colors ${isSkipped ? 'text-danger' : 'text-muted hover:text-danger'}`}
           >
-            <SkipForward size={13} />
+            <Ban size={13} />
           </button>
         </div>
       </div>
 
       {ing.status !== 'available' && ing.substitutes.length > 0 && !isSkipped && (
-        <div className="flex items-center gap-2 pl-4">
-          <span className="text-xs text-muted">Use:</span>
-          <select
-            value={selectedSubId}
-            onChange={e => onSubChange(e.target.value)}
-            className="text-xs border border-edge rounded px-1.5 py-0.5 text-black bg-white"
+        <div className="flex items-center gap-1.5 pl-4 flex-wrap">
+          <span className="text-xs text-muted shrink-0">Sub:</span>
+          <button
+            onClick={() => onSubChange('')}
+            className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${
+              !selectedSubId
+                ? 'bg-muted/10 border-muted text-muted font-medium'
+                : 'border-edge text-muted hover:border-muted'
+            }`}
           >
-            <option value="">— original ({ing.ingredient_name}) —</option>
-            {ing.substitutes.map(s => (
-              <option key={s.substitute_ingredient_id} value={s.substitute_ingredient_id}>
-                {s.substitute_ingredient_name}
-              </option>
-            ))}
-          </select>
+            {ing.ingredient_name}
+          </button>
+          {ing.substitutes.map(s => (
+            <button
+              key={s.substitute_ingredient_id}
+              onClick={() => onSubChange(s.substitute_ingredient_id)}
+              className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${
+                selectedSubId === s.substitute_ingredient_id
+                  ? 'bg-warn/10 border-warn text-warn font-medium'
+                  : 'border-edge text-muted hover:border-warn hover:text-warn'
+              }`}
+            >
+              {s.substitute_ingredient_name}
+            </button>
+          ))}
         </div>
       )}
     </li>
