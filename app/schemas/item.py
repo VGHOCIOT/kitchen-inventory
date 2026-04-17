@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
@@ -32,7 +32,7 @@ class ItemOut(BaseModel):
 
 
 class ScanIn(BaseModel):
-    barcode: str
+    barcode: str = Field(..., min_length=1, max_length=20, pattern=r"^\d+$")
     location: Locations = Locations.FRIDGE
 
 

@@ -1,10 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 from uuid import UUID
 from typing import Optional
 
 
 class RecipeCreateFromURL(BaseModel):
-    url: str
+    url: HttpUrl
 
 
 class RecipeOut(BaseModel):

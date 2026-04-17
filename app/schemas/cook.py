@@ -5,7 +5,7 @@ from uuid import UUID
 
 class CookRequest(BaseModel):
     recipe_id: UUID
-    substitutions: Optional[dict[str, str]] = None
+    substitutions: Optional[dict[UUID, UUID]] = None
 
 
 class DeductedItem(BaseModel):
@@ -14,23 +14,7 @@ class DeductedItem(BaseModel):
     unit: str
 
 
-class SubstitutedItem(BaseModel):
-    original: str
-    substitute: str
-    amount: float
-    unit: str
-
-
-class InsufficientItem(BaseModel):
-    ingredient: str
-    needed: float
-    available: float
-    unit: str
-
-
 class CookResponse(BaseModel):
     recipe_title: str
     deducted: list[DeductedItem]
-    substituted: list[SubstitutedItem]
-    insufficient: list[InsufficientItem]
-    unmapped: list[str]
+    failed: list[str]

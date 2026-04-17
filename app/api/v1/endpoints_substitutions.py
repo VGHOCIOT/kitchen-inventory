@@ -22,9 +22,9 @@ async def _resolve_substitution_out(db: AsyncSession, sub) -> SubstitutionOut:
     return SubstitutionOut(
         id=sub.id,
         original_ingredient_id=sub.original_ingredient_id,
-        original_ingredient_name=original.name if original else "unknown",
+        original_ingredient_name=original.name,
         substitute_ingredient_id=sub.substitute_ingredient_id,
-        substitute_ingredient_name=substitute.name if substitute else "unknown",
+        substitute_ingredient_name=substitute.name,
         ratio=sub.ratio,
         quality_score=sub.quality_score,
         notes=sub.notes,

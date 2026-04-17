@@ -9,6 +9,8 @@ docker-compose.override.yml
 .DS_Store
 
 frontend/node_modules/
+frontend/dist/
 
 # Claude Code AI instructions (local only)
 .claude/
+.codesight

@@ -258,30 +258,10 @@ function CookResultSummary({ result }: { result: CookResponse }) {
           </ul>
         </div>
       )}
-      {result.substituted.length > 0 && (
-        <div className="mb-2">
-          <p className="text-xs text-muted mb-1">Substituted:</p>
-          <ul className="space-y-0.5">
-            {result.substituted.map((s, i) => (
-              <li key={i} className="text-sm text-black">{s.original} → {s.substitute}: {s.amount} {s.unit}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {result.insufficient.length > 0 && (
-        <div className="mb-2">
-          <p className="text-xs text-muted mb-1">Insufficient:</p>
-          <ul className="space-y-0.5">
-            {result.insufficient.map((item, i) => (
-              <li key={i} className="text-sm text-danger">{item.ingredient}: needed {item.needed}, had {item.available} {item.unit}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {result.unmapped.length > 0 && (
+      {result.failed.length > 0 && (
         <div>
-          <p className="text-xs text-muted mb-1">Not tracked:</p>
-          <p className="text-sm text-subtle">{result.unmapped.join(', ')}</p>
+          <p className="text-xs text-muted mb-1">Could not deduct:</p>
+          <p className="text-sm text-danger">{result.failed.join(', ')}</p>
         </div>
       )}
     </div>

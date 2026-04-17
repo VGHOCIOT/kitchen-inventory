@@ -59,7 +59,7 @@ async def create_recipe_from_url(
     Business logic orchestrates multiple CRUD operations.
     """
     # Parse recipe from URL
-    recipe_data = await parse_recipe_from_url(payload.url)
+    recipe_data = await parse_recipe_from_url(str(payload.url))
     if not recipe_data:
         raise HTTPException(status_code=400, detail="Failed to parse recipe from URL")
 

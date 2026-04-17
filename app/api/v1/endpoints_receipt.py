@@ -55,7 +55,10 @@ async def scan_receipt(
     if mime_type not in SUPPORTED_TYPES:
         raise HTTPException(status_code=400, detail=f"Unsupported image type. Must be one of: {', '.join(SUPPORTED_TYPES)}")
 
+    MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
     image_bytes = await image_file.read()
+    if len(image_bytes) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="Image exceeds 10 MB limit")
 
     items, skipped = await parse_receipt_image(image_bytes, mime_type, store_name)
     processed = []

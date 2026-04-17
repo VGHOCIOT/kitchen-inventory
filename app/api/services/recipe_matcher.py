@@ -82,10 +82,6 @@ async def aggregate_inventory_by_ingredient(
         logger.info(f"[AGGREGATE] Found alias for '{product.name}' → ingredient_id: {alias.ingredient_id}")
 
         ingredient = await get_ingredient_by_id(db, alias.ingredient_id)
-        if not ingredient:
-            logger.warning(f"[AGGREGATE] Ingredient not found for id: {alias.ingredient_id}")
-            continue
-
         logger.info(f"[AGGREGATE] Ingredient name: '{ingredient.name}'")
 
         # Item.qty is already in base units — use directly
@@ -155,10 +151,6 @@ async def match_recipe_to_inventory(
 
     for recipe_ing in recipe_ingredients:
         ingredient = await get_ingredient_by_id(db, recipe_ing.canonical_ingredient_id)
-        if not ingredient:
-            logger.warning(f"[MATCH] Ingredient not found for id: {recipe_ing.canonical_ingredient_id}")
-            continue
-
         logger.info(f"[MATCH] Checking ingredient '{ingredient.name}': need {recipe_ing.quantity} {recipe_ing.unit}")
 
         # Convert recipe requirement to base unit
@@ -349,8 +341,6 @@ async def find_substitutions_for_ingredient(
     results = []
     for sub in candidates:
         substitute_ing = await get_ingredient_by_id(db, sub.substitute_ingredient_id)
-        if not substitute_ing:
-            continue
         results.append(SubstitutionSuggestion(
             original_ingredient_id=ingredient_id,
             original_ingredient_name=original_ing.name,

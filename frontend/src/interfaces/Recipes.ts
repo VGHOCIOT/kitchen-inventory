@@ -65,25 +65,9 @@ export interface DeductedItem {
   unit: string
 }
 
-export interface SubstitutedItem {
-  original: string
-  substitute: string
-  amount: number
-  unit: string
-}
-
-export interface InsufficientItem {
-  ingredient: string
-  needed: number
-  available: number
-  unit: string
-}
-
 export interface CookResponse {
   recipe_title: string
   deducted: DeductedItem[]
-  substituted: SubstitutedItem[]
-  insufficient: InsufficientItem[]
-  unmapped: string[]
+  failed: string[]
 }
 
