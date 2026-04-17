@@ -129,6 +129,9 @@ async def cook_recipe(
 
     for recipe_ing in recipe_ingredients:
         ingredient = await get_ingredient_by_id(db, recipe_ing.canonical_ingredient_id)
+        if not ingredient:
+            logger.warning(f"[COOK] Ingredient not found: {recipe_ing.canonical_ingredient_id}")
+            continue
         required = await convert_to_base_unit(
             recipe_ing.quantity,
             recipe_ing.unit,
