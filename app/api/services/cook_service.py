@@ -242,7 +242,7 @@ async def cook_recipe(
             _, _, _, status, subs = await _resolve_ingredient_status(
                 db, ingredient, needed, needed_unit, inventory
             )
-            if status != 'available' and not subs:
+            if status == 'insufficient' and not subs:
                 preflight_failed.append(ingredient.name)
 
     if preflight_failed:
