@@ -71,3 +71,23 @@ export interface CookResponse {
   failed: string[]
 }
 
+export type CookPlanStatus = 'available' | 'insufficient' | 'missing'
+
+export interface CookPlanIngredient {
+  recipe_ingredient_id: string
+  ingredient_id: string
+  ingredient_name: string
+  ingredient_text: string
+  quantity: number
+  unit: string
+  status: CookPlanStatus
+  available_quantity: number
+  substitutes: SubstitutionSuggestion[]
+}
+
+export interface CookPlan {
+  recipe_id: string
+  recipe_title: string
+  ingredients: CookPlanIngredient[]
+}
+

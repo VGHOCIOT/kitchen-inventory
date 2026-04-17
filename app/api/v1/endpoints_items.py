@@ -333,6 +333,7 @@ async def cook(
         db,
         str(payload.recipe_id),
         substitutions=payload.substitutions,
+        skipped=payload.skipped,
     )
 
     if result is None:

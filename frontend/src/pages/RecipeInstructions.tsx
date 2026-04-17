@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { ChefHat, Minus, Plus, Timer, ExternalLink } from 'lucide-react'
-import { fetchRecipeInstructions, cookRecipe } from '../api/recipes'
-import type { RecipeOut, RecipeIngredient, CookResponse } from '../interfaces/Recipes'
+import { ChefHat, Minus, Plus, Timer, ExternalLink, ArrowRightLeft, SkipForward } from 'lucide-react'
+import { fetchRecipeInstructions, fetchCookPlan, cookRecipe } from '../api/recipes'
+import type { RecipeOut, CookResponse, CookPlan, CookPlanIngredient } from '../interfaces/Recipes'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../store'
 import RecipeActions from '../store/actions/recipeActions'
@@ -39,13 +39,18 @@ function formatQty(qty: number, scale: number): string {
 export default function RecipeInstructions() {
   const dispatch = useDispatch<AppDispatch>()
   const [recipe, setRecipe] = useState<RecipeOut | null>(null)
-  const [ingredients, setIngredients] = useState<RecipeIngredient[]>([])
+  const [cookPlan, setCookPlan] = useState<CookPlan | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [scale, setScale] = useState(1)
   const [cookResult, setCookResult] = useState<CookResponse | null>(null)
   const [cooking, setCooking] = useState(false)
   const [wakeLock, setWakeLock] = useState<WakeLockSentinel | null>(null)
+
+  // ingredient_id → substitute_ingredient_id (empty string = use original)
+  const [selectedSubs, setSelectedSubs] = useState<Record<string, string>>({})
+  // ingredient_ids the user has chosen to skip
+  const [skipped, setSkipped] = useState<Set<string>>(new Set())
 
   const recipeId = window.location.pathname.split('/').pop() || ''
 
@@ -55,10 +60,21 @@ export default function RecipeInstructions() {
       setLoading(false)
       return
     }
-    fetchRecipeInstructions(recipeId)
-      .then((data) => {
-        setRecipe(data.recipe)
-        setIngredients(data.ingredients)
+    Promise.all([
+      fetchRecipeInstructions(recipeId),
+      fetchCookPlan(recipeId),
+    ])
+      .then(([recipeData, plan]) => {
+        setRecipe(recipeData.recipe)
+        setCookPlan(plan)
+        // Pre-select the best substitute for insufficient/missing ingredients
+        const autoSubs: Record<string, string> = {}
+        for (const ing of plan.ingredients) {
+          if (ing.status !== 'available' && ing.substitutes.length > 0) {
+            autoSubs[ing.ingredient_id] = ing.substitutes[0].substitute_ingredient_id
+          }
+        }
+        setSelectedSubs(autoSubs)
       })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false))
@@ -81,7 +97,12 @@ export default function RecipeInstructions() {
     if (!recipeId || cooking) return
     setCooking(true)
     try {
-      const result = await cookRecipe(recipeId)
+      // Build substitutions map: only entries where a sub is selected (non-empty)
+      const substitutions: Record<string, string> = {}
+      for (const [ingId, subId] of Object.entries(selectedSubs)) {
+        if (subId) substitutions[ingId] = subId
+      }
+      const result = await cookRecipe(recipeId, substitutions, Array.from(skipped))
       setCookResult(result)
       dispatch(InventoryActions.fetchInventory())
       dispatch(RecipeActions.fetchRecipeMatches())
@@ -119,37 +140,20 @@ export default function RecipeInstructions() {
         <p className="text-muted text-sm mb-6">{recipe.description}</p>
       )}
 
-      {ingredients.length > 0 && (
-        <div className="rounded border border-edge p-4 bg-white mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-widest">Ingredients</h2>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setScale(s => Math.max(0.5, s - 0.5))}
-                className="p-1 rounded border border-edge text-muted hover:text-black"
-              >
-                <Minus size={14} />
-              </button>
-              <span className="text-sm font-medium text-black w-10 text-center">{scale}x</span>
-              <button
-                onClick={() => setScale(s => s + 0.5)}
-                className="p-1 rounded border border-edge text-muted hover:text-black"
-              >
-                <Plus size={14} />
-              </button>
-            </div>
-          </div>
-          <ul className="space-y-1.5">
-            {ingredients.map(ing => (
-              <li key={ing.id} className="text-sm text-black flex justify-between">
-                <span>{ing.ingredient_text.replace(/^[\d\s/.½¼¾⅓⅔]+/, '').trim()}</span>
-                {ing.quantity != null && ing.unit && (
-                  <span className="text-muted shrink-0 ml-3">{formatQty(ing.quantity, scale)} {ing.unit}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {cookPlan && (
+        <CookPlanView
+          plan={cookPlan}
+          scale={scale}
+          selectedSubs={selectedSubs}
+          skipped={skipped}
+          onScaleChange={setScale}
+          onSubChange={(ingId, subId) => setSelectedSubs(prev => ({ ...prev, [ingId]: subId }))}
+          onSkipToggle={(ingId) => setSkipped(prev => {
+            const next = new Set(prev)
+            next.has(ingId) ? next.delete(ingId) : next.add(ingId)
+            return next
+          })}
+        />
       )}
 
       <div className="rounded border border-edge p-4 bg-white mb-6">
@@ -174,6 +178,138 @@ export default function RecipeInstructions() {
         </button>
       )}
     </div>
+  )
+}
+
+function CookPlanView({
+  plan,
+  scale,
+  selectedSubs,
+  skipped,
+  onScaleChange,
+  onSubChange,
+  onSkipToggle,
+}: {
+  plan: CookPlan
+  scale: number
+  selectedSubs: Record<string, string>
+  skipped: Set<string>
+  onScaleChange: (s: number) => void
+  onSubChange: (ingId: string, subId: string) => void
+  onSkipToggle: (ingId: string) => void
+}) {
+  return (
+    <div className="rounded border border-edge p-4 bg-white mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-semibold text-muted uppercase tracking-widest">Ingredients</h2>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onScaleChange(Math.max(0.5, scale - 0.5))}
+            className="p-1 rounded border border-edge text-muted hover:text-black"
+          >
+            <Minus size={14} />
+          </button>
+          <span className="text-sm font-medium text-black w-10 text-center">{scale}x</span>
+          <button
+            onClick={() => onScaleChange(scale + 0.5)}
+            className="p-1 rounded border border-edge text-muted hover:text-black"
+          >
+            <Plus size={14} />
+          </button>
+        </div>
+      </div>
+      <ul className="space-y-2">
+        {plan.ingredients.map(ing => (
+          <CookPlanRow
+            key={ing.ingredient_id}
+            ing={ing}
+            scale={scale}
+            selectedSubId={selectedSubs[ing.ingredient_id] ?? ''}
+            isSkipped={skipped.has(ing.ingredient_id)}
+            onSubChange={(subId) => onSubChange(ing.ingredient_id, subId)}
+            onSkipToggle={() => onSkipToggle(ing.ingredient_id)}
+          />
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+function CookPlanRow({
+  ing,
+  scale,
+  selectedSubId,
+  isSkipped,
+  onSubChange,
+  onSkipToggle,
+}: {
+  ing: CookPlanIngredient
+  scale: number
+  selectedSubId: string
+  isSkipped: boolean
+  onSubChange: (subId: string) => void
+  onSkipToggle: () => void
+}) {
+  const displayName = ing.ingredient_text.replace(/^[\d\s/.½¼¾⅓⅔]+/, '').trim()
+
+  const activeSub = selectedSubId
+    ? ing.substitutes.find(s => s.substitute_ingredient_id === selectedSubId)
+    : null
+
+  const rowClass = isSkipped
+    ? 'opacity-40 line-through'
+    : ing.status === 'available'
+    ? ''
+    : activeSub
+    ? 'text-warn'
+    : 'text-danger'
+
+  return (
+    <li className={`text-sm flex flex-col gap-1 ${rowClass}`}>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 min-w-0">
+          {ing.status !== 'available' && activeSub && (
+            <ArrowRightLeft size={12} className="shrink-0 text-warn" />
+          )}
+          <span className={`${isSkipped ? 'line-through text-muted' : 'text-black'}`}>
+            {activeSub ? activeSub.substitute_ingredient_name : displayName}
+          </span>
+          {ing.status !== 'available' && !activeSub && !isSkipped && (
+            <span className="text-xs text-danger ml-1">({ing.status})</span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {ing.quantity != null && ing.unit && (
+            <span className="text-muted">{formatQty(ing.quantity, scale)} {ing.unit}</span>
+          )}
+          <button
+            onClick={onSkipToggle}
+            title={isSkipped ? 'Un-skip' : 'Skip ingredient'}
+            className="p-0.5 text-muted hover:text-black rounded"
+          >
+            <SkipForward size={13} />
+          </button>
+        </div>
+      </div>
+
+      {ing.status !== 'available' && ing.substitutes.length > 0 && !isSkipped && (
+        <div className="flex items-center gap-2 pl-4">
+          <span className="text-xs text-muted">Use:</span>
+          <select
+            value={selectedSubId}
+            onChange={e => onSubChange(e.target.value)}
+            className="text-xs border border-edge rounded px-1.5 py-0.5 text-black bg-white"
+          >
+            <option value="">— original ({ing.ingredient_name}) —</option>
+            {ing.substitutes.map(s => (
+              <option key={s.substitute_ingredient_id} value={s.substitute_ingredient_id}>
+                {s.substitute_ingredient_name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+    </li>
   )
 }
 

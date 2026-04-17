@@ -5,7 +5,6 @@ Reuses the recipe matcher's inventory aggregation, then deducts
 required amounts from lots per ingredient.
 """
 
-from http.client import HTTPException
 import logging
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,6 +20,7 @@ from api.services.recipe_matcher import (
     find_substitutions_for_ingredient,
 )
 from api.services.unit_converter import convert_to_base_unit
+from schemas.cook import CookPlan, CookPlanIngredient
 
 logger = logging.getLogger(__name__)
 
@@ -88,10 +88,62 @@ async def _deduct_ingredient(
     return remaining_to_deduct <= 0
 
 
+async def get_cook_plan(db: AsyncSession, recipe_id: UUID) -> CookPlan | None:
+    recipe = await get_recipe_by_id(db, recipe_id)
+    if not recipe:
+        return None
+
+    recipe_ingredients = await get_recipe_ingredients(db, recipe_id)
+    inventory = await aggregate_inventory_by_ingredient(db)
+
+    plan_ingredients = []
+    for recipe_ing in recipe_ingredients:
+        ingredient = await get_ingredient_by_id(db, recipe_ing.canonical_ingredient_id)
+        if not ingredient:
+            continue
+
+        required = await convert_to_base_unit(recipe_ing.quantity, recipe_ing.unit, ingredient.name)
+        needed = required["quantity"]
+        needed_unit = required["base_unit"]
+
+        inv_data = inventory.get(recipe_ing.canonical_ingredient_id)
+        available_qty = inv_data.total_quantity if inv_data else 0.0
+
+        if inv_data and inv_data.base_unit == needed_unit and available_qty >= needed:
+            status = 'available'
+            substitutes = []
+        else:
+            status = 'missing' if not inv_data else 'insufficient'
+            substitutes = await find_substitutions_for_ingredient(
+                db, recipe_ing.canonical_ingredient_id, inventory,
+                required_quantity=needed,
+                required_unit=needed_unit,
+            )
+
+        plan_ingredients.append(CookPlanIngredient(
+            recipe_ingredient_id=recipe_ing.id,
+            ingredient_id=recipe_ing.canonical_ingredient_id,
+            ingredient_name=ingredient.name,
+            ingredient_text=recipe_ing.ingredient_text,
+            quantity=recipe_ing.quantity,
+            unit=recipe_ing.unit,
+            status=status,
+            available_quantity=available_qty,
+            substitutes=substitutes,
+        ))
+
+    return CookPlan(
+        recipe_id=recipe_id,
+        recipe_title=recipe.title,
+        ingredients=plan_ingredients,
+    )
+
+
 async def cook_recipe(
     db: AsyncSession,
     recipe_id: UUID,
     substitutions: dict[UUID, UUID] | None = None,
+    skipped: list[UUID] | None = None,
 ) -> dict | None:
     """
     Deduct all recipe ingredient quantities from inventory.
@@ -114,15 +166,41 @@ async def cook_recipe(
     if not recipe:
         return None
 
-    sub_overrides: dict[UUID, UUID] = substitutions or {} 
+    sub_overrides: dict[UUID, UUID] = substitutions or {}
+    skip_set: set[UUID] = set(skipped) if skipped else set()
 
     recipe_ingredients = await get_recipe_ingredients(db, recipe_id)
 
-    # Reuse the matcher's aggregation for availability check
     inventory = await aggregate_inventory_by_ingredient(db)
-
-    # Also build the item-level map for deduction targets
     ingredient_to_items = await _build_ingredient_to_items_map(db)
+
+    # Pre-flight: verify all non-skipped ingredients can be fulfilled before deducting anything
+    preflight_failed = []
+    for recipe_ing in recipe_ingredients:
+        ing_id = recipe_ing.canonical_ingredient_id
+        if ing_id in skip_set:
+            continue
+        ingredient = await get_ingredient_by_id(db, ing_id)
+        if not ingredient:
+            continue
+        required = await convert_to_base_unit(recipe_ing.quantity, recipe_ing.unit, ingredient.name)
+        needed = required["quantity"]
+        needed_unit = required["base_unit"]
+
+        resolve_id = sub_overrides.get(ing_id, ing_id)
+        inv_data = inventory.get(resolve_id)
+        if not inv_data or inv_data.base_unit != needed_unit or inv_data.total_quantity < needed:
+            if resolve_id == ing_id:
+                # Try auto-sub to see if anything covers it
+                subs = await find_substitutions_for_ingredient(db, ing_id, inventory, required_quantity=needed, required_unit=needed_unit)
+                if not subs:
+                    preflight_failed.append(ingredient.name)
+            else:
+                preflight_failed.append(ingredient.name)
+
+    if preflight_failed:
+        logger.warning(f"[COOK] Pre-flight failed for: {preflight_failed}")
+        return {"recipe_title": recipe.title, "deducted": [], "failed": preflight_failed}
 
     deducted = []
     failed = []
@@ -140,6 +218,9 @@ async def cook_recipe(
         needed = required["quantity"]
         needed_unit = required["base_unit"]
         ing_id = recipe_ing.canonical_ingredient_id
+
+        if ing_id in skip_set:
+            continue
 
         # Manual override: use the specified substitute, don't fall through to auto-sub
         if ing_id in sub_overrides:

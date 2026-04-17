@@ -1,4 +1,4 @@
-import type { RecipeMatchResponse, RecipeResponse, CookResponse } from '../interfaces/Recipes'
+import type { RecipeMatchResponse, RecipeResponse, CookResponse, CookPlan } from '../interfaces/Recipes'
 
 export async function fetchMatchedRecipes(): Promise<RecipeMatchResponse> {
   const res = await fetch('/api/v1/recipes/match-inventory')
@@ -12,11 +12,21 @@ export async function fetchRecipeInstructions(recipeId: string): Promise<RecipeR
   return res.json()
 }
 
-export async function cookRecipe(recipeId: string, substitutions?: Record<string, string>): Promise<CookResponse> {
+export async function fetchCookPlan(recipeId: string): Promise<CookPlan> {
+  const res = await fetch(`/api/v1/recipes/${recipeId}/cook-plan`)
+  if (!res.ok) throw new Error(`Failed to fetch cook plan: ${res.status}`)
+  return res.json()
+}
+
+export async function cookRecipe(
+  recipeId: string,
+  substitutions?: Record<string, string>,
+  skipped?: string[],
+): Promise<CookResponse> {
   const res = await fetch('/api/v1/items/cook', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ recipe_id: recipeId, substitutions }),
+    body: JSON.stringify({ recipe_id: recipeId, substitutions, skipped }),
   })
   if (!res.ok) throw new Error(`Failed to cook recipe: ${res.status}`)
   return res.json()

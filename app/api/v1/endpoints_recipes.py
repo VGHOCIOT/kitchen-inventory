@@ -36,6 +36,8 @@ from config.fresh_weights import MANUAL_FRESH_WEIGHTS
 from api.services.recipe_parser import parse_recipe_from_url, normalize_ingredient_text
 from api.services.spoonacular import parse_ingredients_batch
 from api.services.recipe_matcher import match_all_recipes
+from api.services.cook_service import get_cook_plan
+from schemas.cook import CookPlan
 from api.services.fresh_ingredient_service import get_weight_for_count_ingredient
 from schemas.recipe import (
     RecipeCreateFromURL,
@@ -186,6 +188,18 @@ async def match_recipes_to_inventory(
     - with_substitutions: Can make with ingredient substitutions
     """
     return await match_all_recipes(db)
+
+
+@router.get("/{recipe_id}/cook-plan", response_model=CookPlan)
+async def get_recipe_cook_plan(
+    recipe_id: UUID,
+    db: AsyncSession = Depends(get_db)
+):
+    """Resolve ingredient availability and substitution options before committing a cook."""
+    plan = await get_cook_plan(db, recipe_id)
+    if not plan:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    return plan
 
 
 @router.get("/{recipe_id}", response_model=RecipeWithIngredientsOut)
