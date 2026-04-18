@@ -290,12 +290,24 @@ async def cook_recipe(
             sub_id = sub_overrides[ing_id]
             subs_list = await get_substitutions_for_ingredient(db, ing_id)
             ratio = next((s.ratio for s in subs_list if s.substitute_ingredient_id == sub_id), 1.0)
-            adjusted = cmp_needed * ratio
-            success = await _deduct_ingredient(db, sub_id, adjusted, cmp_unit, ingredient_to_items)
+            sub_inv = inventory.get(sub_id)
+            if sub_inv and cmp_unit and sub_inv.base_unit != cmp_unit:
+                # Cross-unit substitute: bridge original needed to substitute's native unit
+                req_native = (
+                    bridge_to_grams(cmp_needed, ingredient)
+                    if cmp_unit == "unit"
+                    else cmp_needed
+                )
+                adjusted = req_native * ratio if req_native is not None else cmp_needed * ratio
+                deduct_unit = sub_inv.base_unit
+            else:
+                adjusted = cmp_needed * ratio
+                deduct_unit = cmp_unit or needed_unit
+            success = await _deduct_ingredient(db, sub_id, adjusted, deduct_unit, ingredient_to_items)
             if success:
                 sub_ingredient = await get_ingredient_by_id(db, sub_id)
-                deducted.append({"ingredient": sub_ingredient.name, "amount": adjusted, "unit": cmp_unit})
-                logger.info(f"[COOK] Override: deducted {adjusted}{cmp_unit} of '{sub_ingredient.name}' for '{ingredient.name}'")
+                deducted.append({"ingredient": sub_ingredient.name, "amount": adjusted, "unit": deduct_unit})
+                logger.info(f"[COOK] Override: deducted {adjusted}{deduct_unit} of '{sub_ingredient.name}' for '{ingredient.name}'")
             else:
                 failed.append(ingredient.name)
                 logger.warning(f"[COOK] Override substitute insufficient for '{ingredient.name}'")
@@ -310,13 +322,19 @@ async def cook_recipe(
 
         if subs:
             sub = subs[0]
-            adjusted = cmp_needed * sub.ratio
+            if sub.substitute_unit is not None and sub.substitute_quantity is not None:
+                # Cross-unit substitution: recipe_matcher already bridged to substitute's native unit
+                adjusted = sub.substitute_quantity
+                deduct_unit = sub.substitute_unit
+            else:
+                adjusted = cmp_needed * sub.ratio
+                deduct_unit = cmp_unit
             success = await _deduct_ingredient(
-                db, sub.substitute_ingredient_id, adjusted, cmp_unit, ingredient_to_items
+                db, sub.substitute_ingredient_id, adjusted, deduct_unit, ingredient_to_items
             )
             if success:
-                deducted.append({"ingredient": sub.substitute_ingredient_name, "amount": adjusted, "unit": cmp_unit})
-                logger.info(f"[COOK] Auto-sub: deducted {adjusted}{cmp_unit} of '{sub.substitute_ingredient_name}' for '{ingredient.name}'")
+                deducted.append({"ingredient": sub.substitute_ingredient_name, "amount": adjusted, "unit": deduct_unit})
+                logger.info(f"[COOK] Auto-sub: deducted {adjusted}{deduct_unit} of '{sub.substitute_ingredient_name}' for '{ingredient.name}'")
                 continue
 
         failed.append(ingredient.name)
