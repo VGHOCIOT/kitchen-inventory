@@ -67,14 +67,20 @@ def _extract(scraper, url: str) -> dict:
 
 _LEADING_QTY_UNIT_RE = re.compile(
     r'^[\d\s/.½¼¾⅓⅔]+\s*'
-    r'(cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lbs?|pounds?|g|grams?|kg|ml|liters?|l|pinch|dash|handful|slices?|pieces?|pcs)?\s*',
+    r'(?:(cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lbs?|pounds?|g|grams?|kg|ml|liters?|l|pinch|dash|handful|slices?|pieces?|pcs)\b\s*)?',
     re.IGNORECASE,
 )
+# Matches price annotations like "$1.98", "$0.25*", "$1.47***" with any preceding comma/space
+_PRICE_RE = re.compile(r',?\s*\$[\d.]+\*{0,3}')
+_EMPTY_PARENS_RE = re.compile(r'\(\s*\)')
 
 
 def ingredient_display_name(ingredient_text: str) -> str:
-    """Strip leading quantity+unit from raw ingredient text, preserving the rest."""
-    return _LEADING_QTY_UNIT_RE.sub('', ingredient_text).strip()
+    """Strip leading quantity+unit and price annotations from raw ingredient text."""
+    text = _LEADING_QTY_UNIT_RE.sub('', ingredient_text).strip()
+    text = _PRICE_RE.sub('', text)
+    text = _EMPTY_PARENS_RE.sub('', text).strip()
+    return text
 
 
 def normalize_product_name(product_name: str) -> str:
@@ -142,23 +148,45 @@ def normalize_ingredient_text(ingredient_text: str) -> str:
         'ounce', 'ounces', 'oz', 'pound', 'pounds', 'lb', 'lbs', 'gram', 'grams', 'g',
         'kilogram', 'kilograms', 'kg', 'liter', 'liters', 'l', 'milliliter', 'milliliters', 'ml',
         'pinch', 'dash', 'handful', 'slice', 'slices', 'piece', 'pieces', 'pcs',
+        'dozen', 'clove', 'cloves', 'head', 'heads', 'bunch', 'bunches', 'spear', 'spears',
+        'ear', 'ears', 'knob', 'knobs', 'drop', 'drops', 'scoop', 'scoops',
+        # Packaging/form descriptors
+        'block', 'stick', 'sticks', 'bar', 'bars', 'can', 'cans', 'jar', 'jars',
+        'bottle', 'bottles', 'bag', 'bags', 'box', 'boxes', 'package', 'packages',
+        'packet', 'packets', 'container', 'containers', 'carton', 'cartons',
+        'sheet', 'sheets', 'log', 'roll', 'rolls', 'tube', 'tubes',
         # Preparation methods
         'chopped', 'diced', 'minced', 'sliced', 'fresh', 'dried', 'ground', 'crushed', 'grated',
         'shredded', 'melted', 'softened', 'beaten', 'whisked', 'toasted', 'roasted',
+        'peeled', 'deveined', 'trimmed', 'washed', 'rinsed', 'cleaned', 'halved', 'quartered',
+        'cubed', 'crumbled', 'sifted', 'blanched', 'cooked', 'boiled', 'steamed',
+        'smoked', 'cured', 'pickled', 'aged', 'marinated', 'seasoned', 'fried', 'grilled',
+        'baked', 'chilled', 'thawed', 'frozen', 'divided', 'separated', 'strained',
+        'drained', 'rinsed', 'patted', 'dry', 'pitted', 'seeded', 'deseeded', 'hulled',
+        'zested', 'juiced', 'squeezed',
         # Plant part descriptors (e.g. "cilantro leaves" → "cilantro")
         'leaves', 'leaf', 'stalks', 'stalk', 'sprig', 'sprigs', 'florets', 'floret',
-        # Size descriptors
+        'root', 'roots', 'stem', 'stems', 'tip', 'tips', 'skin', 'skins', 'rind', 'rinds',
+        'peel', 'peels', 'zest', 'core', 'seeds', 'seed', 'pit', 'pits',
+        # Size/thickness descriptors
         'large', 'medium', 'small', 'whole', 'half', 'quarter', 'mini', 'extra', 'jumbo',
+        'thin', 'thick', 'long', 'short', 'wide', 'fine', 'coarse', 'tiny',
         # Range/connector words (e.g. "1 to 2 jalapeños" → "jalapeños")
-        'to',
+        'to', 'or', 'and', 'about', 'approximately', 'around',
         # Quality descriptors
         'pure', 'organic', 'natural', 'raw', 'unbleached', 'free', 'range', 'cage',
         'grade', 'quality', 'premium', 'fancy', 'select', 'choice',
+        'farm-raised', 'grass-fed', 'pasture-raised', 'wild-caught', 'non-gmo',
+        # Temperature/state
+        'room', 'temperature', 'warm', 'cold', 'hot',
         # Common adjectives
         'all-purpose', 'purpose', 'all', 'light', 'dark', 'unsalted', 'salted', 'sweetened',
         'unsweetened', 'plain', 'regular', 'low', 'fat', 'sodium', 'reduced',
+        'full', 'skim', 'nonfat', 'low-fat', 'part-skim', 'whole-milk',
+        'homemade', 'store-bought', 'store', 'bought',
         # Optional/variation markers that slip through scraping
-        'optional', 'variation',
+        'optional', 'variation', 'plus', 'more', 'garnish', 'serving', 'taste', 'needed',
+        'if', 'desired', 'as', 'needed',
     }
 
     words = text.split()
