@@ -167,28 +167,48 @@ class TestAggregateInventory:
         assert inventory[butter.id].total_quantity == 681.0
 
 
-class TestFindSubstitution:
-    async def test_quality_filter(self, db_session, make_ingredient, make_substitution, make_product, make_alias, make_stock):
-        from api.services.recipe_matcher import find_substitution_for_ingredient, aggregate_inventory_by_ingredient
+class TestFindSubstitutions:
+    async def test_no_result_when_substitute_not_in_inventory(
+        self, db_session, make_ingredient, make_substitution
+    ):
+        """Substitute exists in the substitution table but has no stock — returns empty list."""
+        from api.services.recipe_matcher import find_substitutions_for_ingredient, aggregate_inventory_by_ingredient
+
+        butter = await make_ingredient(name="butter")
+        lard = await make_ingredient(name="lard")
+        await make_substitution(butter.id, lard.id, ratio=1.0, quality_score=8)
+
+        inventory = await aggregate_inventory_by_ingredient(db_session)
+        result = await find_substitutions_for_ingredient(db_session, butter.id, inventory)
+        assert result == []
+
+    async def test_filters_insufficient_stock(
+        self, db_session, make_ingredient, make_substitution, make_product, make_alias, make_stock
+    ):
+        """Substitute with insufficient stock for the required quantity is excluded."""
+        from api.services.recipe_matcher import find_substitutions_for_ingredient, aggregate_inventory_by_ingredient
 
         butter = await make_ingredient(name="butter")
         lard = await make_ingredient(name="lard")
 
         p_lard = await make_product(name="Lard Tub", package_quantity=500, package_unit="g")
         await make_alias("Lard Tub", lard.id)
-        await make_stock(p_lard.id, Locations.FRIDGE, 500.0, "g")
+        await make_stock(p_lard.id, Locations.FRIDGE, 50.0, "g")  # only 50g available
 
-        # Quality score 4 — below threshold
-        await make_substitution(butter.id, lard.id, ratio=1.0, quality_score=4)
+        await make_substitution(butter.id, lard.id, ratio=1.0, quality_score=8)
 
         inventory = await aggregate_inventory_by_ingredient(db_session)
-        result = await find_substitution_for_ingredient(db_session, butter.id, inventory)
-        assert result is None
+        result = await find_substitutions_for_ingredient(
+            db_session, butter.id, inventory,
+            required_quantity=200.0, required_unit="g",
+        )
+        assert result == []
 
     async def test_prefers_sufficient_quantity(
         self, db_session, make_ingredient, make_substitution, make_product, make_alias, make_stock
     ):
-        from api.services.recipe_matcher import find_substitution_for_ingredient, aggregate_inventory_by_ingredient
+        """When one sub has insufficient stock, the sufficient one is returned first."""
+        from api.services.recipe_matcher import find_substitutions_for_ingredient, aggregate_inventory_by_ingredient
 
         butter = await make_ingredient(name="butter")
         margarine = await make_ingredient(name="margarine")
@@ -198,20 +218,49 @@ class TestFindSubstitution:
         p_coco = await make_product(name="Coconut Oil", package_quantity=500, package_unit="g")
         await make_alias("Margarine", margarine.id)
         await make_alias("Coconut Oil", coconut_oil.id)
-        await make_stock(p_marg.id, Locations.FRIDGE, 50.0, "g")  # Not enough
+        await make_stock(p_marg.id, Locations.FRIDGE, 50.0, "g")   # Not enough for 200g
         await make_stock(p_coco.id, Locations.CUPBOARD, 500.0, "g")  # Enough
 
         await make_substitution(butter.id, margarine.id, ratio=1.0, quality_score=8)
         await make_substitution(butter.id, coconut_oil.id, ratio=0.8, quality_score=7)
 
         inventory = await aggregate_inventory_by_ingredient(db_session)
-        result = await find_substitution_for_ingredient(
+        result = await find_substitutions_for_ingredient(
             db_session, butter.id, inventory,
             required_quantity=200.0, required_unit="g",
         )
-        # Should prefer coconut oil (sufficient qty) over margarine (insufficient)
-        assert result is not None
-        assert result.substitute_ingredient_name == "coconut oil"
+        # Only coconut oil has sufficient qty (500 >= 200*0.8=160); margarine (50 < 200) excluded
+        assert len(result) == 1
+        assert result[0].substitute_ingredient_name == "coconut oil"
+
+    async def test_sorted_by_quality_score(
+        self, db_session, make_ingredient, make_substitution, make_product, make_alias, make_stock
+    ):
+        """Results are sorted highest quality_score first."""
+        from api.services.recipe_matcher import find_substitutions_for_ingredient, aggregate_inventory_by_ingredient
+
+        butter = await make_ingredient(name="butter")
+        lard = await make_ingredient(name="lard")
+        coconut_oil = await make_ingredient(name="coconut oil")
+
+        p_lard = await make_product(name="Lard Tub", package_quantity=500, package_unit="g")
+        p_coco = await make_product(name="Coconut Oil", package_quantity=500, package_unit="g")
+        await make_alias("Lard Tub", lard.id)
+        await make_alias("Coconut Oil", coconut_oil.id)
+        await make_stock(p_lard.id, Locations.FRIDGE, 500.0, "g")
+        await make_stock(p_coco.id, Locations.CUPBOARD, 500.0, "g")
+
+        await make_substitution(butter.id, lard.id, ratio=1.0, quality_score=6)
+        await make_substitution(butter.id, coconut_oil.id, ratio=0.8, quality_score=9)
+
+        inventory = await aggregate_inventory_by_ingredient(db_session)
+        result = await find_substitutions_for_ingredient(
+            db_session, butter.id, inventory,
+            required_quantity=100.0, required_unit="g",
+        )
+        assert len(result) == 2
+        assert result[0].substitute_ingredient_name == "coconut oil"  # quality 9
+        assert result[1].substitute_ingredient_name == "lard"          # quality 6
 
 
 # ── cook_service ──────────────────────────────────────────────────────────────
@@ -226,10 +275,11 @@ class TestCookService:
         assert result is not None
         assert result["recipe_title"] == "Simple Cookies"
         assert len(result["deducted"]) == 3
-        assert len(result["insufficient"]) == 0
-        assert len(result["unmapped"]) == 0
+        assert result["failed"] == []
 
-    async def test_cook_with_explicit_substitution(self, db_session, make_product, make_ingredient, make_alias, make_stock, make_recipe, make_substitution):
+    async def test_cook_with_explicit_substitution(
+        self, db_session, make_product, make_ingredient, make_alias, make_stock, make_recipe, make_substitution
+    ):
         from api.services.cook_service import cook_recipe
 
         butter = await make_ingredient(name="butter")
@@ -246,15 +296,18 @@ class TestCookService:
             ingredients=[{"text": "butter", "ingredient_id": butter.id, "quantity": 50.0, "unit": "g"}],
         )
 
+        # Pass UUIDs (not strings) — the endpoint converts strings; the service expects UUID objects
         result = await cook_recipe(
             db_session, recipe.id,
-            substitutions={str(butter.id): str(margarine.id)},
+            substitutions={butter.id: margarine.id},
         )
-        assert len(result["substituted"]) == 1
-        assert result["substituted"][0]["substitute"] == "margarine"
-        assert result["substituted"][0]["amount"] == 50.0
+        assert result["failed"] == []
+        deducted_names = [d["ingredient"] for d in result["deducted"]]
+        assert "margarine" in deducted_names
 
-    async def test_cook_auto_substitution(self, db_session, make_product, make_ingredient, make_alias, make_stock, make_recipe, make_substitution):
+    async def test_cook_auto_substitution(
+        self, db_session, make_product, make_ingredient, make_alias, make_stock, make_recipe, make_substitution
+    ):
         from api.services.cook_service import cook_recipe
 
         butter = await make_ingredient(name="butter")
@@ -271,12 +324,16 @@ class TestCookService:
             ingredients=[{"text": "butter", "ingredient_id": butter.id, "quantity": 100.0, "unit": "g"}],
         )
 
-        # No explicit substitution — should auto-find margarine
+        # No butter stock — should auto-find margarine and deduct it
         result = await cook_recipe(db_session, recipe.id)
-        assert len(result["substituted"]) == 1
-        assert result["substituted"][0]["substitute"] == "margarine"
+        assert result["failed"] == []
+        deducted_names = [d["ingredient"] for d in result["deducted"]]
+        assert "margarine" in deducted_names
 
-    async def test_cook_insufficient(self, db_session, make_product, make_ingredient, make_alias, make_stock, make_recipe):
+    async def test_cook_preflight_fails_when_insufficient_no_sub(
+        self, db_session, make_product, make_ingredient, make_alias, make_stock, make_recipe
+    ):
+        """Pre-flight aborts and returns empty deducted when an ingredient is insufficient with no substitute."""
         from api.services.cook_service import cook_recipe
 
         flour = await make_ingredient(name="flour")
@@ -290,11 +347,13 @@ class TestCookService:
         )
 
         result = await cook_recipe(db_session, recipe.id)
-        assert len(result["insufficient"]) == 1
-        assert result["insufficient"][0]["needed"] == 500.0
-        assert result["insufficient"][0]["available"] == 100.0
+        assert result["deducted"] == []
+        assert "flour" in result["failed"]
 
-    async def test_cook_unmapped(self, db_session, make_ingredient, make_recipe):
+    async def test_cook_missing_ingredient_goes_to_failed(
+        self, db_session, make_ingredient, make_recipe
+    ):
+        """Ingredients with no stock and no substitute end up in failed."""
         from api.services.cook_service import cook_recipe
 
         saffron = await make_ingredient(name="saffron")
@@ -304,10 +363,87 @@ class TestCookService:
         )
 
         result = await cook_recipe(db_session, recipe.id)
-        assert "saffron" in result["unmapped"]
+        assert "saffron" in result["failed"]
 
     async def test_cook_not_found(self, db_session):
         from api.services.cook_service import cook_recipe
 
         result = await cook_recipe(db_session, uuid.uuid4())
         assert result is None
+
+
+# ── get_cook_plan ─────────────────────────────────────────────────────────────
+
+class TestGetCookPlan:
+    async def test_returns_none_for_unknown_recipe(self, db_session):
+        from api.services.cook_service import get_cook_plan
+
+        result = await get_cook_plan(db_session, uuid.uuid4())
+        assert result is None
+
+    async def test_available_status_when_sufficient_stock(
+        self, db_session, make_product, make_ingredient, make_alias, make_stock, make_recipe
+    ):
+        from api.services.cook_service import get_cook_plan
+
+        flour = await make_ingredient(name="flour")
+        p_flour = await make_product(name="Flour Bag", package_quantity=1000, package_unit="g")
+        await make_alias("Flour Bag", flour.id)
+        await make_stock(p_flour.id, Locations.CUPBOARD, 1000.0, "g")
+
+        recipe = await make_recipe(
+            title="Pancakes",
+            ingredients=[{"text": "flour", "ingredient_id": flour.id, "quantity": 200.0, "unit": "g"}],
+        )
+
+        plan = await get_cook_plan(db_session, recipe.id)
+        assert plan is not None
+        assert plan.recipe_title == "Pancakes"
+        assert len(plan.ingredients) == 1
+        assert plan.ingredients[0].status == "available"
+        assert plan.ingredients[0].ingredient_name == "flour"
+
+    async def test_insufficient_status_with_substitute_listed(
+        self, db_session, make_product, make_ingredient, make_alias, make_stock, make_recipe, make_substitution
+    ):
+        from api.services.cook_service import get_cook_plan
+
+        butter = await make_ingredient(name="butter")
+        margarine = await make_ingredient(name="margarine")
+
+        p_butter = await make_product(name="Store Butter", package_quantity=227, package_unit="g")
+        p_marg = await make_product(name="Margarine Tub", package_quantity=454, package_unit="g")
+        await make_alias("Store Butter", butter.id)
+        await make_alias("Margarine Tub", margarine.id)
+        await make_stock(p_butter.id, Locations.FRIDGE, 50.0, "g")   # not enough
+        await make_stock(p_marg.id, Locations.FRIDGE, 454.0, "g")
+
+        await make_substitution(butter.id, margarine.id, ratio=1.0, quality_score=8)
+
+        recipe = await make_recipe(
+            title="Shortbread",
+            ingredients=[{"text": "butter", "ingredient_id": butter.id, "quantity": 200.0, "unit": "g"}],
+        )
+
+        plan = await get_cook_plan(db_session, recipe.id)
+        assert plan is not None
+        ing = plan.ingredients[0]
+        assert ing.status == "insufficient"
+        assert len(ing.substitutes) == 1
+        assert ing.substitutes[0].substitute_ingredient_name == "margarine"
+
+    async def test_missing_status_when_no_stock(
+        self, db_session, make_ingredient, make_recipe
+    ):
+        from api.services.cook_service import get_cook_plan
+
+        saffron = await make_ingredient(name="saffron")
+        recipe = await make_recipe(
+            title="Paella",
+            ingredients=[{"text": "saffron", "ingredient_id": saffron.id, "quantity": 1.0, "unit": "g"}],
+        )
+
+        plan = await get_cook_plan(db_session, recipe.id)
+        assert plan is not None
+        assert plan.ingredients[0].status == "missing"
+        assert plan.ingredients[0].substitutes == []
