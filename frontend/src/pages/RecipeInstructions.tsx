@@ -67,14 +67,19 @@ export default function RecipeInstructions() {
       .then(([recipeData, plan]) => {
         setRecipe(recipeData.recipe)
         setCookPlan(plan)
-        // Pre-select the best substitute for insufficient/missing ingredients
         const autoSubs: Record<string, string> = {}
+        const autoSkipped = new Set<string>()
         for (const ing of plan.ingredients) {
-          if (ing.status !== 'available' && ing.substitutes.length > 0) {
-            autoSubs[ing.ingredient_id] = ing.substitutes[0].substitute_ingredient_id
+          if (ing.status !== 'available') {
+            if (ing.substitutes.length > 0) {
+              autoSubs[ing.ingredient_id] = ing.substitutes[0].substitute_ingredient_id
+            } else {
+              autoSkipped.add(ing.ingredient_id)
+            }
           }
         }
         setSelectedSubs(autoSubs)
+        setSkipped(autoSkipped)
       })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false))
@@ -308,7 +313,10 @@ function CookPlanRow({
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          {ing.quantity != null && ing.unit && (
+          
+          {activeSub && activeSub.substitute_quantity != null && activeSub.substitute_unit ? (
+            <span className="text-muted">{formatQty(activeSub.substitute_quantity, scale)} {activeSub.substitute_unit}</span>
+          ) : ing.quantity != null && ing.unit && (
             <span className="text-muted">{formatQty(ing.quantity, scale)} {ing.unit}</span>
           )}
           <button
@@ -394,8 +402,9 @@ function InstructionStep({ step, index }: { step: string; index: number }) {
                   ? countdown === 0
                     ? 'bg-danger/10 text-danger animate-pulse'
                     : 'bg-accent-dim text-accent'
-                  : 'bg-gray-100 text-muted hover:text-black'
+                  : `bg-gray-100 text-muted ${isChecked ? '' : 'hover:text-black'}`
               }`}
+              disabled={isChecked}
             >
               <Timer size={12} />
               {countdown !== null ? formatTime(countdown) : `${timerMinutes} min`}

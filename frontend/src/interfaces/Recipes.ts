@@ -16,6 +16,8 @@ export interface SubstitutionSuggestion {
   quality_score: number
   notes: string | null
   max_scale: number | null
+  substitute_quantity: number | null
+  substitute_unit: string | null
 }
 
 export interface RecipeMatchResult {

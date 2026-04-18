@@ -355,6 +355,7 @@ async def find_substitutions_for_ingredient(
             if required_quantity > 0 and sub.ratio > 0
             else None
         )
+        sub_qty = round(required_quantity * sub.ratio, 4) if required_quantity > 0 else None
         results.append(SubstitutionSuggestion(
             original_ingredient_id=ingredient_id,
             original_ingredient_name=original_ing.name,
@@ -364,6 +365,8 @@ async def find_substitutions_for_ingredient(
             quality_score=sub.quality_score,
             notes=sub.notes,
             max_scale=sub_max_scale,
+            substitute_quantity=sub_qty,
+            substitute_unit=required_unit if required_quantity > 0 else None,
         ))
 
     return results
