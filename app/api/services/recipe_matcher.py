@@ -335,10 +335,20 @@ async def find_substitutions_for_ingredient(
         inv_data = inventory[sub.substitute_ingredient_id]
 
         if required_quantity > 0:
-            if inv_data.base_unit != required_unit:
-                continue  # incompatible units — skip
-            if inv_data.total_quantity < required_quantity * sub.ratio:
-                continue  # not enough inventory of the substitute
+            cross_unit = inv_data.base_unit != required_unit
+            if cross_unit:
+                # Ratio bridges units (e.g. g→ml for lemon→lemon juice).
+                # If recipe unit is still a count, bridge to grams first.
+                req_native = (
+                    bridge_to_grams(required_quantity, original_ing)
+                    if required_unit == "unit"
+                    else required_quantity
+                )
+                if req_native is None or inv_data.total_quantity < req_native * sub.ratio:
+                    continue
+            else:
+                if inv_data.total_quantity < required_quantity * sub.ratio:
+                    continue
 
         candidates.append(sub)
 
@@ -350,17 +360,29 @@ async def find_substitutions_for_ingredient(
         if not substitute_ing:
             continue
         inv_data = inventory[sub.substitute_ingredient_id]
-        sub_max_scale: float | None = (
-            inv_data.total_quantity / (required_quantity * sub.ratio)
-            if required_quantity > 0 and sub.ratio > 0
-            else None
-        )
-        # Only surface quantity/unit when the substitute's consistency (base unit) differs
-        # from the requirement — same-unit swaps (e.g. turkey bacon slices for bacon slices)
-        # need no visual quantity annotation regardless of ratio.
         cross_unit = inv_data.base_unit != required_unit
-        sub_qty = round(required_quantity * sub.ratio, 4) if cross_unit and required_quantity > 0 else None
-        sub_unit = inv_data.base_unit if cross_unit else None
+        if cross_unit and required_quantity > 0:
+            req_native = (
+                bridge_to_grams(required_quantity, original_ing)
+                if required_unit == "unit"
+                else required_quantity
+            )
+            needed_sub = (req_native * sub.ratio) if req_native is not None else None
+            sub_qty = round(needed_sub, 4) if needed_sub is not None else None
+            sub_unit = inv_data.base_unit
+            sub_max_scale: float | None = (
+                inv_data.total_quantity / needed_sub
+                if needed_sub is not None and needed_sub > 0
+                else None
+            )
+        else:
+            sub_qty = None
+            sub_unit = None
+            sub_max_scale = (
+                inv_data.total_quantity / (required_quantity * sub.ratio)
+                if required_quantity > 0 and sub.ratio > 0
+                else None
+            )
         results.append(SubstitutionSuggestion(
             original_ingredient_id=ingredient_id,
             original_ingredient_name=original_ing.name,
