@@ -276,7 +276,7 @@ function CookPlanRow({
   onSubChange: (subId: string) => void
   onSkipToggle: () => void
 }) {
-  const displayName = ing.ingredient_text.replace(/^[\d\s/.½¼¾⅓⅔]+/, '').trim()
+  const displayName = ing.display_name
 
   const activeSub = selectedSubId
     ? ing.substitutes.find(s => s.substitute_ingredient_id === selectedSubId)

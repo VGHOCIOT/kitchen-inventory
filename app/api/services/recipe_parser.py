@@ -1,5 +1,6 @@
 import asyncio
 import os
+import re
 import httpx
 from recipe_scrapers import scrape_me, scrape_html
 from typing import Optional
@@ -64,6 +65,18 @@ def _extract(scraper, url: str) -> dict:
     }
 
 
+_LEADING_QTY_UNIT_RE = re.compile(
+    r'^[\d\s/.½¼¾⅓⅔]+\s*'
+    r'(cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lbs?|pounds?|g|grams?|kg|ml|liters?|l|pinch|dash|handful|slices?|pieces?|pcs)?\s*',
+    re.IGNORECASE,
+)
+
+
+def ingredient_display_name(ingredient_text: str) -> str:
+    """Strip leading quantity+unit from raw ingredient text, preserving the rest."""
+    return _LEADING_QTY_UNIT_RE.sub('', ingredient_text).strip()
+
+
 def normalize_product_name(product_name: str) -> str:
     """
     Normalize a scanned product name for ingredient matching.
@@ -102,6 +115,12 @@ def normalize_ingredient_text(ingredient_text: str) -> str:
     Example: "2 cups all-purpose flour" -> "flour"
     """
     text = ingredient_text.lower().strip()
+
+    # Strip parenthetical blocks entirely before word-level filtering.
+    # e.g. "lemons (juiced and zested, divided, $1.47***)" → "lemons"
+    # The word-by-word filter only drops tokens containing '(' or ')', leaving
+    # the words in between and breaking the match key.
+    text = re.sub(r'\([^)]*\)', '', text).strip()
 
     # Strip leading preparation phrases that word-level filtering can't catch
     phrase_prefixes = [

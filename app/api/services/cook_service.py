@@ -15,6 +15,7 @@ from crud.ingredient_reference import get_ingredient_by_id
 from crud.recipe import get_recipe_by_id
 from crud.recipe_ingredient import get_recipe_ingredients
 from crud.ingredient_substitution import get_substitutions_for_ingredient
+from api.services.recipe_parser import ingredient_display_name
 from api.services.recipe_matcher import (
     aggregate_inventory_by_ingredient,
     find_substitutions_for_ingredient,
@@ -172,6 +173,7 @@ async def get_cook_plan(db: AsyncSession, recipe_id: UUID) -> CookPlan | None:
             ingredient_id=recipe_ing.canonical_ingredient_id,
             ingredient_name=ingredient.name,
             ingredient_text=recipe_ing.ingredient_text,
+            display_name=ingredient_display_name(recipe_ing.ingredient_text),
             quantity=recipe_ing.quantity,
             unit=recipe_ing.unit,
             status=status,

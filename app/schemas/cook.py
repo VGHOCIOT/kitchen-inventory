@@ -28,6 +28,7 @@ class CookPlanIngredient(BaseModel):
     ingredient_id: UUID
     ingredient_name: str
     ingredient_text: str
+    display_name: str
     quantity: float
     unit: str
     status: Literal['available', 'insufficient', 'missing']

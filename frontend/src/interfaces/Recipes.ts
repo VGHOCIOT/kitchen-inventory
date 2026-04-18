@@ -81,6 +81,7 @@ export interface CookPlanIngredient {
   ingredient_id: string
   ingredient_name: string
   ingredient_text: string
+  display_name: string
   quantity: number
   unit: string
   status: CookPlanStatus
