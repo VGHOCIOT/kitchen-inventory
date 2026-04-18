@@ -563,6 +563,76 @@ INGREDIENT_SUBSTITUTION_SEEDS: list[dict] = [
         "bidirectional": False,
     },
 
+    # ── Cheese ───────────────────────────────────────────────────────────────
+    {
+        "original": "parmesan",
+        "substitute": "pecorino romano",
+        "ratio": 1.0,
+        "quality_score": 4,
+        "notes": "Similar hard, salty aged cheese; pecorino is slightly sharper",
+        "bidirectional": True,
+    },
+    {
+        "original": "mozzarella",
+        "substitute": "provolone",
+        "ratio": 1.0,
+        "quality_score": 3,
+        "notes": "Similar melt; provolone has more flavor",
+        "bidirectional": True,
+    },
+    {
+        "original": "cheddar",
+        "substitute": "colby",
+        "ratio": 1.0,
+        "quality_score": 4,
+        "notes": "Colby is milder and creamier; melts similarly",
+        "bidirectional": True,
+    },
+    {
+        "original": "ricotta",
+        "substitute": "cottage cheese",
+        "ratio": 1.0,
+        "quality_score": 3,
+        "notes": "Blend cottage cheese smooth first; slightly wetter",
+        "bidirectional": True,
+    },
+
+    # ── Greens ────────────────────────────────────────────────────────────────
+    {
+        "original": "arugula",
+        "substitute": "spinach",
+        "ratio": 1.0,
+        "quality_score": 3,
+        "notes": "Spinach is milder; loses the peppery bite",
+        "bidirectional": True,
+    },
+    {
+        "original": "kale",
+        "substitute": "swiss chard",
+        "ratio": 1.0,
+        "quality_score": 4,
+        "notes": "Very similar texture when cooked; chard is slightly milder",
+        "bidirectional": True,
+    },
+    {
+        "original": "kale",
+        "substitute": "collard greens",
+        "ratio": 1.0,
+        "quality_score": 3,
+        "notes": "Heartier and more bitter; works in soups and braises",
+        "bidirectional": True,
+    },
+
+    # ── Squash ────────────────────────────────────────────────────────────────
+    {
+        "original": "zucchini",
+        "substitute": "yellow squash",
+        "ratio": 1.0,
+        "quality_score": 5,
+        "notes": "Nearly identical in flavor and texture; direct swap",
+        "bidirectional": True,
+    },
+
     # ── Concentrated / Dried / Liquid Forms ──────────────────────────────────
     # Ratios represent how much of the substitute equals the same flavor impact
     # as the original, by weight. Both ends share the same base unit (g or ml).
@@ -709,5 +779,31 @@ INGREDIENT_SUBSTITUTION_SEEDS: list[dict] = [
         "quality_score": 3,
         "notes": "Slightly sweeter and less salty; works in most Asian dishes",
         "bidirectional": True,
+    },
+
+    # ── Missing reverses ──────────────────────────────────────────────────────
+    {
+        "original": "apple cider vinegar",
+        "substitute": "white vinegar",
+        "ratio": 1.0,
+        "quality_score": 3,
+        "notes": "White vinegar is sharper with no fruity notes; works in dressings and pickles",
+        "bidirectional": False,
+    },
+    {
+        "original": "vegetable broth",
+        "substitute": "beef broth",
+        "ratio": 1.0,
+        "quality_score": 2,
+        "notes": "Heavier, meatier flavor; use in hearty stews only",
+        "bidirectional": False,
+    },
+    {
+        "original": "chives",
+        "substitute": "green onion",
+        "ratio": 1.0,
+        "quality_score": 3,
+        "notes": "Similar mild onion flavor; best as garnish",
+        "bidirectional": False,
     },
 ]

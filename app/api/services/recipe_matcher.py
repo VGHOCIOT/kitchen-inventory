@@ -355,7 +355,12 @@ async def find_substitutions_for_ingredient(
             if required_quantity > 0 and sub.ratio > 0
             else None
         )
-        sub_qty = round(required_quantity * sub.ratio, 4) if required_quantity > 0 else None
+        # Only surface quantity/unit when the substitute's consistency (base unit) differs
+        # from the requirement — same-unit swaps (e.g. turkey bacon slices for bacon slices)
+        # need no visual quantity annotation regardless of ratio.
+        cross_unit = inv_data.base_unit != required_unit
+        sub_qty = round(required_quantity * sub.ratio, 4) if cross_unit and required_quantity > 0 else None
+        sub_unit = inv_data.base_unit if cross_unit else None
         results.append(SubstitutionSuggestion(
             original_ingredient_id=ingredient_id,
             original_ingredient_name=original_ing.name,
@@ -366,7 +371,7 @@ async def find_substitutions_for_ingredient(
             notes=sub.notes,
             max_scale=sub_max_scale,
             substitute_quantity=sub_qty,
-            substitute_unit=required_unit if required_quantity > 0 else None,
+            substitute_unit=sub_unit,
         ))
 
     return results

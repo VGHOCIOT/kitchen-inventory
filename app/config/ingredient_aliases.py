@@ -308,9 +308,132 @@ INGREDIENT_ALIAS_SEEDS: dict[str, list[str]] = {
     "chickpea": ["chickpeas", "garbanzo bean", "garbanzo beans", "garbanzo"],
     "fava bean": ["fava beans", "broad bean", "broad beans"],
     "lentil": ["lentils", "red lentil", "red lentils", "green lentil", "green lentils"],
+    "black beans": ["black bean", "canned black beans", "dried black beans"],
+    "kidney beans": ["kidney bean", "canned kidney beans", "red kidney beans", "dark red kidney beans"],
+    "navy beans": [
+        "navy bean", "white bean", "white beans",
+        "great northern bean", "great northern beans",
+        "cannellini bean", "cannellini beans",
+    ],
+    "pinto beans": ["pinto bean", "canned pinto beans", "dried pinto beans"],
 
     # ── Pantry / Condiments ───────────────────────────────────────────────────
     "soy sauce": ["soya sauce"],
+    "tamari": ["gluten-free soy sauce", "san-j tamari", "wheat-free soy sauce"],
+    "coconut aminos": ["coconut aminos sauce", "coconut secret aminos"],
     "molasses": ["treacle", "blackstrap molasses"],
     "maple syrup": ["pure maple syrup"],
+    "worcestershire sauce": ["worcestershire", "lea & perrins worcestershire sauce", "lea and perrins"],
+    "hot sauce": ["tabasco", "frank's redhot", "crystal hot sauce", "louisiana hot sauce"],
+    "sriracha": ["sriracha sauce", "huy fong sriracha", "rooster sauce"],
+    "mayonnaise": ["mayo", "light mayonnaise", "olive oil mayonnaise", "avocado oil mayo"],
+    "ketchup": ["tomato ketchup", "heinz ketchup", "catsup"],
+    "mustard": ["yellow mustard", "prepared mustard", "french's mustard"],
+    "dijon mustard": ["dijon", "smooth dijon mustard", "old style dijon", "whole grain dijon"],
+
+    # ── Pantry (concentrated / processed forms) ───────────────────────────────
+    "tomato paste": ["double concentrate tomato paste", "tomato concentré", "tomato concentrate"],
+    "canned tomatoes": [
+        "diced tomatoes", "canned diced tomatoes",
+        "crushed tomatoes", "canned crushed tomatoes",
+        "whole canned tomatoes", "whole peeled tomatoes",
+        "san marzano tomatoes",
+    ],
+    "tomato sauce": ["passata", "strained tomatoes", "pureed tomatoes", "sieved tomatoes"],
+    "evaporated milk": ["carnation evaporated milk", "evaporated skim milk", "evaporated 2% milk"],
+    "lemon juice": ["bottled lemon juice", "pure lemon juice"],
+    "lime juice": ["bottled lime juice", "pure lime juice"],
+
+    # ── Dairy (additional) ────────────────────────────────────────────────────
+    "sour cream": ["light sour cream", "fat-free sour cream", "14% sour cream", "dairy sour cream"],
+    "greek yogurt": [
+        "plain greek yogurt", "0% greek yogurt", "2% greek yogurt",
+        "non-fat greek yogurt", "oikos", "chobani",
+    ],
+    "yogurt": ["plain yogurt", "natural yogurt", "regular yogurt", "balkan style yogurt"],
+    "ghee": ["clarified butter", "pure ghee", "desi ghee", "organic ghee"],
+    "ricotta": ["ricotta cheese", "part skim ricotta", "fresh ricotta"],
+    "margarine": ["non-hydrogenated margarine", "light margarine", "soft margarine"],
+
+    # ── Dairy (plant-based) ───────────────────────────────────────────────────
+    "oat milk": ["oat milk beverage", "oat-based beverage", "oatly", "unsweetened oat milk"],
+    "almond milk": ["almond milk beverage", "unsweetened almond milk", "original almond milk"],
+    "coconut milk": ["canned coconut milk", "light coconut milk", "coconut milk beverage"],
+    "coconut cream": ["canned coconut cream", "thai coconut cream"],
+    "coconut oil": ["organic coconut oil", "refined coconut oil", "virgin coconut oil", "extra virgin coconut oil"],
+
+    # ── Cheeses ───────────────────────────────────────────────────────────────
+    "cheddar": [
+        "cheddar cheese", "old cheddar", "mild cheddar", "medium cheddar",
+        "sharp cheddar", "aged cheddar", "white cheddar", "shredded cheddar",
+    ],
+    "mozzarella": [
+        "mozzarella cheese", "fresh mozzarella", "part skim mozzarella",
+        "shredded mozzarella", "buffalo mozzarella",
+    ],
+    "parmesan": [
+        "parmigiano reggiano", "parmigiano", "grated parmesan",
+        "shredded parmesan", "parmesan cheese",
+    ],
+    "feta": ["feta cheese", "greek feta", "crumbled feta", "feta in brine"],
+    "swiss cheese": ["swiss", "emmental", "emmenthal", "gruyère", "gruyere"],
+    "provolone": ["provolone cheese", "provolone slices"],
+
+    # ── Spices & Dried Herbs ──────────────────────────────────────────────────
+    "cumin": ["ground cumin", "cumin powder", "cumin seed", "cumin seeds"],
+    "paprika": ["sweet paprika", "smoked paprika", "hungarian paprika"],
+    "turmeric": ["ground turmeric", "turmeric powder"],
+    "chili powder": ["chile powder", "chili seasoning blend"],
+    "cayenne": ["cayenne pepper", "ground cayenne", "cayenne pepper powder"],
+    "cinnamon": ["ground cinnamon", "cinnamon powder"],
+    "coriander": ["ground coriander", "coriander powder", "coriander seed"],
+    "garlic powder": ["garlic granules"],
+    "onion powder": ["onion granules"],
+    "ground ginger": ["ginger powder", "powdered ginger"],
+    "dried oregano": ["oregano", "mediterranean oregano"],
+    "dried thyme": ["thyme leaves"],
+    "dried basil": ["basil leaves"],
+    "dried rosemary": ["rosemary leaves"],
+    "dried dill": ["dill weed", "dill tips"],
+    "bay leaf": ["bay leaves", "dried bay leaf", "dried bay leaves"],
+    "chili flakes": ["red pepper flakes", "crushed red pepper", "crushed chili flakes"],
+    "allspice": ["ground allspice"],
+    "nutmeg": ["ground nutmeg"],
+    "cardamom": ["ground cardamom", "cardamom pods"],
+    "cloves": ["ground cloves", "whole cloves"],
+
+    # ── Vinegars ─────────────────────────────────────────────────────────────
+    "apple cider vinegar": ["acv", "unpasteurized apple cider vinegar", "bragg apple cider vinegar"],
+    "rice vinegar": ["rice wine vinegar", "seasoned rice vinegar", "unseasoned rice vinegar"],
+    "balsamic vinegar": ["balsamic", "balsamic vinegar of modena", "aged balsamic"],
+    "white vinegar": ["distilled white vinegar", "white distilled vinegar", "spirit vinegar"],
+    "red wine vinegar": ["red wine vinegar"],
+
+    # ── Grains & Starches ─────────────────────────────────────────────────────
+    "white rice": ["long grain white rice", "enriched white rice", "medium grain white rice"],
+    "brown rice": ["long grain brown rice", "whole grain brown rice"],
+    "jasmine rice": ["thai jasmine rice", "fragrant rice"],
+    "basmati rice": ["aged basmati", "indian basmati rice", "long grain basmati"],
+    "quinoa": ["white quinoa", "mixed quinoa", "tri-color quinoa", "red quinoa"],
+    "oats": [
+        "rolled oats", "quick oats", "old fashioned oats",
+        "instant oats", "steel cut oats",
+    ],
+    "spaghetti": ["thin spaghetti", "spaghettini", "spaghetti noodles"],
+    "penne": ["penne rigate", "penne lisce", "penne pasta"],
+    "fettuccine": ["fettucine", "fettuccine pasta", "fettuccine noodles"],
+    "linguine": ["linguini", "linguine pasta"],
+    "farfalle": ["bowtie pasta", "bow tie pasta", "bow-tie pasta"],
+    "rigatoni": ["rigatoni pasta"],
+    "rotini": ["rotini pasta", "fusilli", "spiral pasta"],
+    "elbow macaroni": ["elbow pasta", "macaroni", "mac"],
+    "lasagna noodles": ["lasagne", "lasagna pasta", "lasagna sheets"],
+
+    # ── Nut Butters & Spreads ─────────────────────────────────────────────────
+    "peanut butter": [
+        "natural peanut butter", "smooth peanut butter",
+        "crunchy peanut butter", "creamy peanut butter",
+    ],
+    "almond butter": ["natural almond butter", "smooth almond butter", "crunchy almond butter"],
+    "tahini": ["sesame paste", "sesame tahini", "roasted tahini", "raw tahini"],
 }
