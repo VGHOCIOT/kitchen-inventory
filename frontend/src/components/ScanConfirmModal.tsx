@@ -66,7 +66,7 @@ export default function ScanConfirmModal({ scanResult, onClose }: Props) {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-semibold text-foreground truncate">
+            <h2 className="font-display text-lg font-semibold text-foreground truncate">
               {product_reference.name}
             </h2>
             {product_reference.brands.length > 0 && (

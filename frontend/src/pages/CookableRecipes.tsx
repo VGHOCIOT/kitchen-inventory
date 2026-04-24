@@ -11,7 +11,7 @@ export default function CookableRecipes() {
     if (recipes.length === 0) return null
     return (
       <section className="mb-10">
-        <h2 className="text-sm font-semibold text-muted mb-4 uppercase tracking-widest">{title}</h2>
+        <h2 className="font-display text-sm font-semibold text-muted mb-4 uppercase tracking-widest">{title}</h2>
         <div className="grid grid-cols-2 gap-4">
           {recipes.map(recipe => (
             <RecipeCard key={recipe.recipe_id} recipe={recipe} />
@@ -23,7 +23,7 @@ export default function CookableRecipes() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white">
-      <h1 className="text-3xl font-bold mb-8 text-black">Cookable Recipes</h1>
+      <h1 className="font-display text-3xl font-bold mb-8 text-black">Cookable Recipes</h1>
       <Section title="Unlocked" recipes={recipeState.unlocked} />
       <Section title="Almost There" recipes={recipeState.almost} />
       <Section title="Locked" recipes={recipeState.locked} />
@@ -70,7 +70,7 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
       </div>
 
       <div className="p-4 flex flex-col gap-2 flex-1">
-        <h3 className="font-semibold text-base leading-snug text-black">{recipe.recipe_title}</h3>
+        <h3 className="font-display font-semibold text-base leading-snug text-black">{recipe.recipe_title}</h3>
 
         {recipe.recipe_description && (
           <p className="text-muted text-sm line-clamp-2">{recipe.recipe_description}</p>

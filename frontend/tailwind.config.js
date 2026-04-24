@@ -3,6 +3,10 @@ export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans:    ["'Lora'", 'Georgia', 'serif'],
+        display: ["'Playfair Display'", 'Georgia', 'serif'],
+      },
       colors: {
         canvas:       '#111111',
         surface:      '#1e1e1e',
