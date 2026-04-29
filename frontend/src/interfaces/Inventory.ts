@@ -23,6 +23,13 @@ export interface ItemWithProduct {
 
 export interface ScanOut {
   product_reference: ProductReferenceOut
-  item: ItemOut
+  item: ItemOut | null
   data_quality_warning: string | null
+  requires_manual_entry: boolean
+}
+
+export interface ScanIn {
+  barcode: string
+  location: string
+  quantity: number | null
 }

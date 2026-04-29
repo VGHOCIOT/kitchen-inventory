@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { Minus, Plus, Check, X } from 'lucide-react'
-import { adjustQuantity } from '../api/items'
+import { adjustQuantity, moveItem } from '../api/items'
 import type { ScanOut } from '../interfaces/Inventory'
+
+const LOCATIONS = ['fridge', 'freezer', 'cupboard'] as const
+type Location = typeof LOCATIONS[number]
 
 function formatQty(qty: number, unit: string): string {
   if (unit === 'g' && qty >= 1000) return `${(qty / 1000).toFixed(2).replace(/\.?0+$/, '')} kg`
@@ -15,10 +18,12 @@ interface Props {
 }
 
 export default function ScanConfirmModal({ scanResult, onClose }: Props) {
+  const { product_reference, item: nullableItem, data_quality_warning } = scanResult
+  const item = nullableItem!
+  const [selectedLocation, setSelectedLocation] = useState<Location>(item.location as Location)
   const [multiplier, setMultiplier] = useState(1)
   const [confirming, setConfirming] = useState(false)
 
-  const { product_reference, item, data_quality_warning } = scanResult
   const lotQty = item.qty
   const totalQty = lotQty * multiplier
 
@@ -26,10 +31,11 @@ export default function ScanConfirmModal({ scanResult, onClose }: Props) {
     if (confirming) return
     setConfirming(true)
     try {
-      // First lot already added by the scan call.
-      // Adjust by (multiplier - 1) additional lots.
+      if (selectedLocation !== item.location) {
+        await moveItem(product_reference.id, item.location, selectedLocation, lotQty)
+      }
       if (multiplier > 1) {
-        await adjustQuantity(product_reference.id, item.location, lotQty * (multiplier - 1))
+        await adjustQuantity(product_reference.id, selectedLocation, lotQty * (multiplier - 1))
       }
       onClose()
     } catch {
@@ -85,6 +91,23 @@ export default function ScanConfirmModal({ scanResult, onClose }: Props) {
             {data_quality_warning}
           </p>
         )}
+
+        {/* Location */}
+        <div className="flex gap-2">
+          {LOCATIONS.map(loc => (
+            <button
+              key={loc}
+              onClick={() => setSelectedLocation(loc)}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                selectedLocation === loc
+                  ? 'bg-accent text-white'
+                  : 'bg-raised text-muted'
+              }`}
+            >
+              {loc.charAt(0).toUpperCase() + loc.slice(1)}
+            </button>
+          ))}
+        </div>
 
         {/* Multiplier */}
         <div className="flex items-center justify-between bg-raised rounded-2xl px-5 py-4">

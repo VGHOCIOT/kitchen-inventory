@@ -38,8 +38,9 @@ class ScanIn(BaseModel):
 
 class ScanOut(BaseModel):
     product_reference: "ProductReferenceOut"
-    item: ItemOut
+    item: Optional[ItemOut] = None
     data_quality_warning: Optional[str] = None
+    requires_manual_entry: bool = False
 
     class Config:
         from_attributes = True

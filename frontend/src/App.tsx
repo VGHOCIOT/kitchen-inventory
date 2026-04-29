@@ -3,7 +3,6 @@ import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
-  useNavigate,
   type RouteObject
 } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
@@ -12,6 +11,7 @@ import InventoryPage from './pages/InventoryPage'
 import CookableRecipes from './pages/CookableRecipes'
 import RecipeInstructions from './pages/RecipeInstructions'
 import ScanConfirmModal from './components/ScanConfirmModal'
+import ManualEntryModal from './components/ManualEntryModal'
 import Paths from './interfaces/Pages'
 import RecipeActions from './store/actions/recipeActions'
 import InventoryActions from './store/actions/inventoryActions'
@@ -23,11 +23,9 @@ import type { ScanOut } from './interfaces/Inventory'
 const SCAN_TIMEOUT_MS = 50
 const MIN_BARCODE_LENGTH = 6
 
-// Default location to scan into — can later come from a per-session settings screen
 const DEFAULT_SCAN_LOCATION = 'fridge'
 
 function BarcodeLayout() {
-  const navigate = useNavigate()
   const [pendingScan, setPendingScan] = useState<ScanOut | null>(null)
   const bufferRef = useRef<string>('')
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -35,7 +33,7 @@ function BarcodeLayout() {
   useEffect(() => {
     function flush(barcode: string) {
       if (barcode.length < MIN_BARCODE_LENGTH) return
-      scanBarcode(barcode, DEFAULT_SCAN_LOCATION)
+      scanBarcode({ barcode, location: DEFAULT_SCAN_LOCATION, quantity: null })
         .then(setPendingScan)
         .catch(console.error)
     }
@@ -63,16 +61,15 @@ function BarcodeLayout() {
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [navigate])
+  }, [])
 
   return (
     <>
       <Outlet />
       {pendingScan && (
-        <ScanConfirmModal
-          scanResult={pendingScan}
-          onClose={() => setPendingScan(null)}
-        />
+        pendingScan.requires_manual_entry
+          ? <ManualEntryModal scanResult={pendingScan} onClose={() => setPendingScan(null)} />
+          : <ScanConfirmModal scanResult={pendingScan} onClose={() => setPendingScan(null)} />
       )}
     </>
   )

@@ -120,45 +120,42 @@ async def scan_product(
     else:
         logger.warning(f"[SCAN] Skipping ingredient mapping for '{product_ref.name}' - incomplete data")
 
-    # Compute lot weight in base units
-    data_warning = None
-    if product_ref.package_quantity is not None and product_ref.package_unit is not None:
-        conversion = await convert_to_base_unit(
-            product_ref.package_quantity,
-            product_ref.package_unit,
-            product_ref.name,
+    # Degraded mode: missing package data — don't create item, let frontend collect it
+    if product_ref.package_quantity is None or product_ref.package_unit is None:
+        logger.warning(f"[SCAN] Degraded mode for '{product_ref.name}' — requires manual entry")
+        return ScanOut(
+            product_reference=product_ref,
+            item=None,
+            requires_manual_entry=True,
         )
-        lot_qty = conversion["quantity"]
-        lot_unit = conversion["base_unit"]
 
-        # If conversion returned "unit" (count-based), try to convert to grams
-        # using the ingredient's avg_weight_grams so inventory matches recipe units.
-        if lot_unit == "unit":
-            weight_per_unit = None
-            alias = await get_alias_by_text(db, product_ref.name)
-            if alias:
-                ingredient = await get_ingredient_by_id(db, alias.ingredient_id)
-                if ingredient and ingredient.avg_weight_grams:
-                    weight_per_unit = ingredient.avg_weight_grams
-                elif ingredient:
-                    weight_per_unit = get_manual_weight(ingredient.name)
+    conversion = await convert_to_base_unit(
+        product_ref.package_quantity,
+        product_ref.package_unit,
+        product_ref.name,
+    )
+    lot_qty = conversion["quantity"]
+    lot_unit = conversion["base_unit"]
 
-            if weight_per_unit:
-                lot_qty = product_ref.package_quantity * weight_per_unit
-                lot_unit = "g"
-                logger.info(
-                    f"[SCAN] Converted {product_ref.package_quantity} units to "
-                    f"{lot_qty}g using avg_weight={weight_per_unit}g/unit"
-                )
-    else:
-        # Degraded mode: no package data, track as count
-        lot_qty = 1.0
-        lot_unit = "unit"
-        data_warning = (
-            f"'{product_ref.name}' has incomplete quantity/unit data. "
-            f"This product cannot be used for recipe matching. "
-            f"Consider scanning a different barcode or manually updating product data."
-        )
+    # If conversion returned "unit" (count-based), try to convert to grams
+    # using the ingredient's avg_weight_grams so inventory matches recipe units.
+    if lot_unit == "unit":
+        weight_per_unit = None
+        alias = await get_alias_by_text(db, product_ref.name)
+        if alias:
+            ingredient = await get_ingredient_by_id(db, alias.ingredient_id)
+            if ingredient and ingredient.avg_weight_grams:
+                weight_per_unit = ingredient.avg_weight_grams
+            elif ingredient:
+                weight_per_unit = get_manual_weight(ingredient.name)
+
+        if weight_per_unit:
+            lot_qty = product_ref.package_quantity * weight_per_unit
+            lot_unit = "g"
+            logger.info(
+                f"[SCAN] Converted {product_ref.package_quantity} units to "
+                f"{lot_qty}g using avg_weight={weight_per_unit}g/unit"
+            )
 
     item = await add_stock(
         db,
@@ -171,7 +168,6 @@ async def scan_product(
     return ScanOut(
         product_reference=product_ref,
         item=item,
-        data_quality_warning=data_warning,
     )
 
 
