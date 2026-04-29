@@ -42,8 +42,14 @@ Edit `.env` and fill in your keys:
 ### 3. Start everything
 
 ```bash
+# Docker Compose v2 (Docker Desktop / most Linux installs)
+docker compose up
+
+# Docker Compose v1 (Unraid and older setups)
 docker-compose up
 ```
+
+> **Unraid users:** Unraid ships Docker Compose v1, so use the hyphenated `docker-compose` form throughout.
 
 On first run this will:
 - Build the API and frontend containers
