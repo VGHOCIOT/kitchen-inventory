@@ -9,6 +9,7 @@ from crud.item import (
     get_all_items,
     get_all_items_with_products,
     get_items_by_location,
+    get_item_by_id,
     get_item_by_product_and_location,
     add_stock,
     adjust_item_quantity,
@@ -280,30 +281,42 @@ async def edit_item(
     payload: EditItemIn,
     db: AsyncSession = Depends(get_db),
 ):
-    """Edit item qty (per-location) and/or product name (global across all locations)."""
-    if payload.qty is None and payload.name is None:
-        raise HTTPException(status_code=400, detail="At least one of qty or name must be provided")
+    """Edit item qty, location, and/or product name (name change applies globally)."""
+    if payload.qty is None and payload.name is None and payload.location is None:
+        raise HTTPException(status_code=400, detail="At least one of qty, name, or location must be provided")
+
+    item = await get_item_by_id(payload.item_id, db)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
 
     if payload.name is not None:
-        product = await rename_product(db, payload.product_reference_id, payload.name.strip())
+        product = await rename_product(db, item.product_reference_id, payload.name.strip())
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
         await auto_map_product_to_ingredient(db, product.name)
 
-    existing = await get_item_by_product_and_location(db, payload.product_reference_id, payload.location)
-    if not existing:
-        raise HTTPException(status_code=404, detail="Item not found")
+    if payload.location is not None and payload.location != item.location:
+        item = await move_item(
+            db,
+            product_reference_id=item.product_reference_id,
+            from_location=item.location,
+            to_location=payload.location,
+            quantity=item.qty,
+            unit=item.unit,
+        )
+        if not item:
+            raise HTTPException(status_code=400, detail="Failed to move item to new location")
 
     if payload.qty is not None:
         if payload.qty <= 0:
             raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
-        delta = payload.qty - existing.qty
-        item = await adjust_item_quantity(db, payload.product_reference_id, payload.location, delta) if delta != 0 else existing
-    else:
-        item = existing
+        delta = payload.qty - item.qty
+        if delta != 0:
+            item = await adjust_item_quantity(db, item.product_reference_id, item.location, delta)
+        if not item:
+            raise HTTPException(status_code=400, detail="Quantity adjustment resulted in empty item")
 
-    product = await get_product_by_id(db, payload.product_reference_id)
-
+    product = await get_product_by_id(db, item.product_reference_id)
     return {"item": item, "product": product}
 
 

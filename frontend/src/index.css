@@ -22,6 +22,9 @@ html, body, #root {
 button {
   cursor: pointer;
   font: inherit;
-  border: none;
   background: none;
+}
+
+button:focus, button:focus-visible {
+  outline: none;
 }

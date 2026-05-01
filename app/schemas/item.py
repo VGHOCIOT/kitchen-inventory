@@ -65,8 +65,8 @@ class DeleteItemIn(BaseModel):
 
 
 class EditItemIn(BaseModel):
-    product_reference_id: UUID
-    location: Locations
+    item_id: UUID
+    location: Optional[Locations] = None
     qty: Optional[float] = None
     name: Optional[str] = None
 

@@ -67,6 +67,15 @@ export async function editItem(payload: EditItemIn): Promise<void> {
   if (!res.ok) throw new Error(`Edit failed: ${res.status}`)
 }
 
+export async function deleteItem(productReferenceId: string, location: string): Promise<void> {
+  const res = await fetch('/api/v1/items/', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ product_reference_id: productReferenceId, location }),
+  })
+  if (!res.ok) throw new Error(`Delete failed: ${res.status}`)
+}
+
 export async function moveItem(
   productReferenceId: string,
   fromLocation: string,

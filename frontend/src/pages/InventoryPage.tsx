@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../store'
-import { ScanBarcode } from 'lucide-react'
+import { ScanBarcode, Pencil, Trash2 } from 'lucide-react'
 import { useScanContext } from '../App'
 import EditItemModal from '../components/EditItemModal'
 import type { ItemWithProduct } from '../interfaces/Inventory'
+import { deleteItem, fetchItems } from '../api/items'
+import { actions } from '../store/slices/inventorySlice'
 
 const LOCATIONS = ['fridge', 'freezer', 'cupboard'] as const
 type Location = typeof LOCATIONS[number]
@@ -17,9 +19,16 @@ function formatQty(qty: number, unit: string): string {
 
 export default function InventoryPage() {
   const items = useSelector((state: RootState) => state.inventory)
+  const dispatch = useDispatch()
   const [activeLocation, setActiveLocation] = useState<Location>('fridge')
   const [editing, setEditing] = useState<ItemWithProduct | null>(null)
   const { openManual } = useScanContext()
+
+  async function handleDelete(productReferenceId: string, location: string) {
+    await deleteItem(productReferenceId, location)
+    const updated = await fetchItems()
+    dispatch(actions.setInventory(updated))
+  }
   const locationItems = items.filter(({ item }) => item.location === activeLocation)
 
   return (
@@ -49,16 +58,22 @@ export default function InventoryPage() {
         {locationItems.map(({ item, product }) => (
           <div
             key={item.id}
-            className="flex justify-between items-center px-5 py-3.5 border-b border-edge min-h-14"
+            className="group flex items-center px-5 border-b border-edge min-h-14 overflow-hidden"
           >
-            <span className="text-base text-black">{product.name}</span>
-            <div className="flex items-center gap-3 shrink-0 ml-3">
+            <span className="flex-1 text-base text-black">{product.name}</span>
+            <div className="flex items-center gap-3 shrink-0">
               <span className="text-muted text-sm">{formatQty(item.qty, item.unit)}</span>
               <button
                 onClick={() => setEditing({ item, product })}
-                className="text-xs text-accent font-medium"
+                className="rounded-full text-muted border border-subtle hover:border-accent hover:text-accent font-medium leading-5 text-sm px-3 py-1 focus:outline-none focus-visible:outline-none opacity-0 translate-x-5 pointer-events-none transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto"
               >
-                Edit
+                <Pencil size={16} />
+              </button>
+              <button
+                onClick={() => handleDelete(item.product_reference_id, item.location)}
+                className="rounded-full text-muted border border-subtle hover:border-red-400 hover:text-red-400 font-medium leading-5 text-sm px-3 py-1 focus:outline-none focus-visible:outline-none opacity-0 translate-x-5 pointer-events-none transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto"
+              >
+                <Trash2 size={16} />
               </button>
             </div>
           </div>
