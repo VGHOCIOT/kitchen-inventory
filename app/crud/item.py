@@ -114,6 +114,22 @@ async def get_all_items_with_products(db: AsyncSession) -> list[dict]:
     return items_with_products
 
 
+async def adjust_item_quantity(
+    db: AsyncSession,
+    product_reference_id: UUID,
+    location: Locations,
+    delta: float,
+) -> Item | None:
+    """Adjust item by delta. Positive creates a lot; negative deducts FIFO. Returns None if depleted."""
+    existing = await get_item_by_product_and_location(db, product_reference_id, location)
+    if delta > 0:
+        unit = existing.unit if existing else "unit"
+        return await add_stock(db, product_reference_id, location, delta, unit)
+    if not existing:
+        return None
+    return await deduct_stock(db, product_reference_id, location, abs(delta), existing.unit)
+
+
 async def move_item(
     db: AsyncSession,
     product_reference_id: UUID,

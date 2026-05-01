@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
+import { ScanBarcode } from 'lucide-react'
+import { useScanContext } from '../App'
+import EditItemModal from '../components/EditItemModal'
+import type { ItemWithProduct } from '../interfaces/Inventory'
 
 const LOCATIONS = ['fridge', 'freezer', 'cupboard'] as const
 type Location = typeof LOCATIONS[number]
@@ -14,7 +18,8 @@ function formatQty(qty: number, unit: string): string {
 export default function InventoryPage() {
   const items = useSelector((state: RootState) => state.inventory)
   const [activeLocation, setActiveLocation] = useState<Location>('fridge')
-
+  const [editing, setEditing] = useState<ItemWithProduct | null>(null)
+  const { openManual } = useScanContext()
   const locationItems = items.filter(({ item }) => item.location === activeLocation)
 
   return (
@@ -47,12 +52,36 @@ export default function InventoryPage() {
             className="flex justify-between items-center px-5 py-3.5 border-b border-edge min-h-14"
           >
             <span className="text-base text-black">{product.name}</span>
-            <span className="text-muted text-sm shrink-0 ml-3">
-              {formatQty(item.qty, item.unit)}
-            </span>
+            <div className="flex items-center gap-3 shrink-0 ml-3">
+              <span className="text-muted text-sm">{formatQty(item.qty, item.unit)}</span>
+              <button
+                onClick={() => setEditing({ item, product })}
+                className="text-xs text-accent font-medium"
+              >
+                Edit
+              </button>
+            </div>
           </div>
         ))}
       </div>
+
+      <button
+        className="fixed bottom-6 right-6 z-50 text-white bg-accent box-border border border-transparent hover:bg-accent-hover shadow-xs font-medium leading-5 rounded-full text-sm p-5 focus:outline-none"
+        onClick={openManual}
+      >
+        <ScanBarcode size={25} />
+      </button>
+
+      {editing && (
+        <EditItemModal
+          productReferenceId={editing.item.product_reference_id}
+          location={editing.item.location}
+          currentName={editing.product.name}
+          currentQty={editing.item.qty}
+          unit={editing.item.unit}
+          onClose={() => setEditing(null)}
+        />
+      )}
     </div>
   )
 }

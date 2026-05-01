@@ -30,6 +30,31 @@ async def get_product_by_name(
     return result.scalar_one_or_none()
 
 
+async def get_product_by_id(
+    db: AsyncSession,
+    product_reference_id: UUID,
+) -> ProductReference | None:
+    result = await db.execute(
+        select(ProductReference).where(ProductReference.id == product_reference_id)
+    )
+    return result.scalar_one_or_none()
+
+
+async def rename_product(
+    db: AsyncSession,
+    product_reference_id: UUID,
+    new_name: str,
+) -> ProductReference | None:
+    product = await get_product_by_id(db, product_reference_id)
+    if not product:
+        return None
+    product.name = new_name
+    await db.commit()
+    await db.refresh(product)
+    events.emit("item_updated", {"product_reference_id": str(product_reference_id)})
+    return product
+
+
 async def create_product(
     db: AsyncSession,
     name: str,

@@ -51,6 +51,22 @@ export async function adjustQuantity(
   if (!res.ok) throw new Error(`Adjust failed: ${res.status}`)
 }
 
+export interface EditItemIn {
+  product_reference_id: string
+  location: string
+  qty?: number
+  name?: string
+}
+
+export async function editItem(payload: EditItemIn): Promise<void> {
+  const res = await fetch('/api/v1/items/edit', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!res.ok) throw new Error(`Edit failed: ${res.status}`)
+}
+
 export async function moveItem(
   productReferenceId: string,
   fromLocation: string,

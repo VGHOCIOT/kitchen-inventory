@@ -64,6 +64,13 @@ class DeleteItemIn(BaseModel):
     location: Locations
 
 
+class EditItemIn(BaseModel):
+    product_reference_id: UUID
+    location: Locations
+    qty: Optional[float] = None
+    name: Optional[str] = None
+
+
 # Import here to avoid circular dependency
 from schemas.product_reference import ProductReferenceOut
 ScanOut.model_rebuild()

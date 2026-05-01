@@ -1,19 +1,21 @@
 import { useState } from 'react'
 import { Check, X } from 'lucide-react'
 import { addFreshItem } from '../api/items'
-import type { ScanOut } from '../interfaces/Inventory'
 
 const LOCATIONS = ['fridge', 'freezer', 'cupboard'] as const
 type Location = typeof LOCATIONS[number]
 
 interface Props {
-  scanResult: ScanOut
+  initialName?: string
+  initialCategories?: string[]
+  initialBrands?: string[]
   onClose: () => void
 }
 
-export default function ManualEntryModal({ scanResult, onClose }: Props) {
-  const { product_reference } = scanResult
-  const [name, setName] = useState(product_reference.name)
+export default function ManualEntryModal({ initialName, initialCategories, initialBrands, onClose }: Props) {
+  const [name, setName] = useState(initialName || '')
+  const [categories, setCategories] = useState(initialCategories || [])
+  const [brands, setBrands] = useState(initialBrands || [])
   const [weightStr, setWeightStr] = useState('')
   const [location, setLocation] = useState<Location>('fridge')
   const [confirming, setConfirming] = useState(false)
@@ -31,8 +33,8 @@ export default function ManualEntryModal({ scanResult, onClose }: Props) {
         name: name.trim(),
         weight_grams: weight,
         location,
-        categories: product_reference.categories ?? undefined,
-        brands: product_reference.brands ?? undefined,
+        categories: categories.length > 0 ? categories : undefined,
+        brands: brands.length > 0 ? brands : undefined,
       })
       onClose()
     } catch {

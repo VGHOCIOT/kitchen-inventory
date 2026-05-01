@@ -11,7 +11,7 @@ from crud.item import (
     get_items_by_location,
     get_item_by_product_and_location,
     add_stock,
-    deduct_stock,
+    adjust_item_quantity,
     move_item,
     delete_item_by_composite_key,
 )
@@ -19,7 +19,9 @@ from crud.stock_lot import get_lots_for_item
 from crud.product_reference import (
     get_product_by_barcode,
     get_product_by_name,
+    get_product_by_id,
     create_product,
+    rename_product,
 )
 from api.services.openfood import lookup_barcode
 from api.services.ingredient_mapper import auto_map_product_to_ingredient
@@ -37,12 +39,13 @@ from schemas.item import (
     AdjustQuantityIn,
     MoveItemIn,
     DeleteItemIn,
+    EditItemIn,
 )
 from schemas.product_reference import CreateFreshItemIn
 from schemas.cook import CookRequest, CookResponse
 from models.item import Locations
-from uuid import UUID as _UUID
 from models.product_reference import ProductType
+from uuid import UUID as _UUID
 
 router = APIRouter(tags=["Inventory"])
 
@@ -228,30 +231,7 @@ async def adjust_quantity(
     if payload.delta == 0:
         raise HTTPException(status_code=400, detail="Delta must be non-zero")
 
-    # Need to know the unit — get from existing item
-    existing = await get_item_by_product_and_location(
-        db, payload.product_reference_id, payload.location
-    )
-
-    if payload.delta > 0:
-        unit = existing.unit if existing else "unit"
-        item = await add_stock(
-            db,
-            product_reference_id=payload.product_reference_id,
-            location=payload.location,
-            quantity=payload.delta,
-            unit=unit,
-        )
-    else:
-        if not existing:
-            raise HTTPException(status_code=404, detail="Item not found")
-        item = await deduct_stock(
-            db,
-            product_reference_id=payload.product_reference_id,
-            location=payload.location,
-            amount=abs(payload.delta),
-            unit=existing.unit,
-        )
+    item = await adjust_item_quantity(db, payload.product_reference_id, payload.location, payload.delta)
 
     if not item:
         raise HTTPException(
@@ -293,6 +273,38 @@ async def move_item_between_locations(
         )
 
     return item
+
+
+@router.patch("/edit", response_model=ItemWithProductOut)
+async def edit_item(
+    payload: EditItemIn,
+    db: AsyncSession = Depends(get_db),
+):
+    """Edit item qty (per-location) and/or product name (global across all locations)."""
+    if payload.qty is None and payload.name is None:
+        raise HTTPException(status_code=400, detail="At least one of qty or name must be provided")
+
+    if payload.name is not None:
+        product = await rename_product(db, payload.product_reference_id, payload.name.strip())
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        await auto_map_product_to_ingredient(db, product.name)
+
+    existing = await get_item_by_product_and_location(db, payload.product_reference_id, payload.location)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    if payload.qty is not None:
+        if payload.qty <= 0:
+            raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
+        delta = payload.qty - existing.qty
+        item = await adjust_item_quantity(db, payload.product_reference_id, payload.location, delta) if delta != 0 else existing
+    else:
+        item = existing
+
+    product = await get_product_by_id(db, payload.product_reference_id)
+
+    return {"item": item, "product": product}
 
 
 @router.delete("/", status_code=204)

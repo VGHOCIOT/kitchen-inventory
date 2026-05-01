@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useRef, useState, useContext, createContext } from 'react'
 import {
   createBrowserRouter,
   RouterProvider,
@@ -25,8 +25,12 @@ const MIN_BARCODE_LENGTH = 6
 
 const DEFAULT_SCAN_LOCATION = 'fridge'
 
+export const ScanContext = createContext<{ openManual: () => void }>({ openManual: () => {} })
+export const useScanContext = () => useContext(ScanContext)
+
 function BarcodeLayout() {
   const [pendingScan, setPendingScan] = useState<ScanOut | null>(null)
+  const [manualOpen, setManualOpen] = useState(false)
   const bufferRef = useRef<string>('')
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -64,14 +68,20 @@ function BarcodeLayout() {
   }, [])
 
   return (
-    <>
+    <ScanContext.Provider value={{ openManual: () => setManualOpen(true) }}>
       <Outlet />
       {pendingScan && (
         pendingScan.requires_manual_entry
-          ? <ManualEntryModal scanResult={pendingScan} onClose={() => setPendingScan(null)} />
+          ? <ManualEntryModal
+              initialName={pendingScan.product_reference.name}
+              initialCategories={pendingScan.product_reference.categories}
+              initialBrands={pendingScan.product_reference.brands}
+              onClose={() => setPendingScan(null)}
+            />
           : <ScanConfirmModal scanResult={pendingScan} onClose={() => setPendingScan(null)} />
       )}
-    </>
+      {manualOpen && <ManualEntryModal onClose={() => setManualOpen(false)} />}
+    </ScanContext.Provider>
   )
 }
 
@@ -108,7 +118,7 @@ function AppWithStore(): ReactElement {
 
     ws.onmessage = (event) => {
       const msg = JSON.parse(event.data)
-      if (msg.event === 'item_added' || msg.event === 'item_deleted' || msg.event === 'recipe_added' || msg.event === 'recipe_deleted') {
+      if (msg.event === 'item_added' || msg.event === 'item_deleted' || msg.event === 'item_updated' || msg.event === 'recipe_added' || msg.event === 'recipe_deleted') {
         dispatch(InventoryActions.fetchInventory())
         dispatch(RecipeActions.fetchRecipeMatches())
       }
