@@ -52,8 +52,8 @@ export async function adjustQuantity(
 }
 
 export interface EditItemIn {
-  product_reference_id: string
-  location: string
+  item_id: string
+  location?: string
   qty?: number
   name?: string
 }

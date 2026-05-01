@@ -400,12 +400,12 @@ class TestDeleteItem:
         )
         assert resp.status_code == 404
 
-    async def test_delete_last_item_removes_product_and_aliases(
+    async def test_delete_last_item_preserves_product_and_aliases(
         self, db_session, make_product, make_ingredient, make_alias, make_stock
     ):
         """
-        Deleting the last item referencing a product cleans up the
-        ProductReference and its IngredientAlias rows.
+        Deleting the last item referencing a product leaves ProductReference
+        and IngredientAlias rows intact (aliases are a persistent learned cache).
         """
         from crud.item import delete_item_by_composite_key
         from crud.product_reference import get_product_by_barcode
@@ -420,10 +420,9 @@ class TestDeleteItem:
         deleted = await delete_item_by_composite_key(db_session, product.id, Locations.FRIDGE)
         assert deleted is True
 
-        # ProductReference gone
-        assert await get_product_by_barcode(db_session, "111") is None
-        # Alias gone
-        assert await get_alias_by_text(db_session, "Store Butter") is None
+        # ProductReference and alias are preserved — not cleaned up on item delete
+        assert await get_product_by_barcode(db_session, "111") is not None
+        assert await get_alias_by_text(db_session, "Store Butter") is not None
 
     async def test_delete_one_location_preserves_product_at_other(
         self, db_session, make_product, make_ingredient, make_alias, make_stock

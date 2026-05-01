@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { RootState } from '../store'
 import { ScanBarcode, Pencil, Trash2 } from 'lucide-react'
 import { useScanContext } from '../App'
 import EditItemModal from '../components/EditItemModal'
 import type { ItemWithProduct } from '../interfaces/Inventory'
-import { deleteItem, fetchItems } from '../api/items'
-import { actions } from '../store/slices/inventorySlice'
+import { deleteItem } from '../api/items'
 
 const LOCATIONS = ['fridge', 'freezer', 'cupboard'] as const
 type Location = typeof LOCATIONS[number]
@@ -19,16 +18,15 @@ function formatQty(qty: number, unit: string): string {
 
 export default function InventoryPage() {
   const items = useSelector((state: RootState) => state.inventory)
-  const dispatch = useDispatch()
   const [activeLocation, setActiveLocation] = useState<Location>('fridge')
   const [editing, setEditing] = useState<ItemWithProduct | null>(null)
   const { openManual } = useScanContext()
 
   async function handleDelete(productReferenceId: string, location: string) {
     await deleteItem(productReferenceId, location)
-    const updated = await fetchItems()
-    dispatch(actions.setInventory(updated))
+    // WebSocket item_deleted event in App.tsx triggers the inventory refresh
   }
+
   const locationItems = items.filter(({ item }) => item.location === activeLocation)
 
   return (
@@ -89,12 +87,13 @@ export default function InventoryPage() {
 
       {editing && (
         <EditItemModal
-          productReferenceId={editing.item.product_reference_id}
-          location={editing.item.location}
+          itemId={editing.item.id}
+          currentLocation={editing.item.location}
           currentName={editing.product.name}
           currentQty={editing.item.qty}
           unit={editing.item.unit}
           onClose={() => setEditing(null)}
+          onSaved={() => setEditing(null)}
         />
       )}
     </div>

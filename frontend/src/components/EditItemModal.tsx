@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { Check, X } from 'lucide-react'
 import { editItem } from '../api/items'
 
+const LOCATIONS = ['fridge', 'freezer', 'cupboard'] as const
+type Location = typeof LOCATIONS[number]
+
 function unitLabel(unit: string): string {
   if (unit === 'g') return 'grams'
   if (unit === 'ml') return 'ml'
@@ -9,24 +12,27 @@ function unitLabel(unit: string): string {
 }
 
 interface Props {
-  productReferenceId: string
-  location: string
+  itemId: string
+  currentLocation: string
   currentName: string
   currentQty: number
   unit: string
   onClose: () => void
+  onSaved: () => void
 }
 
-export default function EditItemModal({ productReferenceId, location, currentName, currentQty, unit, onClose }: Props) {
+export default function EditItemModal({ itemId, currentLocation, currentName, currentQty, unit, onClose, onSaved }: Props) {
   const [name, setName] = useState(currentName)
   const [qtyStr, setQtyStr] = useState(String(currentQty % 1 === 0 ? currentQty : currentQty.toFixed(1)))
+  const [location, setLocation] = useState<Location>(currentLocation as Location)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const qty = parseFloat(qtyStr)
   const nameChanged = name.trim() !== currentName
   const qtyChanged = !isNaN(qty) && qty > 0 && qty !== currentQty
-  const canSave = (nameChanged || qtyChanged) && name.trim().length > 0 && !isNaN(qty) && qty > 0
+  const locationChanged = location !== currentLocation
+  const canSave = (nameChanged || qtyChanged || locationChanged) && name.trim().length > 0 && !isNaN(qty) && qty > 0
 
   async function handleSave() {
     if (!canSave || saving) return
@@ -34,11 +40,12 @@ export default function EditItemModal({ productReferenceId, location, currentNam
     setError(null)
     try {
       await editItem({
-        product_reference_id: productReferenceId,
-        location,
+        item_id: itemId,
         ...(nameChanged ? { name: name.trim() } : {}),
         ...(qtyChanged ? { qty } : {}),
+        ...(locationChanged ? { location } : {}),
       })
+      onSaved()
       onClose()
     } catch {
       setError('Failed to save changes. Please try again.')
@@ -83,6 +90,25 @@ export default function EditItemModal({ productReferenceId, location, currentNam
               onChange={e => setQtyStr(e.target.value)}
               className="w-full bg-raised rounded-xl px-4 py-3 text-foreground text-sm outline-none focus:ring-2 focus:ring-accent"
             />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-muted">Location</label>
+            <div className="flex gap-2">
+              {LOCATIONS.map(loc => (
+                <button
+                  key={loc}
+                  onClick={() => setLocation(loc)}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                    location === loc
+                      ? 'bg-accent text-white'
+                      : 'bg-raised text-muted hover:text-foreground'
+                  }`}
+                >
+                  {loc.charAt(0).toUpperCase() + loc.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
