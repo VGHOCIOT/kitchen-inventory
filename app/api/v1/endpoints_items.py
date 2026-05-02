@@ -35,6 +35,8 @@ from schemas.item import (
     ItemOut,
     ItemWithProductOut,
     StockLotOut,
+    ScanLookupIn,
+    ScanLookupOut,
     ScanIn,
     ScanOut,
     AdjustQuantityIn,
@@ -81,36 +83,34 @@ async def list_items_by_location(
 
 # ============== SCAN OPERATION (Entry Point) ==============
 
-@router.post("/scan", response_model=ScanOut)
-async def scan_product(
-    scan: ScanIn,
-    db: AsyncSession = Depends(get_db),
-):
+async def _resolve_product_and_compute_lot(
+    db: AsyncSession,
+    barcode: str,
+) -> tuple:
     """
-    Scan a barcode to add item to inventory.
-    - Looks up or creates ProductReference
-    - Creates a StockLot with the package weight converted to base units
-    - Refreshes the Item cache (qty = total grams/ml across lots)
+    Shared logic for lookup and confirm: resolve ProductReference, convert units.
+    Returns (product_ref, lot_qty, lot_unit, requires_manual_entry).
+    lot_qty/lot_unit are None when requires_manual_entry is True.
     """
-    product_ref = await get_product_by_barcode(db, scan.barcode)
+    product_ref = await get_product_by_barcode(db, barcode)
 
     if not product_ref:
-        product_info = await lookup_barcode(scan.barcode)
+        product_info = await lookup_barcode(barcode)
 
         has_quantity = product_info.get("package_quantity") is not None
         has_unit = product_info.get("package_unit") is not None
 
         if not has_quantity or not has_unit:
             logger.warning(
-                f"[SCAN] Incomplete product data for barcode {scan.barcode}: "
+                f"[SCAN] Incomplete product data for barcode {barcode}: "
                 f"quantity={product_info.get('package_quantity')}, unit={product_info.get('package_unit')}. "
                 f"This product will NOT be usable for recipe matching."
             )
 
         product_ref = await create_product(
             db,
-            name=product_info.get("name", f"Unknown product {scan.barcode}"),
-            barcode=scan.barcode,
+            name=product_info.get("name", f"Unknown product {barcode}"),
+            barcode=barcode,
             product_type=ProductType.UPC,
             brands=product_info.get("brands", []),
             categories=product_info.get("categories", []),
@@ -124,14 +124,8 @@ async def scan_product(
     else:
         logger.warning(f"[SCAN] Skipping ingredient mapping for '{product_ref.name}' - incomplete data")
 
-    # Degraded mode: missing package data — don't create item, let frontend collect it
     if product_ref.package_quantity is None or product_ref.package_unit is None:
-        logger.warning(f"[SCAN] Degraded mode for '{product_ref.name}' — requires manual entry")
-        return ScanOut(
-            product_reference=product_ref,
-            item=None,
-            requires_manual_entry=True,
-        )
+        return product_ref, None, None, True
 
     conversion = await convert_to_base_unit(
         product_ref.package_quantity,
@@ -161,11 +155,60 @@ async def scan_product(
                 f"{lot_qty}g using avg_weight={weight_per_unit}g/unit"
             )
 
+    return product_ref, lot_qty, lot_unit, False
+
+
+@router.post("/scan/lookup", response_model=ScanLookupOut)
+async def scan_lookup(
+    scan: ScanLookupIn,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Resolve a barcode to product info and computed lot qty/unit without writing to inventory.
+    Creates ProductReference on first encounter (idempotent catalog write).
+    Returns requires_manual_entry=True when package data is missing.
+    """
+    product_ref, lot_qty, lot_unit, requires_manual_entry = await _resolve_product_and_compute_lot(db, scan.barcode)
+
+    if requires_manual_entry:
+        logger.warning(f"[SCAN] Degraded mode for '{product_ref.name}' — requires manual entry")
+        return ScanLookupOut(
+            product_reference=product_ref,
+            requires_manual_entry=True,
+        )
+
+    return ScanLookupOut(
+        product_reference=product_ref,
+        computed_qty=lot_qty,
+        computed_unit=lot_unit,
+    )
+
+
+@router.post("/scan", response_model=ScanOut)
+async def scan_product(
+    scan: ScanIn,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Commit a scanned barcode to inventory.
+    - Resolves or creates ProductReference (no-op if already exists from /scan/lookup)
+    - Creates multiplier StockLots at the chosen location
+    """
+    product_ref, lot_qty, lot_unit, requires_manual_entry = await _resolve_product_and_compute_lot(db, scan.barcode)
+
+    if requires_manual_entry:
+        logger.warning(f"[SCAN] Degraded mode for '{product_ref.name}' — requires manual entry")
+        return ScanOut(
+            product_reference=product_ref,
+            item=None,
+            requires_manual_entry=True,
+        )
+
     item = await add_stock(
         db,
         product_reference_id=product_ref.id,
         location=scan.location,
-        quantity=lot_qty,
+        quantity=lot_qty * scan.multiplier,
         unit=lot_unit,
     )
 

@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Minus, Plus, Check, X } from 'lucide-react'
-import { adjustQuantity, moveItem } from '../api/items'
-import type { ScanOut } from '../interfaces/Inventory'
+import { confirmScan } from '../api/items'
+import type { ScanLookupOut } from '../interfaces/Inventory'
 
 const LOCATIONS = ['fridge', 'freezer', 'cupboard'] as const
 type Location = typeof LOCATIONS[number]
+
+const DEFAULT_LOCATION: Location = 'fridge'
 
 function formatQty(qty: number, unit: string): string {
   if (unit === 'g' && qty >= 1000) return `${(qty / 1000).toFixed(2).replace(/\.?0+$/, '')} kg`
@@ -13,30 +15,24 @@ function formatQty(qty: number, unit: string): string {
 }
 
 interface Props {
-  scanResult: ScanOut
+  scanResult: ScanLookupOut
+  barcode: string
   onClose: () => void
 }
 
-export default function ScanConfirmModal({ scanResult, onClose }: Props) {
-  const { product_reference, item: nullableItem, data_quality_warning } = scanResult
-  const item = nullableItem!
-  const [selectedLocation, setSelectedLocation] = useState<Location>(item.location as Location)
+export default function ScanConfirmModal({ scanResult, barcode, onClose }: Props) {
+  const { product_reference, computed_qty, computed_unit, data_quality_warning } = scanResult
+  const [selectedLocation, setSelectedLocation] = useState<Location>(DEFAULT_LOCATION)
   const [multiplier, setMultiplier] = useState(1)
   const [confirming, setConfirming] = useState(false)
 
-  const lotQty = item.qty
-  const totalQty = lotQty * multiplier
+  const totalQty = computed_qty! * multiplier
 
   async function handleConfirm() {
     if (confirming) return
     setConfirming(true)
     try {
-      if (selectedLocation !== item.location) {
-        await moveItem(product_reference.id, item.location, selectedLocation, lotQty)
-      }
-      if (multiplier > 1) {
-        await adjustQuantity(product_reference.id, selectedLocation, lotQty * (multiplier - 1))
-      }
+      await confirmScan(barcode, selectedLocation, multiplier)
       onClose()
     } catch {
       setConfirming(false)
@@ -44,64 +40,52 @@ export default function ScanConfirmModal({ scanResult, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6 flex flex-col gap-5" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-semibold text-black">Confirm Scan</h2>
+          <button onClick={onClose} className="text-muted hover:text-black transition-colors cursor-pointer">
+            <X size={20} />
+          </button>
+        </div>
 
-      {/* Sheet */}
-      <div className="relative w-full max-w-lg bg-surface rounded-t-3xl px-6 pt-5 pb-8 flex flex-col gap-5">
-        {/* Drag handle */}
-        <div className="w-10 h-1 rounded-full bg-edge mx-auto" />
-
-        {/* Dismiss */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 text-muted hover:text-foreground"
-        >
-          <X size={20} />
-        </button>
-
-        {/* Product */}
         <div className="flex items-center gap-4">
           {/* TODO: replace with OpenFoodFacts product image when available
               API: https://world.openfoodfacts.org/api/v0/product/{barcode}.json
               Image field: product.image_front_small_url
               Needs to be stored on ProductReference and returned in ProductReferenceOut */}
-          <div className="w-16 h-16 rounded-xl bg-raised flex items-center justify-center shrink-0">
-            <span className="text-3xl">📦</span>
+          <div className="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
+            <span className="text-2xl">📦</span>
           </div>
 
           <div className="flex-1 min-w-0">
-            <h2 className="font-display text-lg font-semibold text-foreground truncate">
+            <h3 className="font-display text-base font-semibold text-black truncate">
               {product_reference.name}
-            </h2>
+            </h3>
             {product_reference.brands.length > 0 && (
               <p className="text-sm text-muted truncate">
                 {product_reference.brands.join(', ')}
               </p>
             )}
             <p className="text-sm text-accent mt-0.5">
-              {formatQty(lotQty, item.unit)} per scan
+              {formatQty(computed_qty!, computed_unit!)} per scan
             </p>
           </div>
         </div>
 
         {data_quality_warning && (
-          <p className="text-sm text-warn px-3 py-2 bg-warn-dim rounded-xl">
-            {data_quality_warning}
-          </p>
+          <p className="text-sm text-warn px-3 py-2 bg-warn-dim rounded-lg">{data_quality_warning}</p>
         )}
 
-        {/* Location */}
         <div className="flex gap-2">
           {LOCATIONS.map(loc => (
             <button
               key={loc}
               onClick={() => setSelectedLocation(loc)}
-              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                 selectedLocation === loc
                   ? 'bg-accent text-white'
-                  : 'bg-raised text-muted'
+                  : 'bg-gray-100 text-muted hover:text-black'
               }`}
             >
               {loc.charAt(0).toUpperCase() + loc.slice(1)}
@@ -109,38 +93,36 @@ export default function ScanConfirmModal({ scanResult, onClose }: Props) {
           ))}
         </div>
 
-        {/* Multiplier */}
-        <div className="flex items-center justify-between bg-raised rounded-2xl px-5 py-4">
+        <div className="flex items-center justify-between bg-gray-100 rounded-xl px-5 py-4">
           <button
             onClick={() => setMultiplier(m => Math.max(1, m - 1))}
             disabled={multiplier === 1}
-            className="w-11 h-11 rounded-full border border-edge flex items-center justify-center text-foreground disabled:text-subtle disabled:border-subtle"
+            className="w-10 h-10 rounded-full border border-edge bg-white flex items-center justify-center text-black disabled:text-subtle disabled:border-subtle cursor-pointer disabled:cursor-not-allowed"
           >
-            <Minus size={18} />
+            <Minus size={16} />
           </button>
 
           <div className="text-center">
-            <span className="text-4xl font-bold text-foreground">×{multiplier}</span>
+            <span className="text-4xl font-bold text-black">×{multiplier}</span>
             <p className="text-sm text-muted mt-1">
-              Total: <span className="text-foreground font-medium">{formatQty(totalQty, item.unit)}</span>
+              Total: <span className="text-black font-medium">{formatQty(totalQty, computed_unit!)}</span>
             </p>
           </div>
 
           <button
             onClick={() => setMultiplier(m => m + 1)}
-            className="w-11 h-11 rounded-full border border-edge flex items-center justify-center text-foreground"
+            className="w-10 h-10 rounded-full border border-edge bg-white flex items-center justify-center text-black cursor-pointer"
           >
-            <Plus size={18} />
+            <Plus size={16} />
           </button>
         </div>
 
-        {/* Confirm */}
         <button
           onClick={handleConfirm}
           disabled={confirming}
-          className="w-full py-4 rounded-2xl bg-accent text-white font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-2.5 rounded-lg text-sm font-semibold bg-accent hover:bg-accent-hover text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          <Check size={18} />
+          <Check size={16} />
           {confirming ? 'Adding…' : 'Confirm'}
         </button>
       </div>

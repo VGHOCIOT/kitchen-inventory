@@ -2,7 +2,7 @@
 // ItemOut:           { id, product_reference_id, location, qty, unit, expires_at }
 // ProductReferenceOut: { id, name, brands, categories, package_quantity, package_unit, ... }
 
-import { ItemWithProduct, ScanOut, ScanIn } from "../interfaces/Inventory"
+import { ItemWithProduct, ScanLookupOut, ScanOut } from "../interfaces/Inventory"
 
 export interface AddFreshIn {
   name: string
@@ -18,13 +18,23 @@ export async function fetchItems(): Promise<ItemWithProduct[]> {
   return res.json()
 }
 
-export async function scanBarcode(scan: ScanIn): Promise<ScanOut> {
+export async function scanBarcode(barcode: string): Promise<ScanLookupOut> {
+  const res = await fetch('/api/v1/items/scan/lookup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ barcode }),
+  })
+  if (!res.ok) throw new Error(`Scan lookup failed: ${res.status}`)
+  return res.json()
+}
+
+export async function confirmScan(barcode: string, location: string, multiplier: number): Promise<ScanOut> {
   const res = await fetch('/api/v1/items/scan', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(scan),
+    body: JSON.stringify({ barcode, location, multiplier }),
   })
-  if (!res.ok) throw new Error(`Scan failed: ${res.status}`)
+  if (!res.ok) throw new Error(`Scan confirm failed: ${res.status}`)
   return res.json()
 }
 
@@ -38,18 +48,6 @@ export async function addFreshItem(payload: AddFreshIn): Promise<ScanOut> {
   return res.json()
 }
 
-export async function adjustQuantity(
-  productReferenceId: string,
-  location: string,
-  delta: number,
-): Promise<void> {
-  const res = await fetch('/api/v1/items/adjust', {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ product_reference_id: productReferenceId, location, delta }),
-  })
-  if (!res.ok) throw new Error(`Adjust failed: ${res.status}`)
-}
 
 export interface EditItemIn {
   item_id: string
@@ -76,22 +74,4 @@ export async function deleteItem(productReferenceId: string, location: string): 
   if (!res.ok) throw new Error(`Delete failed: ${res.status}`)
 }
 
-export async function moveItem(
-  productReferenceId: string,
-  fromLocation: string,
-  toLocation: string,
-  quantity: number,
-): Promise<void> {
-  const res = await fetch('/api/v1/items/move', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      product_reference_id: productReferenceId,
-      from_location: fromLocation,
-      to_location: toLocation,
-      quantity,
-    }),
-  })
-  if (!res.ok) throw new Error(`Move failed: ${res.status}`)
-}
 

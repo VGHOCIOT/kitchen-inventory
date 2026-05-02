@@ -14,8 +14,8 @@ interface Props {
 
 export default function ManualEntryModal({ initialName, initialCategories, initialBrands, onClose }: Props) {
   const [name, setName] = useState(initialName || '')
-  const [categories, setCategories] = useState(initialCategories || [])
-  const [brands, setBrands] = useState(initialBrands || [])
+  const [categories] = useState(initialCategories || [])
+  const [brands] = useState(initialBrands || [])
   const [weightStr, setWeightStr] = useState('')
   const [location, setLocation] = useState<Location>('fridge')
   const [confirming, setConfirming] = useState(false)
@@ -44,22 +44,16 @@ export default function ManualEntryModal({ initialName, initialCategories, initi
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-
-      <div className="relative w-full max-w-lg bg-surface rounded-t-3xl px-6 pt-5 pb-8 flex flex-col gap-5">
-        <div className="w-10 h-1 rounded-full bg-edge mx-auto" />
-
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 text-muted hover:text-foreground"
-        >
-          <X size={20} />
-        </button>
-
-        <div>
-          <h2 className="font-display text-lg font-semibold text-foreground">Manual Entry</h2>
-          <p className="text-sm text-muted mt-0.5">Product data incomplete — enter details below</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6 flex flex-col gap-5" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-lg font-semibold text-black">Manual Entry</h2>
+            <p className="text-sm text-muted mt-0.5">Product data incomplete — enter details below</p>
+          </div>
+          <button onClick={onClose} className="text-muted hover:text-black transition-colors cursor-pointer">
+            <X size={20} />
+          </button>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -69,7 +63,7 @@ export default function ManualEntryModal({ initialName, initialCategories, initi
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
-              className="w-full bg-raised rounded-xl px-4 py-3 text-foreground text-sm outline-none focus:ring-2 focus:ring-accent"
+              className="w-full border border-edge rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
 
@@ -82,7 +76,7 @@ export default function ManualEntryModal({ initialName, initialCategories, initi
               value={weightStr}
               onChange={e => setWeightStr(e.target.value)}
               placeholder="e.g. 500"
-              className="w-full bg-raised rounded-xl px-4 py-3 text-foreground text-sm outline-none focus:ring-2 focus:ring-accent"
+              className="w-full border border-edge rounded-lg px-3 py-2 text-sm text-black placeholder:text-subtle focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
         </div>
@@ -92,10 +86,10 @@ export default function ManualEntryModal({ initialName, initialCategories, initi
             <button
               key={loc}
               onClick={() => setLocation(loc)}
-              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                 location === loc
                   ? 'bg-accent text-white'
-                  : 'bg-raised text-muted'
+                  : 'bg-gray-100 text-muted hover:text-black'
               }`}
             >
               {loc.charAt(0).toUpperCase() + loc.slice(1)}
@@ -103,16 +97,14 @@ export default function ManualEntryModal({ initialName, initialCategories, initi
           ))}
         </div>
 
-        {error && (
-          <p className="text-sm text-warn px-3 py-2 bg-warn-dim rounded-xl">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-500">{error}</p>}
 
         <button
           onClick={handleConfirm}
           disabled={!canConfirm || confirming}
-          className="w-full py-4 rounded-2xl bg-accent text-white font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-2.5 rounded-lg text-sm font-semibold bg-accent hover:bg-accent-hover text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          <Check size={18} />
+          <Check size={16} />
           {confirming ? 'Adding…' : 'Add Item'}
         </button>
       </div>

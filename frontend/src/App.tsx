@@ -12,24 +12,23 @@ import CookableRecipes from './pages/CookableRecipes'
 import RecipeInstructions from './pages/RecipeInstructions'
 import ScanConfirmModal from './components/ScanConfirmModal'
 import ManualEntryModal from './components/ManualEntryModal'
+import SideNav from './components/SideNav'
 import Paths from './interfaces/Pages'
 import RecipeActions from './store/actions/recipeActions'
 import InventoryActions from './store/actions/inventoryActions'
 import { scanBarcode } from './api/items'
-import type { ScanOut } from './interfaces/Inventory'
+import type { ScanLookupOut } from './interfaces/Inventory'
 
 // Zebra/Symbol scanners in HID mode emit barcodes as rapid keystrokes ending with Enter.
 // Characters arriving within SCAN_TIMEOUT_MS of each other are treated as one scan sequence.
 const SCAN_TIMEOUT_MS = 50
 const MIN_BARCODE_LENGTH = 6
 
-const DEFAULT_SCAN_LOCATION = 'fridge'
-
 export const ScanContext = createContext<{ openManual: () => void }>({ openManual: () => {} })
 export const useScanContext = () => useContext(ScanContext)
 
 function BarcodeLayout() {
-  const [pendingScan, setPendingScan] = useState<ScanOut | null>(null)
+  const [pendingScan, setPendingScan] = useState<{ result: ScanLookupOut; barcode: string } | null>(null)
   const [manualOpen, setManualOpen] = useState(false)
   const bufferRef = useRef<string>('')
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -37,8 +36,8 @@ function BarcodeLayout() {
   useEffect(() => {
     function flush(barcode: string) {
       if (barcode.length < MIN_BARCODE_LENGTH) return
-      scanBarcode({ barcode, location: DEFAULT_SCAN_LOCATION, quantity: null })
-        .then(setPendingScan)
+      scanBarcode(barcode)
+        .then(result => setPendingScan({ result, barcode }))
         .catch(console.error)
     }
 
@@ -69,20 +68,26 @@ function BarcodeLayout() {
 
   return (
     <ScanContext.Provider value={{ openManual: () => setManualOpen(true) }}>
-      <Outlet />
+      <div className="flex h-dvh bg-white">
+        <SideNav />
+        <main className="flex-1 overflow-hidden min-w-0">
+          <Outlet />
+        </main>
+      </div>
       {pendingScan && (
-        pendingScan.requires_manual_entry
+        pendingScan.result.requires_manual_entry
           ? <ManualEntryModal
-              initialName={pendingScan.product_reference.name}
-              initialCategories={pendingScan.product_reference.categories}
-              initialBrands={pendingScan.product_reference.brands}
+              initialName={pendingScan.result.product_reference.name}
+              initialCategories={pendingScan.result.product_reference.categories}
+              initialBrands={pendingScan.result.product_reference.brands}
               onClose={() => setPendingScan(null)}
             />
-          : <ScanConfirmModal scanResult={pendingScan} onClose={() => setPendingScan(null)} />
+          : <ScanConfirmModal scanResult={pendingScan.result} barcode={pendingScan.barcode} onClose={() => setPendingScan(null)} />
       )}
       {manualOpen && <ManualEntryModal onClose={() => setManualOpen(false)} />}
     </ScanContext.Provider>
   )
+
 }
 
 const routes: RouteObject[] = [

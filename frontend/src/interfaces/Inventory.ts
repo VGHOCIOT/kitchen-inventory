@@ -21,15 +21,17 @@ export interface ItemWithProduct {
   product: ProductReferenceOut
 }
 
+export interface ScanLookupOut {
+  product_reference: ProductReferenceOut
+  computed_qty: number | null
+  computed_unit: string | null
+  data_quality_warning: string | null
+  requires_manual_entry: boolean
+}
+
 export interface ScanOut {
   product_reference: ProductReferenceOut
   item: ItemOut | null
   data_quality_warning: string | null
   requires_manual_entry: boolean
-}
-
-export interface ScanIn {
-  barcode: string
-  location: string
-  quantity: number | null
 }

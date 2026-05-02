@@ -123,7 +123,7 @@ export default function RecipeInstructions() {
   if (!recipe) return null
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-white">
+    <div className="p-6 max-w-4xl mx-auto bg-white overflow-y-auto h-full">
       <h1 className="font-display text-3xl font-bold mb-2 text-black">{recipe.title}</h1>
 
       {recipe.source_url && (
@@ -176,7 +176,7 @@ export default function RecipeInstructions() {
         <button
           onClick={handleCook}
           disabled={cooking}
-          className="w-full py-3 rounded-lg text-sm font-medium transition-colors bg-accent hover:bg-accent-hover text-canvas cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-lg text-sm font-medium transition-colors bg-accent hover:bg-accent-hover text-white cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <ChefHat size={18} />
           {cooking ? 'Deducting from inventory…' : 'Cook — deduct from inventory'}

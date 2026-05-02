@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
-import { ScanBarcode, Pencil, Trash2 } from 'lucide-react'
+import { ScanBarcode } from 'lucide-react'
 import { useScanContext } from '../App'
 import EditItemModal from '../components/EditItemModal'
 import type { ItemWithProduct } from '../interfaces/Inventory'
@@ -24,22 +24,35 @@ export default function InventoryPage() {
 
   async function handleDelete(productReferenceId: string, location: string) {
     await deleteItem(productReferenceId, location)
-    // WebSocket item_deleted event in App.tsx triggers the inventory refresh
   }
 
   const locationItems = items.filter(({ item }) => item.location === activeLocation)
 
+  const activeLocations = LOCATIONS.filter(loc => items.some(({ item }) => item.location === loc))
+  const locationList = activeLocations.length === 0
+    ? 'no locations'
+    : activeLocations.length === 1
+    ? activeLocations[0]
+    : activeLocations.slice(0, -1).join(', ') + ' & ' + activeLocations[activeLocations.length - 1]
+
   return (
-    <div className="flex flex-col h-dvh bg-white">
-      <div className="flex border-b border-edge">
+    <div className="flex flex-col h-full bg-white">
+      <div className="px-8 pt-8 pb-2 shrink-0">
+        <h1 className="font-display text-4xl font-bold text-black leading-tight">What's in stock</h1>
+        <p className="text-sm text-muted mt-1.5">
+          {items.length} {items.length === 1 ? 'item' : 'items'} across {locationList}
+        </p>
+      </div>
+
+      <div className="flex px-8 mt-5 border-b border-edge shrink-0">
         {LOCATIONS.map(loc => (
           <button
             key={loc}
             onClick={() => setActiveLocation(loc)}
-            className={`flex-1 py-4 text-sm font-semibold tracking-wide ${
+            className={`mr-7 pb-3 text-sm transition-colors ${
               activeLocation === loc
-                ? 'text-accent border-b-2 border-accent'
-                : 'text-muted border-b-2 border-transparent'
+                ? 'font-semibold text-black border-b-[2.5px] border-black -mb-px'
+                : 'text-muted'
             }`}
           >
             {loc.charAt(0).toUpperCase() + loc.slice(1)}
@@ -47,39 +60,41 @@ export default function InventoryPage() {
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto py-2">
+      <div className="flex-1 overflow-y-auto">
         {locationItems.length === 0 && (
-          <p className="p-6 text-muted text-center">
+          <p className="px-8 py-10 text-muted text-center">
             Nothing in {activeLocation.charAt(0).toUpperCase() + activeLocation.slice(1)}
           </p>
         )}
         {locationItems.map(({ item, product }) => (
           <div
             key={item.id}
-            className="group flex items-center px-5 border-b border-edge min-h-14 overflow-hidden"
+            className="group flex items-center px-8 border-b border-dotted border-edge min-h-[3.25rem] overflow-hidden hover:bg-[#f7fbf9] transition-colors"
           >
             <span className="flex-1 text-base text-black">{product.name}</span>
             <div className="flex items-center gap-3 shrink-0">
-              <span className="text-muted text-sm">{formatQty(item.qty, item.unit)}</span>
               <button
                 onClick={() => setEditing({ item, product })}
-                className="rounded-full text-muted border border-subtle hover:border-accent hover:text-accent font-medium leading-5 text-sm px-3 py-1 focus:outline-none focus-visible:outline-none opacity-0 translate-x-5 pointer-events-none transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto"
+                className="border border-edge text-muted text-sm px-3 py-1 rounded focus:outline-none opacity-0 translate-x-3 pointer-events-none transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto hover:border-black hover:text-black"
               >
-                <Pencil size={16} />
+                edit
               </button>
               <button
                 onClick={() => handleDelete(item.product_reference_id, item.location)}
-                className="rounded-full text-muted border border-subtle hover:border-red-400 hover:text-red-400 font-medium leading-5 text-sm px-3 py-1 focus:outline-none focus-visible:outline-none opacity-0 translate-x-5 pointer-events-none transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto"
+                className="border border-danger text-danger text-sm px-3 py-1 rounded focus:outline-none opacity-0 translate-x-3 pointer-events-none transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto hover:bg-red-50"
               >
-                <Trash2 size={16} />
+                remove
               </button>
+              <span className="text-sm font-medium text-accent min-w-[4rem] text-right">
+                {formatQty(item.qty, item.unit)}
+              </span>
             </div>
           </div>
         ))}
       </div>
 
       <button
-        className="fixed bottom-6 right-6 z-50 text-white bg-accent box-border border border-transparent hover:bg-accent-hover shadow-xs font-medium leading-5 rounded-full text-sm p-5 focus:outline-none"
+        className="fixed bottom-6 right-6 z-50 text-white bg-accent box-border border border-transparent hover:bg-accent-hover shadow-sm font-medium leading-5 rounded-full text-sm p-5 focus:outline-none"
         onClick={openManual}
       >
         <ScanBarcode size={25} />

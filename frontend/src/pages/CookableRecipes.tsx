@@ -1,11 +1,64 @@
 import { useState } from 'react'
-import { Lock, ArrowRightLeft } from 'lucide-react'
+import { Lock, ArrowRightLeft, Plus, X } from 'lucide-react'
 import type { RecipeMatchResult } from '../interfaces/Recipes'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
+import { createRecipeFromUrl } from '../api/recipes'
+
+function AddRecipeModal({ onClose }: { onClose: () => void }) {
+  const [url, setUrl] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!url.trim() || loading) return
+    setLoading(true)
+    setError(null)
+    try {
+      await createRecipeFromUrl(url.trim())
+      onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display text-lg font-semibold text-black">Add Recipe from URL</h2>
+          <button onClick={onClose} className="text-muted hover:text-black transition-colors cursor-pointer">
+            <X size={20} />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input
+            type="url"
+            placeholder="https://..."
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+            autoFocus
+            className="w-full border border-edge rounded-lg px-3 py-2 text-sm text-black placeholder:text-subtle focus:outline-none focus:ring-2 focus:ring-accent"
+          />
+          {error && <p className="text-sm text-red-500">{error}</p>}
+          <button
+            type="submit"
+            disabled={!url.trim() || loading}
+            className="w-full py-2 rounded-lg text-sm font-medium bg-accent hover:bg-accent-hover text-canvas transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Importing…' : 'Import Recipe'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
 
 export default function CookableRecipes() {
   const recipeState = useSelector((state: RootState) => state.recipes)
+  const [addOpen, setAddOpen] = useState(false)
 
   const Section = ({ title, recipes }: { title: string; recipes: RecipeMatchResult[] }) => {
     if (recipes.length === 0) return null
@@ -22,11 +75,23 @@ export default function CookableRecipes() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-white">
-      <h1 className="font-display text-3xl font-bold mb-8 text-black">Cookable Recipes</h1>
+    <div className="h-full overflow-y-auto bg-white">
+    <div className="p-6 max-w-4xl mx-auto">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="font-display text-3xl font-bold text-black">Cookable Recipes</h1>
+        <button
+          onClick={() => setAddOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-accent hover:bg-accent-hover text-white transition-colors cursor-pointer"
+        >
+          <Plus size={16} />
+          Add Recipe
+        </button>
+      </div>
       <Section title="Unlocked" recipes={recipeState.unlocked} />
       <Section title="Almost There" recipes={recipeState.almost} />
       <Section title="Locked" recipes={recipeState.locked} />
+    </div>
+    {addOpen && <AddRecipeModal onClose={() => setAddOpen(false)} />}
     </div>
   )
 }
@@ -103,7 +168,7 @@ export function RecipeCard({ recipe }: { recipe: RecipeMatchResult }) {
         {!isLocked && (
           <div className="pt-2">
             <button
-              className="w-full py-2 rounded-lg text-sm font-medium transition-colors bg-accent hover:bg-accent-hover text-canvas cursor-pointer"
+              className="w-full py-2 rounded-lg text-sm font-medium transition-colors bg-accent hover:bg-accent-hover text-white cursor-pointer"
               onClick={() => window.location.href = `/recipes/${recipe.recipe_id}`}
             >
               Cook

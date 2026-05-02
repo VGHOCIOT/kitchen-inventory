@@ -31,9 +31,25 @@ class ItemOut(BaseModel):
         from_attributes = True
 
 
+class ScanLookupIn(BaseModel):
+    barcode: str = Field(..., min_length=1, max_length=20, pattern=r"^\d+$")
+
+
+class ScanLookupOut(BaseModel):
+    product_reference: "ProductReferenceOut"
+    computed_qty: Optional[float] = None
+    computed_unit: Optional[str] = None
+    data_quality_warning: Optional[str] = None
+    requires_manual_entry: bool = False
+
+    class Config:
+        from_attributes = True
+
+
 class ScanIn(BaseModel):
     barcode: str = Field(..., min_length=1, max_length=20, pattern=r"^\d+$")
     location: Locations = Locations.FRIDGE
+    multiplier: int = Field(1, ge=1)
 
 
 class ScanOut(BaseModel):
@@ -74,6 +90,7 @@ class EditItemIn(BaseModel):
 # Import here to avoid circular dependency
 from schemas.product_reference import ProductReferenceOut
 ScanOut.model_rebuild()
+ScanLookupOut.model_rebuild()
 
 
 class ItemWithProductOut(BaseModel):
