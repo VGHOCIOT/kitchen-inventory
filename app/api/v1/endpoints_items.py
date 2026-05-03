@@ -87,9 +87,9 @@ async def update_lot(
     if not lot:
         raise HTTPException(status_code=404, detail="Lot not found")
     if payload.expires_at is not None:
-        lot.expires_at = payload.expires_at
+        lot.expires_at = payload.expires_at.replace(tzinfo=None)
     if payload.opened_at is not None:
-        lot.opened_at = payload.opened_at
+        lot.opened_at = payload.opened_at.replace(tzinfo=None)
     await db.flush()
     await refresh_item_cache(db, lot.product_reference_id, lot.location, lot.unit)
     await db.refresh(lot)
