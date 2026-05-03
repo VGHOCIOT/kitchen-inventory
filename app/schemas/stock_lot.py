@@ -13,7 +13,13 @@ class StockLotOut(BaseModel):
     remaining_quantity: float
     unit: str
     expires_at: Optional[datetime] = None
+    opened_at: Optional[datetime] = None
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class StockLotUpdateIn(BaseModel):
+    expires_at: Optional[datetime] = None
+    opened_at: Optional[datetime] = None

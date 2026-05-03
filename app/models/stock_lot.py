@@ -22,4 +22,5 @@ class StockLot(Base):
     remaining_quantity = Column(Float, nullable=False)
     unit = Column(String, nullable=False)  # "g", "ml", or "unit"
     expires_at = Column(DateTime, nullable=True)
+    opened_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)

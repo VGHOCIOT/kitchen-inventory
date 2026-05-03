@@ -24,6 +24,7 @@ export default function ScanConfirmModal({ scanResult, barcode, onClose }: Props
   const { product_reference, computed_qty, computed_unit, data_quality_warning } = scanResult
   const [selectedLocation, setSelectedLocation] = useState<Location>(DEFAULT_LOCATION)
   const [multiplier, setMultiplier] = useState(1)
+  const [expiryDate, setExpiryDate] = useState('')
   const [confirming, setConfirming] = useState(false)
 
   const totalQty = computed_qty! * multiplier
@@ -32,7 +33,7 @@ export default function ScanConfirmModal({ scanResult, barcode, onClose }: Props
     if (confirming) return
     setConfirming(true)
     try {
-      await confirmScan(barcode, selectedLocation, multiplier)
+      await confirmScan(barcode, selectedLocation, multiplier, expiryDate || null)
       onClose()
     } catch {
       setConfirming(false)
@@ -91,6 +92,17 @@ export default function ScanConfirmModal({ scanResult, barcode, onClose }: Props
               {loc.charAt(0).toUpperCase() + loc.slice(1)}
             </button>
           ))}
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-muted">Expiry date (optional)</label>
+          <input
+            type="date"
+            value={expiryDate}
+            min={new Date().toISOString().slice(0, 10)}
+            onChange={e => setExpiryDate(e.target.value)}
+            className="w-full border border-edge rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-accent"
+          />
         </div>
 
         <div className="flex items-center justify-between bg-gray-100 rounded-xl px-5 py-4">

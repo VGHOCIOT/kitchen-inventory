@@ -4,7 +4,9 @@ import { RootState } from '../store'
 import { ScanBarcode } from 'lucide-react'
 import { useScanContext } from '../App'
 import EditItemModal from '../components/EditItemModal'
+import LotDetailsModal from '../components/LotDetailsModal'
 import type { ItemWithProduct } from '../interfaces/Inventory'
+import { computeExpiryStatus } from '../interfaces/Inventory'
 import { deleteItem } from '../api/items'
 
 const LOCATIONS = ['fridge', 'freezer', 'cupboard'] as const
@@ -20,6 +22,7 @@ export default function InventoryPage() {
   const items = useSelector((state: RootState) => state.inventory)
   const [activeLocation, setActiveLocation] = useState<Location>('fridge')
   const [editing, setEditing] = useState<ItemWithProduct | null>(null)
+  const [lotsOpen, setLotsOpen] = useState<ItemWithProduct | null>(null)
   const { openManual } = useScanContext()
 
   async function handleDelete(productReferenceId: string, location: string) {
@@ -73,6 +76,23 @@ export default function InventoryPage() {
           >
             <span className="flex-1 text-base text-black">{product.name}</span>
             <div className="flex items-center gap-3 shrink-0">
+              {(() => {
+                const status = computeExpiryStatus(item.expires_at, item.location)
+                if (!status) return null
+                const cls = status === 'expired'
+                  ? 'bg-red-100 text-red-700'
+                  : status === 'nearing'
+                  ? 'bg-amber-100 text-amber-700'
+                  : 'bg-green-100 text-green-700'
+                const label = status === 'expired' ? 'Expired' : status === 'nearing' ? 'Soon' : 'Good'
+                return <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${cls}`}>{label}</span>
+              })()}
+              <button
+                onClick={() => setLotsOpen({ item, product })}
+                className="border border-edge text-muted text-sm px-3 py-1 rounded focus:outline-none opacity-0 translate-x-3 pointer-events-none transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto hover:border-black hover:text-black"
+              >
+                lots
+              </button>
               <button
                 onClick={() => setEditing({ item, product })}
                 className="border border-edge text-muted text-sm px-3 py-1 rounded focus:outline-none opacity-0 translate-x-3 pointer-events-none transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto hover:border-black hover:text-black"
@@ -109,6 +129,16 @@ export default function InventoryPage() {
           unit={editing.item.unit}
           onClose={() => setEditing(null)}
           onSaved={() => setEditing(null)}
+        />
+      )}
+
+      {lotsOpen && (
+        <LotDetailsModal
+          productReferenceId={lotsOpen.item.product_reference_id}
+          location={lotsOpen.item.location}
+          productName={lotsOpen.product.name}
+          categories={lotsOpen.product.categories}
+          onClose={() => setLotsOpen(null)}
         />
       )}
     </div>

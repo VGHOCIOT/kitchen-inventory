@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from db.session import get_db
 import logging
 
@@ -16,7 +17,9 @@ from crud.item import (
     move_item,
     delete_item_by_composite_key,
 )
-from crud.stock_lot import get_lots_for_item
+from crud.stock_lot import get_lots_for_item, refresh_item_cache
+from models.stock_lot import StockLot
+from schemas.stock_lot import StockLotUpdateIn
 from crud.product_reference import (
     get_product_by_barcode,
     get_product_by_name,
@@ -67,9 +70,30 @@ async def list_lots_for_item(
     location: Locations,
     db: AsyncSession = Depends(get_db),
 ):
-    """List all active stock lots for a product at a location, ordered FIFO."""
+    """List all active stock lots for a product at a location, ordered FEFO."""
     lots = await get_lots_for_item(db, _UUID(product_reference_id), location)
     return lots
+
+
+@router.patch("/lots/{lot_id}", response_model=StockLotOut)
+async def update_lot(
+    lot_id: str,
+    payload: StockLotUpdateIn,
+    db: AsyncSession = Depends(get_db),
+):
+    """Update a lot's expires_at and/or opened_at. Syncs Item.expires_at to the new minimum."""
+    result = await db.execute(select(StockLot).where(StockLot.id == _UUID(lot_id)))
+    lot = result.scalar_one_or_none()
+    if not lot:
+        raise HTTPException(status_code=404, detail="Lot not found")
+    if payload.expires_at is not None:
+        lot.expires_at = payload.expires_at
+    if payload.opened_at is not None:
+        lot.opened_at = payload.opened_at
+    await db.flush()
+    await refresh_item_cache(db, lot.product_reference_id, lot.location, lot.unit)
+    await db.refresh(lot)
+    return lot
 
 
 @router.get("/location/{location}", response_model=list[ItemOut])
@@ -210,6 +234,7 @@ async def scan_product(
         location=scan.location,
         quantity=lot_qty * scan.multiplier,
         unit=lot_unit,
+        expires_at=scan.expires_at,
     )
 
     return ScanOut(

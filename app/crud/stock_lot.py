@@ -35,10 +35,7 @@ async def get_lots_for_item(
     product_reference_id: UUID,
     location: Locations,
 ) -> list[StockLot]:
-    """Get all lots for a product+location, ordered FIFO (oldest first).
-    Change to FEFO when expiry tracking is active:
-        .order_by(StockLot.expires_at.asc().nullslast(), StockLot.created_at.asc())
-    """
+    """Get all lots for a product+location, ordered FEFO (earliest expiry first, nulls last)."""
     result = await db.execute(
         select(StockLot)
         .where(
@@ -46,7 +43,7 @@ async def get_lots_for_item(
             StockLot.location == location,
             StockLot.remaining_quantity > 0,
         )
-        .order_by(StockLot.created_at.asc())
+        .order_by(StockLot.expires_at.asc().nullslast(), StockLot.created_at.asc())
     )
     return list(result.scalars().all())
 
@@ -84,7 +81,7 @@ async def refresh_item_cache(
     location: Locations,
     unit: str,
 ) -> Item | None:
-    """Recalculate Item.qty as SUM(remaining_quantity) across lots."""
+    """Recalculate Item.qty and Item.expires_at as SUM/MIN across active lots."""
     result = await db.execute(
         select(func.sum(StockLot.remaining_quantity))
         .where(
@@ -93,6 +90,16 @@ async def refresh_item_cache(
         )
     )
     total = result.scalar() or 0.0
+
+    result_expires = await db.execute(
+        select(func.min(StockLot.expires_at)).where(
+            StockLot.product_reference_id == product_reference_id,
+            StockLot.location == location,
+            StockLot.remaining_quantity > 0,
+            StockLot.expires_at.isnot(None),
+        )
+    )
+    min_expires = result_expires.scalar()
 
     # Get or create the Item cache row
     item_result = await db.execute(
@@ -113,12 +120,14 @@ async def refresh_item_cache(
     if item:
         item.qty = total
         item.unit = unit
+        item.expires_at = min_expires
     else:
         item = Item(
             product_reference_id=product_reference_id,
             location=location,
             qty=total,
             unit=unit,
+            expires_at=min_expires,
         )
         db.add(item)
 
