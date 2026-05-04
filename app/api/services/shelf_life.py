@@ -72,7 +72,8 @@ def estimate_opened_shelf_life_days(name: str, location: Locations) -> int | Non
     if not entry:
         return None
     if location == Locations.FREEZER:
-        days = entry.get("after_opening_fridge_days")
+        # No after-opening freezer data exists; moving-on-open is handled separately
+        return None
     elif location == Locations.CUPBOARD:
         days = entry.get("after_opening_pantry_days") or entry.get("after_opening_fridge_days")
     else:

@@ -7,7 +7,7 @@ from uuid import UUID
 import events
 import logging
 
-from crud.stock_lot import create_lot, deduct_from_lots, refresh_item_cache
+from crud.stock_lot import create_lot, deduct_from_lots, get_lots_for_item, refresh_item_cache
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +138,12 @@ async def move_item(
     unit: str,
 ) -> Item | None:
     """Move stock between locations by deducting from source and adding to destination."""
+    source_lots = await get_lots_for_item(db, product_reference_id, from_location)
+    expires_at = min(
+        (lot.expires_at for lot in source_lots if lot.expires_at is not None),
+        default=None,
+    )
+
     actual_deducted = await deduct_from_lots(
         db, product_reference_id, from_location, quantity
     )
@@ -145,7 +151,7 @@ async def move_item(
     if actual_deducted <= 0:
         return None
 
-    await create_lot(db, product_reference_id, to_location, actual_deducted, unit)
+    await create_lot(db, product_reference_id, to_location, actual_deducted, unit, expires_at)
     source_item = await refresh_item_cache(db, product_reference_id, from_location, unit)
     item = await refresh_item_cache(db, product_reference_id, to_location, unit)
 
