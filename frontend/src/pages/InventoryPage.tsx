@@ -74,19 +74,21 @@ export default function InventoryPage() {
             key={item.id}
             className="group flex items-center px-8 border-b border-dotted border-edge min-h-[3.25rem] overflow-hidden hover:bg-[#f7fbf9] transition-colors"
           >
-            <span className="flex-1 text-base text-black">{product.name}</span>
+            <div className="flex-1">
+            <span className="text-base text-black">{product.name}</span>
+            {(() => {
+              const status = computeExpiryStatus(item.expires_at, item.location)
+              if (!status) return null
+              const cls = status === 'expired'
+                ? 'bg-red-100 text-red-700'
+                : status === 'nearing'
+                ? 'bg-amber-100 text-amber-700'
+                : 'bg-green-100 text-green-700'
+              const label = status === 'expired' ? 'Expired' : status === 'nearing' ? 'Soon' : 'Good'
+              return <span className={`ml-2 text-xs font-medium px-2 py-0.5 rounded-full ${cls}`}>{label}</span>
+            })()}
+            </div>
             <div className="flex items-center gap-3 shrink-0">
-              {(() => {
-                const status = computeExpiryStatus(item.expires_at, item.location)
-                if (!status) return null
-                const cls = status === 'expired'
-                  ? 'bg-red-100 text-red-700'
-                  : status === 'nearing'
-                  ? 'bg-amber-100 text-amber-700'
-                  : 'bg-green-100 text-green-700'
-                const label = status === 'expired' ? 'Expired' : status === 'nearing' ? 'Soon' : 'Good'
-                return <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${cls}`}>{label}</span>
-              })()}
               <button
                 onClick={() => setLotsOpen({ item, product })}
                 className="border border-edge text-muted text-sm px-3 py-1 rounded focus:outline-none opacity-0 translate-x-3 pointer-events-none transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto hover:border-black hover:text-black"

@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.session import get_db
@@ -15,7 +16,8 @@ from crud.item import (
     move_item,
     delete_item_by_composite_key,
 )
-from crud.stock_lot import get_lots_for_item, update_lot_opened_at
+from crud.stock_lot import get_lots_for_item, update_lot_opened_at, update_lot_expires_at
+from api.services.shelf_life import estimate_shelf_life_days
 from schemas.stock_lot import StockLotUpdateIn
 from crud.product_reference import (
     get_product_by_barcode,
@@ -78,8 +80,11 @@ async def update_lot(
     payload: StockLotUpdateIn,
     db: AsyncSession = Depends(get_db),
 ):
-    """Mark a lot as opened. Syncs Item.expires_at to the new minimum across active lots."""
-    lot = await update_lot_opened_at(db, _UUID(lot_id), payload.opened_at)
+    """Update a lot: mark as opened (recomputes expiry from after-opening shelf life) or override expires_at directly."""
+    if "expires_at" in payload.model_fields_set:
+        lot = await update_lot_expires_at(db, _UUID(lot_id), payload.expires_at)
+    else:
+        lot = await update_lot_opened_at(db, _UUID(lot_id), payload.opened_at)
     if not lot:
         raise HTTPException(status_code=404, detail="Lot not found")
     return lot
@@ -217,13 +222,14 @@ async def scan_product(
             requires_manual_entry=True,
         )
 
+    expires_at = date.today() + timedelta(days=estimate_shelf_life_days(product_ref.name, scan.location))
     item = await add_stock(
         db,
         product_reference_id=product_ref.id,
         location=scan.location,
         quantity=lot_qty * scan.multiplier,
         unit=lot_unit,
-        expires_at=scan.expires_at,
+        expires_at=expires_at,
     )
 
     return ScanOut(
@@ -258,12 +264,14 @@ async def add_fresh_item(
 
     await auto_map_product_to_ingredient(db, product_ref.name)
 
+    expires_at = date.today() + timedelta(days=estimate_shelf_life_days(product_ref.name, payload.location))
     item = await add_stock(
         db,
         product_reference_id=product_ref.id,
         location=payload.location,
         quantity=payload.weight_grams,
         unit="g",
+        expires_at=expires_at,
     )
 
     return ScanOut(

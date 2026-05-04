@@ -51,7 +51,6 @@ class ScanIn(BaseModel):
     barcode: str = Field(..., min_length=1, max_length=20, pattern=r"^\d+$")
     location: Locations = Locations.FRIDGE
     multiplier: int = Field(1, ge=1)
-    expires_at: Optional[datetime] = None
 
 
 class ScanOut(BaseModel):

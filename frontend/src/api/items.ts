@@ -32,14 +32,11 @@ export async function confirmScan(
   barcode: string,
   location: string,
   multiplier: number,
-  expiresAt?: string | null,
 ): Promise<ScanOut> {
-  const body: Record<string, unknown> = { barcode, location, multiplier }
-  if (expiresAt) body.expires_at = expiresAt
   const res = await fetch('/api/v1/items/scan', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ barcode, location, multiplier }),
   })
   if (!res.ok) throw new Error(`Scan confirm failed: ${res.status}`)
   return res.json()
@@ -53,7 +50,7 @@ export async function getLots(productReferenceId: string, location: string): Pro
 
 export async function updateLot(
   lotId: string,
-  body: { opened_at?: string | null },
+  body: { opened_at?: string | null } | { expires_at: string | null },
 ): Promise<StockLotOut> {
   const res = await fetch(`/api/v1/items/lots/${lotId}`, {
     method: 'PATCH',

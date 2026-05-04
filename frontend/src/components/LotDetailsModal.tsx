@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { X, PackageOpen } from 'lucide-react'
+import { X, PackageOpen, Pencil, Check } from 'lucide-react'
 import { getLots, updateLot } from '../api/items'
 import type { StockLotOut } from '../interfaces/Inventory'
 
@@ -24,6 +24,8 @@ export default function LotDetailsModal({ productReferenceId, location, productN
   const [lots, setLots] = useState<StockLotOut[]>([])
   const [loading, setLoading] = useState(true)
   const [openingLotId, setOpeningLotId] = useState<string | null>(null)
+  const [editingExpiryLotId, setEditingExpiryLotId] = useState<string | null>(null)
+  const [editingExpiryValue, setEditingExpiryValue] = useState('')
 
   async function refresh() {
     setLoading(true)
@@ -40,6 +42,18 @@ export default function LotDetailsModal({ productReferenceId, location, productN
   async function confirmOpening(lotId: string) {
     await updateLot(lotId, { opened_at: new Date().toISOString() })
     setOpeningLotId(null)
+    await refresh()
+  }
+
+  function startEditingExpiry(lot: StockLotOut) {
+    setEditingExpiryLotId(lot.id)
+    setEditingExpiryValue(lot.expires_at ? lot.expires_at.slice(0, 10) : '')
+  }
+
+  async function saveExpiry(lotId: string) {
+    const isoValue = editingExpiryValue ? new Date(editingExpiryValue).toISOString() : null
+    await updateLot(lotId, { expires_at: isoValue })
+    setEditingExpiryLotId(null)
     await refresh()
   }
 
@@ -74,10 +88,39 @@ export default function LotDetailsModal({ productReferenceId, location, productN
               <span className="text-xs text-muted">Added {formatDate(lot.created_at)}</span>
             </div>
 
-            {lot.expires_at && (
-              <p className="text-xs text-muted">
-                Expires {formatDate(lot.expires_at)}
-              </p>
+            {editingExpiryLotId === lot.id ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={editingExpiryValue}
+                  onChange={e => setEditingExpiryValue(e.target.value)}
+                  className="border border-edge rounded-lg px-2 py-1 text-xs text-black focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+                <button
+                  onClick={() => saveExpiry(lot.id)}
+                  className="text-accent hover:text-accent-hover transition-colors cursor-pointer"
+                >
+                  <Check size={14} />
+                </button>
+                <button
+                  onClick={() => setEditingExpiryLotId(null)}
+                  className="text-muted hover:text-black transition-colors cursor-pointer"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs text-muted">
+                  {lot.expires_at ? `Expires ${formatDate(lot.expires_at)}` : 'No expiry set'}
+                </p>
+                <button
+                  onClick={() => startEditingExpiry(lot)}
+                  className="text-subtle hover:text-muted transition-colors cursor-pointer"
+                >
+                  <Pencil size={11} />
+                </button>
+              </div>
             )}
 
             {lot.opened_at ? (

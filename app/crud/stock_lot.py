@@ -1,3 +1,4 @@
+from datetime import timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from uuid import UUID
@@ -6,6 +7,8 @@ import logging
 import events
 from models.stock_lot import StockLot
 from models.item import Item, Locations
+from models.product_reference import ProductReference
+from api.services.shelf_life import estimate_opened_shelf_life_days
 
 logger = logging.getLogger(__name__)
 
@@ -54,12 +57,40 @@ async def update_lot_opened_at(
     lot_id: UUID,
     opened_at,
 ) -> StockLot | None:
-    """Set opened_at on a lot, then sync Item.expires_at to the minimum across active lots."""
+    """Set opened_at on a lot and recompute expires_at from after-opening shelf life."""
     result = await db.execute(select(StockLot).where(StockLot.id == lot_id))
     lot = result.scalar_one_or_none()
     if not lot:
         return None
     lot.opened_at = opened_at.replace(tzinfo=None) if opened_at is not None else None
+
+    if opened_at is not None:
+        prod_result = await db.execute(
+            select(ProductReference).where(ProductReference.id == lot.product_reference_id)
+        )
+        product_ref = prod_result.scalar_one_or_none()
+        if product_ref:
+            opened_days = estimate_opened_shelf_life_days(product_ref.name, lot.location)
+            if opened_days is not None:
+                lot.expires_at = opened_at.replace(tzinfo=None) + timedelta(days=opened_days)
+
+    await db.flush()
+    await refresh_item_cache(db, lot.product_reference_id, lot.location, lot.unit)
+    await db.refresh(lot)
+    return lot
+
+
+async def update_lot_expires_at(
+    db: AsyncSession,
+    lot_id: UUID,
+    expires_at,
+) -> StockLot | None:
+    """Directly set expires_at on a lot (manual override), then sync Item cache."""
+    result = await db.execute(select(StockLot).where(StockLot.id == lot_id))
+    lot = result.scalar_one_or_none()
+    if not lot:
+        return None
+    lot.expires_at = expires_at.replace(tzinfo=None) if expires_at is not None else None
     await db.flush()
     await refresh_item_cache(db, lot.product_reference_id, lot.location, lot.unit)
     await db.refresh(lot)

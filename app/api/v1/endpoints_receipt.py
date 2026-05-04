@@ -9,10 +9,12 @@ POST /api/v1/receipt/scan
 """
 
 import logging
+from datetime import date, timedelta
 from fastapi import APIRouter, Depends, UploadFile, File, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.session import get_db
+from api.services.shelf_life import estimate_shelf_life_days
 from models.product_reference import ProductType
 from schemas.receipt import ReceiptLineItem, ReceiptScanOut
 from schemas.item import ScanOut
@@ -115,12 +117,14 @@ async def _process_fresh_item(
 
     await auto_map_product_to_ingredient(db, product_ref.name)
 
+    expires_at = date.today() + timedelta(days=estimate_shelf_life_days(product_ref.name, item.suggested_location))
     inventory_item = await add_stock(
         db,
         product_reference_id=product_ref.id,
         location=item.suggested_location,
         quantity=lot_qty,
         unit=lot_unit,
+        expires_at=expires_at,
     )
 
     return ScanOut(
@@ -178,12 +182,14 @@ async def _process_packaged_item(
         lot_qty = float(item.quantity)
         lot_unit = "unit"
 
+    expires_at = date.today() + timedelta(days=estimate_shelf_life_days(product_ref.name, item.suggested_location))
     inventory_item = await add_stock(
         db,
         product_reference_id=product_ref.id,
         location=item.suggested_location,
         quantity=lot_qty,
         unit=lot_unit,
+        expires_at=expires_at,
     )
 
     return ScanOut(

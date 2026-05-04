@@ -1,0 +1,6839 @@
+[
+  {
+    "name": "Almond extract",
+    "keywords": [
+      "almond extract"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 360
+  },
+  {
+    "name": "Almond milk",
+    "keywords": [
+      "almond milk",
+      "milk",
+      "almond"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 9,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Almond oil",
+    "keywords": [
+      "almond oil",
+      "almond"
+    ],
+    "dop_fridge_days": 730,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Almonds, no shell",
+    "keywords": [
+      "almonds",
+      "almond",
+      "no shell",
+      "shell"
+    ],
+    "dop_fridge_days": 240,
+    "dop_freezer_days": 300,
+    "dop_pantry_days": 120,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Almonds, shell",
+    "keywords": [
+      "almonds",
+      "almond",
+      "shell"
+    ],
+    "dop_fridge_days": 480,
+    "dop_freezer_days": 600,
+    "dop_pantry_days": 180,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Anchovies, canned",
+    "keywords": [
+      "anchovies",
+      "anchovy",
+      "canned anchovies"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Apples",
+    "keywords": [
+      "apples",
+      "apple"
+    ],
+    "dop_fridge_days": 35,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 21,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Applesauce, commercial",
+    "keywords": [
+      "applesauce",
+      "apple",
+      "sauce",
+      "commercial"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 450,
+    "after_opening_fridge_days": 9,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Artichokes, whole",
+    "keywords": [
+      "artichokes",
+      "artichoke",
+      "whole"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 2,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Asparagus",
+    "keywords": [
+      "asparagus"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 150,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Avocado Oil",
+    "keywords": [
+      "avodaco oil",
+      "avocado",
+      "oil"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 180
+  },
+  {
+    "name": "Baby carrots",
+    "keywords": [
+      "baby carrots",
+      "carrot",
+      "baby carrot"
+    ],
+    "dop_fridge_days": 28,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 4,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Bacon",
+    "keywords": [
+      "bacon"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 30,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Bacon bits, imitation",
+    "keywords": [
+      "bacon bits",
+      "bits",
+      "imitation",
+      "bacon",
+      "bit"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Bacon, fully cooked",
+    "keywords": [
+      "bacon",
+      "fully cooked",
+      "cooked"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 180,
+    "after_opening_fridge_days": 10,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Bagged greens, leaf, spinach, lettuce, etc.",
+    "keywords": [
+      "bagged greens",
+      "leaf",
+      "spinach",
+      "lettuce",
+      "bagged",
+      "greens",
+      "green"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Baking powder",
+    "keywords": [
+      "baking powder",
+      "baking",
+      "powder"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 360,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 135
+  },
+  {
+    "name": "Baking soda",
+    "keywords": [
+      "baking soda",
+      "soda",
+      "baking"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 913,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 180
+  },
+  {
+    "name": "Balsamic vinegar",
+    "keywords": [
+      "balsamic vinegar",
+      "balsamic",
+      "vinegar"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1460,
+    "after_opening_fridge_days": 540,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Bamboo shoots",
+    "keywords": [
+      "bamboo shoots",
+      "bamboo",
+      "shoots",
+      "shoot"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 5,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Barbecue sauce, bottled",
+    "keywords": [
+      "barbecue sauce",
+      "sauce",
+      "bottled",
+      "barbecue"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 120,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Bean sprouts",
+    "keywords": [
+      "bean sprouts",
+      "bean",
+      "sprouts"
+    ],
+    "dop_fridge_days": 8,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beans and peas, green, fava, lima, soybean, wax, snow, sugar snap",
+    "keywords": [
+      "beans",
+      "peas",
+      "green",
+      "fava",
+      "lima",
+      "soybean",
+      "wax",
+      "snow",
+      "sugar snap",
+      "sugar",
+      "pea",
+      "soya"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beans, dried",
+    "keywords": [
+      "beans",
+      "dried"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 548,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Beef broth/stock/consomm\u00e9, commercially produced",
+    "keywords": [
+      "beef broth",
+      "beef stock",
+      "beef consomm\u00e9",
+      "consomm\u00e9",
+      "commercially produced"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beef, chuck roast, brisket",
+    "keywords": [
+      "beef",
+      "chuck roast",
+      "roast",
+      "brisket"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beef, ground",
+    "keywords": [
+      "beef",
+      "ground"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beef, rib roast, bone-in",
+    "keywords": [
+      "beef",
+      "rib roast",
+      "bone-in",
+      "roast",
+      "bone",
+      "rib"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beef, rib roast; boneless, rolled",
+    "keywords": [
+      "beef",
+      "rib roast",
+      "boneless",
+      "rolled",
+      "roast",
+      "rib"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beef, round or rump roast",
+    "keywords": [
+      "beef",
+      "round",
+      "rump roast",
+      "roast"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beef, short ribs",
+    "keywords": [
+      "beef",
+      "short ribs",
+      "ribs",
+      "rib"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beef, steaks",
+    "keywords": [
+      "beef",
+      "steaks",
+      "steak"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beef, stew, cubes",
+    "keywords": [
+      "beef",
+      "stew",
+      "cubes",
+      "cube"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beef, tenderloin, half",
+    "keywords": [
+      "beef",
+      "tenderloin",
+      "half"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beef, tenderloin, whole",
+    "keywords": [
+      "beef",
+      "tenderloin",
+      "whole"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beets",
+    "keywords": [
+      "beets"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": 210,
+    "dop_pantry_days": 1,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Beets, pickled",
+    "keywords": [
+      "pickled beets",
+      "beets",
+      "pickled"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 45,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Berries, blackberries, boysenberries, currant",
+    "keywords": [
+      "berries",
+      "berry",
+      "blackberries",
+      "blackberry",
+      "boysenberries",
+      "boysenberry",
+      "currant"
+    ],
+    "dop_fridge_days": 5,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Berries, cherries, goose berries, lychee",
+    "keywords": [
+      "berries",
+      "berry",
+      "cherries",
+      "cherry",
+      "goose berries",
+      "goose berry",
+      "lychee",
+      "gooseberries"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Biscuit or pancake mix",
+    "keywords": [
+      "biscuit",
+      "pancake mix",
+      "pancake",
+      "mix",
+      "cake"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Black bean sauce",
+    "keywords": [
+      "black bean sauce",
+      "sauce",
+      "bean",
+      "black",
+      "black bean",
+      "bean sauce"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 630,
+    "after_opening_fridge_days": 135,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Black pepper, cracked, dried, commercially bottled or purchased in bulk",
+    "keywords": [
+      "black pepper",
+      "black",
+      "pepper",
+      "crack",
+      "cracked",
+      "dried",
+      "commercially bottled",
+      "commercially",
+      "bottled",
+      "bottle",
+      "commercial",
+      "purchased in bulk",
+      "bulk",
+      "purchased",
+      "purchase"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 913,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Black pepper, ground, dried, commercially bottled or purchased in bulk",
+    "keywords": [
+      "black pepper",
+      "black",
+      "pepper",
+      "ground",
+      "dried",
+      "commercially bottled",
+      "commercially",
+      "bottled",
+      "bottle",
+      "commercial",
+      "purchased in bulk",
+      "bulk",
+      "purchased",
+      "purchase"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Blueberries",
+    "keywords": [
+      "blueberries",
+      "blueberry",
+      "berries",
+      "berry"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Bok choy",
+    "keywords": [
+      "bok choy"
+    ],
+    "dop_fridge_days": 3,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Broccoli and broccoli raab (rapini)",
+    "keywords": [
+      "broccoli",
+      "broccoli raab",
+      "rapini",
+      "raab"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Brussels sprouts",
+    "keywords": [
+      "brussels sprouts",
+      "brussels",
+      "sprouts",
+      "sprout",
+      "brussel"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Butter",
+    "keywords": [
+      "butter"
+    ],
+    "dop_fridge_days": 45,
+    "dop_freezer_days": 225,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Butter flavor",
+    "keywords": [
+      "butter flavor",
+      "butter"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 360
+  },
+  {
+    "name": "Buttermilk",
+    "keywords": [
+      "buttermilk"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": 90,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cabbage",
+    "keywords": [
+      "cabbage"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cajun seasoning blend, ground, dried, commercially bottled or purchased in bulk",
+    "keywords": [
+      "cajun seasoning blend",
+      "cajun",
+      "seasoning",
+      "blend",
+      "cajun seasoning",
+      "seasoning blend",
+      "ground",
+      "dried",
+      "commercially bottled",
+      "commercially",
+      "bottled",
+      "bottle",
+      "commercial",
+      "purchased in bulk",
+      "bulk",
+      "purchased",
+      "purchase"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 548,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cake, brownie, bread mixes",
+    "keywords": [
+      "cake",
+      "brownie",
+      "bread mixes",
+      "bread",
+      "mixes",
+      "mix"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 450,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Canadian bacon, sliced",
+    "keywords": [
+      "canadian bacon",
+      "bacon",
+      "sliced"
+    ],
+    "dop_fridge_days": 80,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Canned chicken",
+    "keywords": [
+      "canned chicken",
+      "chicken",
+      "canned",
+      "can"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1825,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Canned goods, high acid (such as juices, fruit, pickles, sauerkraut, tomato soup, and foods in vinegar-based sauce)",
+    "keywords": [
+      "canned goods",
+      "canned",
+      "can",
+      "goods",
+      "high acid",
+      "high",
+      "juices",
+      "juice",
+      "fruit",
+      "fruits",
+      "pickles",
+      "pickle",
+      "sauerkraut",
+      "tomato soup",
+      "soup",
+      "tomato",
+      "foods in vinegar based sauce",
+      "sauce",
+      "foods",
+      "food",
+      "vinegar based",
+      "vinegar"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 450,
+    "after_opening_fridge_days": 6,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Canned goods, low acid (such as meat, poultry, fish, gravy, stew, soups, beans, carrots, corn, pasta, peas, potatoes, spinach)",
+    "keywords": [
+      "canned goods",
+      "canned",
+      "can",
+      "goods",
+      "low acid",
+      "low",
+      "meat",
+      "poultry",
+      "fish",
+      "gravy",
+      "stew",
+      "soups",
+      "soup",
+      "beans",
+      "bean",
+      "carrots",
+      "carrot",
+      "corn",
+      "pasta",
+      "peas",
+      "pea",
+      "potatoes",
+      "potato",
+      "spinach"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Canola oil",
+    "keywords": [
+      "canola oil",
+      "canola"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cantaloupe",
+    "keywords": [
+      "cantaloupe"
+    ],
+    "dop_fridge_days": 10,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 3,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Capon, whole",
+    "keywords": [
+      "capon",
+      "whole"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Carrots, parsnips",
+    "keywords": [
+      "carrots",
+      "parsnips",
+      "carrot",
+      "parsnip"
+    ],
+    "dop_fridge_days": 18,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cashews, no shell",
+    "keywords": [
+      "cashews",
+      "cashew",
+      "no shell",
+      "shell"
+    ],
+    "dop_fridge_days": 180,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": 21,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cauliflower",
+    "keywords": [
+      "cauliflower"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Caviar, fresh, in jar",
+    "keywords": [
+      "caviar",
+      "fresh",
+      "jar"
+    ],
+    "dop_fridge_days": 18,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Celery",
+    "keywords": [
+      "celery"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cereal, cook before eating (oatmeal, etc.)",
+    "keywords": [
+      "cereal",
+      "cook before eating",
+      "oatmeal",
+      "oats",
+      "oat",
+      "meal"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 360,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 270
+  },
+  {
+    "name": "Cereal, dry mixes",
+    "keywords": [
+      "cereal",
+      "dry mixes",
+      "mixes",
+      "mix",
+      "dry"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 30
+  },
+  {
+    "name": "Cereal, ready-to-eat",
+    "keywords": [
+      "cereal",
+      "ready",
+      "eat"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 75
+  },
+  {
+    "name": "Cheese, hard such as cheddar, swiss, block parmesan",
+    "keywords": [
+      "cheese",
+      "cheddar",
+      "swiss",
+      "parmesan"
+    ],
+    "dop_fridge_days": 180,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 25,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cheese, parmesan; shredded or grated",
+    "keywords": [
+      "cheese",
+      "parmesan",
+      "shredded",
+      "grated"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cheese, processed slices",
+    "keywords": [
+      "cheese",
+      "processed slices",
+      "slices",
+      "slice"
+    ],
+    "dop_fridge_days": 25,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cheese, shredded; cheddar, mozzarella, etc.",
+    "keywords": [
+      "cheese",
+      "shredded",
+      "cheddar",
+      "mozzarella"
+    ],
+    "dop_fridge_days": 30,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cheese, soft such as brie, bel paese, goat",
+    "keywords": [
+      "cheese",
+      "brie",
+      "bel paese",
+      "goat"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cheesecake",
+    "keywords": [
+      "cheesecake",
+      "cake",
+      "cheese"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 135,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 6,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cherries",
+    "keywords": [
+      "cherries",
+      "cherry"
+    ],
+    "dop_fridge_days": 3,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chicken broth/stock/consomm\u00e9, commercially produced",
+    "keywords": [
+      "chicken broth",
+      "chicken stock",
+      "consomm\u00e9",
+      "commercially produced"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chicken nuggets, patties",
+    "keywords": [
+      "chicken nuggets",
+      "patties",
+      "chicken",
+      "nuggets",
+      "nugget",
+      "patty"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 60,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chicken parts, breast halves, bone-in",
+    "keywords": [
+      "chicken parts",
+      "breast halves",
+      "bone-in",
+      "halves",
+      "bone",
+      "breast",
+      "chicken",
+      "half"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chicken parts, breast halves, boneless",
+    "keywords": [
+      "chicken parts",
+      "breast halves",
+      "boneless",
+      "chicken",
+      "breast",
+      "halves",
+      "half",
+      "bone"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chicken parts, legs or thighs",
+    "keywords": [
+      "chicken parts",
+      "legs",
+      "thighs",
+      "chicken",
+      "leg",
+      "thigh"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chicken, pre-packaged, luncheon/deli meat",
+    "keywords": [
+      "chicken",
+      "pre-packaged",
+      "luncheon meat",
+      "deli meat",
+      "packaged"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chicken, whole",
+    "keywords": [
+      "chicken",
+      "whole"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chiffon pies, chocolate, lemon",
+    "keywords": [
+      "pies",
+      "chiffon",
+      "pie",
+      "chocolate",
+      "lemon",
+      "chocolate pie",
+      "lemon pie"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chili powder",
+    "keywords": [
+      "chili powder",
+      "powder",
+      "chili"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 730
+  },
+  {
+    "name": "Chocolate syrup",
+    "keywords": [
+      "chocolate syrup",
+      "chocolate",
+      "syrup"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": 180,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chocolate, unsweetened and semi-sweet, solid",
+    "keywords": [
+      "chocolate",
+      "unsweetened",
+      "semi sweet",
+      "solid",
+      "sweet"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 548,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Chorizo, smoked and processed, cooked",
+    "keywords": [
+      "smoked chorizo",
+      "chorizo",
+      "processed chorizo",
+      "smoked",
+      "processed",
+      "cooked",
+      "cooked processed chorizo",
+      "cooked smoked chorizo"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 30,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Chutney",
+    "keywords": [
+      "chutney"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 45,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cinnamon extract",
+    "keywords": [
+      "cinnamon extract"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 360
+  },
+  {
+    "name": "Cinnamon, ground, dried, commercially bottled or purchased in bulk",
+    "keywords": [
+      "cinnamon",
+      "ground",
+      "dried",
+      "commercially bottled",
+      "commercially",
+      "bottled",
+      "bottle",
+      "commercial",
+      "purchased in bulk",
+      "bulk",
+      "purchased",
+      "purchase"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Citrus fruit, lemon, lime, orange, grapefruit, tangerines, clementines",
+    "keywords": [
+      "citrus fruit",
+      "fruit",
+      "citrus",
+      "lemon",
+      "lime",
+      "orange",
+      "grape",
+      "grapefruit",
+      "tangerines",
+      "tangerine",
+      "clementines",
+      "clementine"
+    ],
+    "dop_fridge_days": 16,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 10,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cocoa and cocoa mixes",
+    "keywords": [
+      "cocoa",
+      "cocoa mixes",
+      "mixes",
+      "mix"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Coconut cream, canned",
+    "keywords": [
+      "coconut cream",
+      "coconut",
+      "cream",
+      "canned",
+      "can"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Coconut flavor",
+    "keywords": [
+      "coconut flavor",
+      "coconut"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 360
+  },
+  {
+    "name": "Coconut milk",
+    "keywords": [
+      "coconut milk",
+      "coconut",
+      "milk"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 9,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Coconut milk, canned",
+    "keywords": [
+      "coconut milk",
+      "coconut",
+      "milk",
+      "canned",
+      "can"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Coconut water",
+    "keywords": [
+      "coconut water",
+      "coconut",
+      "water"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 360,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Coconut, shredded",
+    "keywords": [
+      "coconut",
+      "shredded"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 240,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Coconuts, fresh",
+    "keywords": [
+      "coconuts",
+      "coconut",
+      "fresh"
+    ],
+    "dop_fridge_days": 18,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 7,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Coffee creamer, liquid refrigerated",
+    "keywords": [
+      "coffee creamer",
+      "coffee",
+      "creamer",
+      "liquid refrigerated"
+    ],
+    "dop_fridge_days": 21,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Coffee creamer, powdered",
+    "keywords": [
+      "coffee creamer",
+      "creamer",
+      "cream",
+      "coffee",
+      "powdered",
+      "powder"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 75
+  },
+  {
+    "name": "Coffee, commercial ground, non-vacuum",
+    "keywords": [
+      "coffee",
+      "commercial ground",
+      "non-vacuum"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": 30,
+    "after_opening_pantry_days": 14
+  },
+  {
+    "name": "Coffee, home ground, non-vacuum",
+    "keywords": [
+      "coffee",
+      "home ground",
+      "non vacuum",
+      "ground",
+      "home",
+      "vacuum"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 120,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 28
+  },
+  {
+    "name": "Coffee, instant",
+    "keywords": [
+      "coffee",
+      "instant"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 75
+  },
+  {
+    "name": "Coffee, whole beans",
+    "keywords": [
+      "coffee",
+      "whole beans",
+      "beans",
+      "whole",
+      "bean"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 120,
+    "after_opening_fridge_days": 105,
+    "after_opening_pantry_days": 120
+  },
+  {
+    "name": "Commercial brand vacuum-packed dinners, with USDA seal",
+    "keywords": [
+      "commercial brand vacuum-packed dinners",
+      "brand vacuum packed dinners",
+      "usda seal",
+      "usda",
+      "seal",
+      "dinners",
+      "dinner",
+      "vacuum packed",
+      "vacuum packed dinner",
+      "packed dinner",
+      "packed"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Commercial bread products, including pan breads, flat breads, rolls, and buns",
+    "keywords": [
+      "commercial bread products",
+      "pan breads",
+      "flat breads",
+      "rolls",
+      "buns",
+      "bread products",
+      "bread",
+      "products",
+      "product",
+      "pan",
+      "breads",
+      "flat",
+      "roll",
+      "bun"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 120,
+    "dop_pantry_days": 16,
+    "after_opening_fridge_days": 18,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Commercial cakes and muffins",
+    "keywords": [
+      "commercial cakes",
+      "cake",
+      "muffin",
+      "muffins"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": 5,
+    "after_opening_fridge_days": 9,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cooked shellfish, all",
+    "keywords": [
+      "cooked shellfish",
+      "shellfish",
+      "fish",
+      "cooked"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 60,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cookie dough",
+    "keywords": [
+      "cookie dough",
+      "cookie",
+      "dough"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 60,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cookies, crispy",
+    "keywords": [
+      "cookies",
+      "crispy",
+      "cookie"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 300,
+    "dop_pantry_days": 150,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cookies, soft",
+    "keywords": [
+      "cookies",
+      "soft",
+      "cookie"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 300,
+    "dop_pantry_days": 75,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Corn on the cob",
+    "keywords": [
+      "corn",
+      "cob"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Corned beef, in pouch with pickling juices",
+    "keywords": [
+      "corned beef",
+      "pouch",
+      "pickling juices",
+      "juices",
+      "juice"
+    ],
+    "dop_fridge_days": 6,
+    "dop_freezer_days": 30,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cornish Hens, whole",
+    "keywords": [
+      "cornish hens",
+      "hens",
+      "whole",
+      "hen"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cornmeal, regular, degerminated",
+    "keywords": [
+      "cornmeal",
+      "regular",
+      "degerminated",
+      "germinated",
+      "germinate",
+      "corn",
+      "meal"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": 365,
+    "after_opening_pantry_days": 730
+  },
+  {
+    "name": "Cornmeal, stone ground or blue",
+    "keywords": [
+      "cornmeal",
+      "stone ground",
+      "blue",
+      "ground",
+      "stone",
+      "corn",
+      "meal"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 30,
+    "after_opening_fridge_days": 90,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cornstarch",
+    "keywords": [
+      "cornstarch",
+      "corn",
+      "starch"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 630,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 540
+  },
+  {
+    "name": "Cottage cheese",
+    "keywords": [
+      "cottage cheese",
+      "cheese"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Crab legs, king, dungeness, snow",
+    "keywords": [
+      "crab legs",
+      "king",
+      "dungeness",
+      "snow",
+      "crab",
+      "legs",
+      "leg"
+    ],
+    "dop_fridge_days": 3,
+    "dop_freezer_days": 315,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Crab meat, pasteurized",
+    "keywords": [
+      "crab meat",
+      "meat",
+      "pasteurized",
+      "crab"
+    ],
+    "dop_fridge_days": 330,
+    "dop_freezer_days": 210,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Crackers",
+    "keywords": [
+      "crackers",
+      "cracker"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 240,
+    "after_opening_fridge_days": 105,
+    "after_opening_pantry_days": 30
+  },
+  {
+    "name": "Cranberries",
+    "keywords": [
+      "cranberries",
+      "cranberry"
+    ],
+    "dop_fridge_days": 60,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cranberry sauce, canned",
+    "keywords": [
+      "cranberry sauce",
+      "sauce",
+      "canned"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": 11,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cream cheese",
+    "keywords": [],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cream pies, banana cream, coconut cream, butterscotch",
+    "keywords": [
+      "pies",
+      "cream",
+      "pie",
+      "banana",
+      "banana cream",
+      "coconut",
+      "coconut cream",
+      "butterscotch"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cream sauces, milk solids",
+    "keywords": [
+      "cream sauces",
+      "milk solids",
+      "sauce",
+      "solids",
+      "cream",
+      "sauces",
+      "milk",
+      "solid"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cream, half and half",
+    "keywords": [
+      "cream",
+      "half"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 120,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cream, heavy",
+    "keywords": [
+      "cream",
+      "heavy"
+    ],
+    "dop_fridge_days": 10,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cream, light",
+    "keywords": [
+      "cream",
+      "light"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cream, whipping, ultrapasteurized",
+    "keywords": [
+      "cream",
+      "whipping",
+      "ultrapasteurized"
+    ],
+    "dop_fridge_days": 30,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cucumbers",
+    "keywords": [
+      "cucumbers",
+      "cucumber"
+    ],
+    "dop_fridge_days": 5,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Cumin, ground, dried, commercially bottled or purchased in bulk, opened or unopened",
+    "keywords": [
+      "cumin",
+      "ground",
+      "dried",
+      "commercially bottled",
+      "commercially",
+      "bottled",
+      "bottle",
+      "commercial",
+      "purchased in bulk",
+      "bulk",
+      "purchased",
+      "purchase",
+      "opened",
+      "unopened",
+      "open",
+      "unopen"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Dairy filled eclairs",
+    "keywords": [
+      "dairy filled eclairs",
+      "dairy filled",
+      "eclairs",
+      "\u00e9clair",
+      "dairy"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 90,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 3,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Dates",
+    "keywords": [
+      "dates"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 60,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Diet powder mixes and drink mixes",
+    "keywords": [
+      "diet powder mixes",
+      "drink mixes",
+      "mixes",
+      "drink",
+      "powder mixes",
+      "diet powder",
+      "mix"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 630,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 60
+  },
+  {
+    "name": "Dinners",
+    "keywords": [
+      "dinners",
+      "dinner"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Dips, sour cream based",
+    "keywords": [
+      "dips",
+      "sour cream based",
+      "sour",
+      "cream based",
+      "cream",
+      "dip"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Dough, commercial (bread or cookie)",
+    "keywords": [
+      "dough",
+      "commercial",
+      "bread",
+      "cookie"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Doughnuts",
+    "keywords": [
+      "doughnuts",
+      "doughnut",
+      "dough",
+      "nut"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 2,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Dry egg noodles",
+    "keywords": [
+      "dry egg noodles",
+      "egg noodles",
+      "egg",
+      "noodles",
+      "noodle",
+      "dry"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 45
+  },
+  {
+    "name": "Dry gravy mixes",
+    "keywords": [
+      "dry gravy mixes",
+      "gravy",
+      "mixes",
+      "mix",
+      "dry"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Duckling, domestic or wild, whole",
+    "keywords": [
+      "duckling",
+      "domestic",
+      "wild",
+      "whole"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Edamame, frozen",
+    "keywords": [
+      "edamame",
+      "frozen",
+      "frozen edamame",
+      "soybean",
+      "soybeans"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 730,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Egg substitutes",
+    "keywords": [
+      "egg substitutes",
+      "egg",
+      "substitute",
+      "egg substitute"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Egg substitutes, liquid",
+    "keywords": [
+      "egg substitutes",
+      "liquid",
+      "egg",
+      "substitutes",
+      "substitute"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 3,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Eggnog, commercial",
+    "keywords": [
+      "eggnog",
+      "commercial",
+      "egg",
+      "nog"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Eggplant",
+    "keywords": [
+      "eggplant",
+      "egg"
+    ],
+    "dop_fridge_days": 6,
+    "dop_freezer_days": 210,
+    "dop_pantry_days": 1,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Eggs, in shell",
+    "keywords": [
+      "eggs",
+      "in shell",
+      "egg",
+      "shell"
+    ],
+    "dop_fridge_days": 28,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fatty fish, bluefish, catfish, mackerel, mullet, salmon, tuna, etc.",
+    "keywords": [
+      "fatty fish",
+      "bluefish",
+      "catfish",
+      "mackerel",
+      "mullet",
+      "salmon",
+      "tuna",
+      "fish",
+      "fatty",
+      "blue",
+      "cat"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 75,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fish, breaded",
+    "keywords": [
+      "fish",
+      "breaded",
+      "bread"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 540,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fish, cold smoked, air pack",
+    "keywords": [
+      "fish",
+      "cold smoked",
+      "air pack",
+      "cold",
+      "smoked",
+      "pack"
+    ],
+    "dop_fridge_days": 22,
+    "dop_freezer_days": 315,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fish, cold smoked, vacuum pack",
+    "keywords": [
+      "fish",
+      "cold smoked",
+      "vacuum pack",
+      "cold",
+      "smoked",
+      "vacuum",
+      "pack"
+    ],
+    "dop_fridge_days": 26,
+    "dop_freezer_days": 315,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fish, hot smoked, air pack",
+    "keywords": [
+      "fish",
+      "hot smoked",
+      "air pack",
+      "hot",
+      "smoked",
+      "pack"
+    ],
+    "dop_fridge_days": 30,
+    "dop_freezer_days": 315,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fish, hot smoked, vacuum pack",
+    "keywords": [
+      "fish",
+      "hot smoked",
+      "vacuum pack",
+      "hot",
+      "smoked",
+      "vacuum",
+      "pack"
+    ],
+    "dop_fridge_days": 30,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fish, raw but headed and gutted",
+    "keywords": [
+      "fish",
+      "raw",
+      "headed",
+      "gutted"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Flavored or herb mixes",
+    "keywords": [
+      "flavored",
+      "herb mixes",
+      "herb",
+      "flavor",
+      "mixes",
+      "mix"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 180,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Flaxseed, ground",
+    "keywords": [
+      "flaxseed",
+      "ground"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Flaxseed, whole seed",
+    "keywords": [
+      "flaxseed",
+      "whole seed",
+      "seed"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Flour, white",
+    "keywords": [
+      "flour",
+      "white"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": 365,
+    "after_opening_pantry_days": 210
+  },
+  {
+    "name": "Flour, whole wheat",
+    "keywords": [
+      "flour",
+      "whole wheat",
+      "wheat"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 135,
+    "after_opening_fridge_days": 210,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Formula, prepared",
+    "keywords": [
+      "formula",
+      "prepared",
+      "prepare"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 1,
+    "after_opening_pantry_days": 1
+  },
+  {
+    "name": "Fresh clams, mussels, oysters",
+    "keywords": [
+      "fresh clams",
+      "clams",
+      "oysters",
+      "clam",
+      "mussels",
+      "mussel",
+      "oyster"
+    ],
+    "dop_fridge_days": 8,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fresh lobster tails, cooked",
+    "keywords": [
+      "fresh lobster tails",
+      "tails",
+      "cooked",
+      "lobster tails",
+      "tail"
+    ],
+    "dop_fridge_days": 3,
+    "dop_freezer_days": 21,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fresh whole lobster, frozen",
+    "keywords": [
+      "fresh whole lobster",
+      "lobster",
+      "frozen",
+      "whole lobster"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 21,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fresh whole lobster, live",
+    "keywords": [
+      "fresh whole lobster",
+      "lobster",
+      "live",
+      "whole lobster"
+    ],
+    "dop_fridge_days": 1,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Frosting or icing",
+    "keywords": [
+      "frosting",
+      "icing",
+      "frost",
+      "ice"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 330,
+    "after_opening_fridge_days": 18,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Frozen entrees, prepared meals",
+    "keywords": [
+      "tv dinners",
+      "entrees",
+      "breakfast",
+      "dinners",
+      "dinner",
+      "entry",
+      "tv"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Frozen potato products, fries, hashbrowns, tater tots",
+    "keywords": [
+      "frozen potato products",
+      "fries",
+      "hashbrowns",
+      "tater tots",
+      "potato products",
+      "products",
+      "product",
+      "frozen potato",
+      "hashbrown",
+      "tater tot"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Frozen pretzels",
+    "keywords": [
+      "frozen pretzels",
+      "frozen",
+      "pretzels",
+      "pretzel"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fruit",
+    "keywords": [
+      "fruit"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 3,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fruit cake",
+    "keywords": [
+      "fruit cake",
+      "fruit",
+      "cake"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": 180,
+    "after_opening_fridge_days": 360,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fruit Juice in cartons, fruit drinks, punch",
+    "keywords": [
+      "fruit juice in cartons",
+      "fruit drinks",
+      "punch",
+      "fruit",
+      "fruit juice",
+      "juice in cartons",
+      "cartons",
+      "carton",
+      "drinks",
+      "drink"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 21,
+    "after_opening_fridge_days": 10,
+    "after_opening_pantry_days": 10
+  },
+  {
+    "name": "Fruit pies, apple, peach, blueberry, apricot, cherry, blackberry",
+    "keywords": [
+      "pies",
+      "fruit",
+      "pie",
+      "apple",
+      "apple pie",
+      "peach",
+      "peach pie",
+      "blueberry",
+      "blueberry pie",
+      "cherry",
+      "cherry pie",
+      "apricot",
+      "apricot pie",
+      "blackberry",
+      "blackberry pie"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fruit, cut",
+    "keywords": [
+      "fruit",
+      "cut"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Fruits, dried, raisins, apricots, mangoes, cranberries, etc.",
+    "keywords": [
+      "fruits",
+      "fruit",
+      "dried",
+      "raisins",
+      "raisin",
+      "apricots",
+      "apricot",
+      "mangoes",
+      "mangoe",
+      "cranberries",
+      "cranberry"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 180,
+    "after_opening_fridge_days": 180,
+    "after_opening_pantry_days": 30
+  },
+  {
+    "name": "Fruits, such as berries, melons",
+    "keywords": [
+      "fruits",
+      "berries",
+      "melons",
+      "berry",
+      "melon"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 420,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Garlic",
+    "keywords": [
+      "garlic"
+    ],
+    "dop_fridge_days": 9,
+    "dop_freezer_days": 30,
+    "dop_pantry_days": 30,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Garlic powder, dried, commercially bottled or purchased in bulk",
+    "keywords": [
+      "garlic powder",
+      "garlic",
+      "powder",
+      "dried",
+      "commercially bottled",
+      "commercially",
+      "bottled",
+      "bottle",
+      "commercial",
+      "purchased in bulk",
+      "bulk",
+      "purchased",
+      "purchase"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Garlic, chopped, commercial jars",
+    "keywords": [
+      "garlic",
+      "chopped",
+      "jars",
+      "commercial jars",
+      "jar"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 300,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Gelatin, flavored",
+    "keywords": [
+      "gelatin",
+      "flavor",
+      "flavored"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 330,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 105
+  },
+  {
+    "name": "Gelatin, unflavored",
+    "keywords": [
+      "gelatin",
+      "unflavor",
+      "unflavored"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1095,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Giblets",
+    "keywords": [
+      "giblets",
+      "giblet"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ginger root",
+    "keywords": [
+      "ginger root",
+      "ginger",
+      "root"
+    ],
+    "dop_fridge_days": 18,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": 4,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Goat, ground",
+    "keywords": [
+      "goat",
+      "ground"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Goat, less tender whole cuts (stew meat, riblets, shanks)",
+    "keywords": [
+      "goat",
+      "less tender whole cuts",
+      "stew meat",
+      "stew",
+      "meat",
+      "riblets",
+      "shanks",
+      "whole cuts",
+      "tender",
+      "less tender"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Goat, tender whole cuts (legs, ribs, shoulder, loin)",
+    "keywords": [
+      "goat",
+      "tender whole cuts",
+      "legs",
+      "ribs",
+      "shoulder",
+      "loin",
+      "tender",
+      "whole cuts",
+      "leg",
+      "rib"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Goose, domestic or wild, whole",
+    "keywords": [
+      "goose",
+      "domestic",
+      "wild",
+      "whole"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Graham cracker/animal cracker",
+    "keywords": [
+      "graham cracker",
+      "animal cracker",
+      "graham",
+      "cracker",
+      "animal"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 225,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Grapes",
+    "keywords": [
+      "grapes",
+      "grape"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Grapeseed oil",
+    "keywords": [
+      "grapeseed oil",
+      "grapeseed",
+      "oil"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Gravy, jars and cans",
+    "keywords": [
+      "gravy",
+      "jars",
+      "cans",
+      "jar",
+      "can"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Greens",
+    "keywords": [
+      "greens",
+      "green"
+    ],
+    "dop_fridge_days": 3,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Grits, boxed",
+    "keywords": [
+      "boxed grits",
+      "grits",
+      "boxed",
+      "box"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 360,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ground turkey or chicken",
+    "keywords": [
+      "ground turkey",
+      "chicken",
+      "turkey"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Gummy (fruit) snacks",
+    "keywords": [
+      "fruit snack",
+      "gummy",
+      "fruit",
+      "snacks",
+      "snack",
+      "gummy snacks",
+      "fruit snacks",
+      "gummy snack"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 225,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, canned (\u201ckeep refrigerated\u201d label)",
+    "keywords": [
+      "ham",
+      "canned",
+      "keep refrigerated",
+      "label",
+      "refrigerated"
+    ],
+    "dop_fridge_days": 225,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, country ham (whole or half)",
+    "keywords": [
+      "ham",
+      "country ham",
+      "whole",
+      "half"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fresh, cook-before-eating, arm picnic shoulder, boneless",
+    "keywords": [
+      "ham",
+      "fresh",
+      "cook-before-eating",
+      "before-eating",
+      "arm picnic shoulder",
+      "boneless",
+      "arm picnic",
+      "shoulder"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fresh, cook-before-eating, bone-in, half",
+    "keywords": [
+      "ham",
+      "fresh",
+      "cook-before-eating",
+      "bone-in",
+      "half",
+      "bone"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fresh, cook-before-eating, bone-in, whole",
+    "keywords": [
+      "ham",
+      "fresh",
+      "cook-before-eating",
+      "bone-in",
+      "whole",
+      "bone"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fresh, cook-before-eating, shank or butt portion, bone-in",
+    "keywords": [
+      "ham",
+      "fresh",
+      "cook-before-eating",
+      "shank",
+      "butt portion",
+      "bone-in",
+      "bone"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fresh, cook-before-eating, shoulder roll (butt), boneless",
+    "keywords": [
+      "ham",
+      "fresh",
+      "cook-before-eating",
+      "before-eating",
+      "shoulder roll",
+      "butt",
+      "boneless",
+      "roll"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fresh, uncooked, half leg, bone-in",
+    "keywords": [
+      "ham",
+      "fresh",
+      "uncooked",
+      "half leg",
+      "bone-in",
+      "bone",
+      "leg",
+      "cooked"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fresh, uncooked, whole leg, bone-in",
+    "keywords": [
+      "ham",
+      "fresh",
+      "uncooked",
+      "whole leg",
+      "bone-in",
+      "cooked",
+      "leg",
+      "bone"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fresh, uncooked, whole leg, boneless",
+    "keywords": [
+      "ham",
+      "fresh",
+      "uncooked",
+      "whole leg",
+      "boneless",
+      "cooked",
+      "leg",
+      "bone"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fully cooked, arm picnic shoulder, boneless",
+    "keywords": [
+      "ham",
+      "fully cooked",
+      "cooked",
+      "arm picnic shoulder",
+      "boneless",
+      "shoulder",
+      "arm picnic"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fully cooked, bone-in, half",
+    "keywords": [
+      "ham",
+      "fully cooked",
+      "bone-in",
+      "half",
+      "cooked",
+      "bone"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fully cooked, bone-in, whole",
+    "keywords": [
+      "ham",
+      "fully cooked",
+      "bone-in",
+      "whole",
+      "cooked",
+      "bone"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fully cooked, canned, boneless (refrigerated)",
+    "keywords": [
+      "ham",
+      "fully cooked",
+      "cooked",
+      "canned",
+      "boneless",
+      "refrigerated"
+    ],
+    "dop_fridge_days": 225,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fully cooked, slices, half, or spiral cut",
+    "keywords": [
+      "ham",
+      "fully cooked",
+      "slices",
+      "half",
+      "spiral cut",
+      "cooked",
+      "slice"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, fully cooked, vacuum packed, boneless",
+    "keywords": [
+      "ham",
+      "fully cooked",
+      "cooked",
+      "vacuum packed",
+      "boneless"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, pre-packaged, luncheon/deli meat",
+    "keywords": [
+      "ham",
+      "pre-packaged",
+      "luncheon/deli meat",
+      "packaged",
+      "luncheon",
+      "deli"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ham, shelf-stable cans",
+    "keywords": [
+      "ham",
+      "shelf stable cans",
+      "cans",
+      "shelf stable",
+      "shelf",
+      "stable",
+      "can"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 225,
+    "after_opening_fridge_days": 10,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Herbs",
+    "keywords": [
+      "herbs",
+      "herb"
+    ],
+    "dop_fridge_days": 9,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Herbs, dried",
+    "keywords": [
+      "herbs",
+      "dried",
+      "herb"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 548,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 548
+  },
+  {
+    "name": "Herring, glass packed, in wine sauce",
+    "keywords": [
+      "herring",
+      "glass packed",
+      "wine sauce",
+      "packed",
+      "glass",
+      "wine",
+      "sauce"
+    ],
+    "dop_fridge_days": 150,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Hoisin sauce",
+    "keywords": [
+      "hoisin sauce",
+      "sauce",
+      "hoisin"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 630,
+    "after_opening_fridge_days": 135,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Honey",
+    "keywords": [
+      "honey"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Honeydew",
+    "keywords": [
+      "honeydew"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 5,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Horseradish, in jar",
+    "keywords": [
+      "horseradish",
+      "jar"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 105,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Hot dogs",
+    "keywords": [
+      "hot dogs",
+      "hot"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Hot peppers",
+    "keywords": [
+      "hot peppers",
+      "pepper"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Hummus, commercial (pasteurized, with preservatives)",
+    "keywords": [
+      "hummus",
+      "commercial",
+      "pasteurized",
+      "preservatives",
+      "preservative"
+    ],
+    "dop_fridge_days": 90,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ice cream",
+    "keywords": [
+      "ice cream",
+      "ice",
+      "cream"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ice pops",
+    "keywords": [
+      "ice pops",
+      "ice",
+      "pops",
+      "pop"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Jams, jellies, and preserves",
+    "keywords": [
+      "jams",
+      "jellies",
+      "preserves",
+      "jam",
+      "jelly",
+      "preserve"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 360,
+    "after_opening_fridge_days": 270,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Jars or pouches",
+    "keywords": [
+      "jars",
+      "pouches",
+      "jar",
+      "pouch"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 3,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Jerky, commercially dried",
+    "keywords": [
+      "jerky",
+      "commercially dried",
+      "dried"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 360,
+    "after_opening_fridge_days": 75,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Jicama, fresh",
+    "keywords": [
+      "jicama",
+      "fresh"
+    ],
+    "dop_fridge_days": 18,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 120,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Juice concentrates",
+    "keywords": [
+      "juice concentrates",
+      "juice",
+      "concentrate"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 730,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Juice, boxes",
+    "keywords": [
+      "juice",
+      "boxes",
+      "box"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 10,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Kale",
+    "keywords": [
+      "kale"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 300,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Kefir, fermented milk",
+    "keywords": [
+      "kefir",
+      "fermented milk",
+      "milk",
+      "fermented"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ketchup, cocktail, or chili sauce",
+    "keywords": [
+      "ketchup",
+      "cocktail",
+      "chili sauce",
+      "sauce",
+      "chili"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 180,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Kimchi",
+    "keywords": [
+      "kimchi"
+    ],
+    "dop_fridge_days": 270,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Kohlrabi",
+    "keywords": [
+      "kohlrabi"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, breast, rolled",
+    "keywords": [
+      "lamb",
+      "breast",
+      "rolled"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, chops, ribs, or loin",
+    "keywords": [
+      "lamb",
+      "chops",
+      "ribs",
+      "loin",
+      "rib"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, crown roast",
+    "keywords": [
+      "lamb",
+      "crown roast",
+      "roast"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, cubes for kabobs",
+    "keywords": [
+      "lamb",
+      "cubes",
+      "kabobs",
+      "cube",
+      "kabob"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, ground",
+    "keywords": [
+      "lamb",
+      "ground"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, leg steaks",
+    "keywords": [
+      "lamb",
+      "leg steaks",
+      "steaks",
+      "steak",
+      "leg"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, leg, bone-in - large",
+    "keywords": [
+      "lamb",
+      "leg",
+      "bone-in - large",
+      "bone-in",
+      "bone"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, leg, bone-in - small",
+    "keywords": [
+      "lamb",
+      "leg",
+      "bone-in - small",
+      "bone-in",
+      "bone"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, leg; boneless, rolled",
+    "keywords": [
+      "lamb",
+      "leg",
+      "boneless",
+      "rolled",
+      "bone"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, shanks",
+    "keywords": [
+      "lamb",
+      "shanks",
+      "shank"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, shoulder roast or shank leg half",
+    "keywords": [
+      "lamb",
+      "shoulder roast",
+      "roast",
+      "shoulder",
+      "shank leg half",
+      "half",
+      "shank",
+      "shank leg",
+      "leg"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lamb, stew meat, pieces",
+    "keywords": [
+      "lamb",
+      "stew",
+      "pieces",
+      "stew meat",
+      "meat",
+      "piece"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lean fish, cod, flounder, haddock, halibut, sole, etc.",
+    "keywords": [
+      "lean fish",
+      "cod",
+      "flounder",
+      "haddock",
+      "halibut",
+      "sole",
+      "fish"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 210,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lean fish, pollock, ocean perch, rockfish, sea trout.",
+    "keywords": [
+      "lean fish",
+      "pollock",
+      "ocean",
+      "rockfish",
+      "sea",
+      "sea trout",
+      "fish",
+      "ocean perch",
+      "perch",
+      "trout",
+      "rock"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Leeks",
+    "keywords": [
+      "leeks",
+      "leek"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lemon extract",
+    "keywords": [
+      "lemon extract",
+      "lemon"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 360
+  },
+  {
+    "name": "Lemon juice",
+    "keywords": [
+      "lemon juice",
+      "lemon",
+      "juice"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 450,
+    "after_opening_fridge_days": 60,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lemongrass",
+    "keywords": [
+      "lemongrass"
+    ],
+    "dop_fridge_days": 8,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lentils, dried",
+    "keywords": [
+      "lentils",
+      "dried"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Lettuce, iceberg, romaine",
+    "keywords": [
+      "lettuce",
+      "iceberg",
+      "romaine"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lettuce, leaf, spinach",
+    "keywords": [
+      "lettuce",
+      "leaf",
+      "spinach"
+    ],
+    "dop_fridge_days": 5,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lime juice",
+    "keywords": [
+      "lime juice",
+      "lime",
+      "juice"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 450,
+    "after_opening_fridge_days": 60,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Liquid concentrate or ready-to-feed formula",
+    "keywords": [
+      "liquid concentrate",
+      "ready to feed formula",
+      "concentrate",
+      "liquid",
+      "formula",
+      "feed",
+      "ready to feed",
+      "feed formula"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Live clams, mussels, crab, and oysters",
+    "keywords": [
+      "live clams",
+      "mussels",
+      "crab",
+      "oysters",
+      "clams",
+      "clam",
+      "mussel",
+      "oyster"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 75,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Lobster tails",
+    "keywords": [
+      "lobster tails",
+      "tail",
+      "lobster",
+      "lobster tail"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Luncheon meat or poultry, pre-packaged",
+    "keywords": [
+      "luncheon meat",
+      "luncheon",
+      "meat",
+      "poultry",
+      "packaged",
+      "pre packaged"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Luncheon meat or poultry, store-sliced",
+    "keywords": [
+      "luncheon meat",
+      "poultry",
+      "store sliced",
+      "meat",
+      "luncheon",
+      "store",
+      "sliced"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Macadamias, no shell",
+    "keywords": [
+      "macadamias",
+      "macadamia",
+      "no shell",
+      "shell"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": 720,
+    "dop_pantry_days": 21,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Main dishes or meals, hot or refrigerated",
+    "keywords": [
+      "main dishes",
+      "meals",
+      "hot",
+      "refrigerated",
+      "dishes",
+      "dish",
+      "meal"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Margarine",
+    "keywords": [
+      "margarine"
+    ],
+    "dop_fridge_days": 180,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Marinades",
+    "keywords": [
+      "marinades",
+      "marinade"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 180,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Marshmallow cr\u00e8me",
+    "keywords": [
+      "marshmallow cr\u00e8me",
+      "marshmallow",
+      "cr\u00e8me"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 105,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 30
+  },
+  {
+    "name": "Marshmallows",
+    "keywords": [
+      "marshmallows",
+      "marshmallow"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 30
+  },
+  {
+    "name": "Mayonnaise, commercial",
+    "keywords": [
+      "mayonnaise",
+      "commercial"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 135,
+    "after_opening_fridge_days": 60,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Meat products, canned",
+    "keywords": [
+      "meat products",
+      "products",
+      "canned",
+      "meat",
+      "product"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1825,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Melons",
+    "keywords": [
+      "melons",
+      "melon"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 3,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Milk, canned evaporated or condensed",
+    "keywords": [
+      "milk",
+      "can",
+      "canned",
+      "evaporated",
+      "condensed",
+      "evaporate",
+      "condense"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 360,
+    "after_opening_fridge_days": 5,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Milk, lactose-free",
+    "keywords": [
+      "milk",
+      "lactose",
+      "lactose-free"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Milk, plain or flavored",
+    "keywords": [
+      "milk",
+      "plain",
+      "flavored",
+      "flavor"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 90,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Milk, shelf-stable",
+    "keywords": [
+      "shelf stable milk",
+      "milk",
+      "shelf",
+      "stable",
+      "uht",
+      "ultrapasteurized",
+      "aseptic packaging"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": 6,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Milk, ultra-pasteurized",
+    "keywords": [
+      "ultra pasteurized milk",
+      "milk",
+      "pasteurized",
+      "ultra"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 9,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Miso",
+    "keywords": [
+      "miso"
+    ],
+    "dop_fridge_days": 365,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Molasses",
+    "keywords": [
+      "molasses"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 548,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 180
+  },
+  {
+    "name": "Mushrooms",
+    "keywords": [
+      "mushroom",
+      "mushrooms"
+    ],
+    "dop_fridge_days": 5,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Mushrooms, dried",
+    "keywords": [
+      "mushrooms",
+      "mushroom",
+      "dried"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 548,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 90
+  },
+  {
+    "name": "Mustard",
+    "keywords": [
+      "mustard"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 548,
+    "after_opening_fridge_days": 365,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Nacho cheese, store bought",
+    "keywords": [
+      "nacho cheese",
+      "nacho",
+      "cheese",
+      "store bought",
+      "store"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 90,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": 14,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Nectar, papaya, mango, guava, or guavabana",
+    "keywords": [
+      "nectar",
+      "papaya",
+      "mango",
+      "guava",
+      "guavabana",
+      "mangoes"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 450,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Nut oils",
+    "keywords": [
+      "nut oils",
+      "nut",
+      "oils",
+      "oil"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": 210,
+    "after_opening_pantry_days": 165
+  },
+  {
+    "name": "Nutmeg, ground, dried, commercially bottled or purchased in bulk",
+    "keywords": [
+      "nutmeg",
+      "ground",
+      "dried",
+      "commercially bottled",
+      "commercially",
+      "bottled",
+      "bottle",
+      "commercial",
+      "purchased in bulk",
+      "bulk",
+      "purchased",
+      "purchase"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Nutrition supplement drinks, canned",
+    "keywords": [
+      "nutrition supplement drinks",
+      "drinks",
+      "canned",
+      "supplement",
+      "boost",
+      "ensure"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Nuts, jars or cans",
+    "keywords": [
+      "nuts",
+      "nut",
+      "jar",
+      "jars",
+      "cans",
+      "can"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 150,
+    "after_opening_pantry_days": 165
+  },
+  {
+    "name": "Oils, olive or vegetable",
+    "keywords": [
+      "oils",
+      "olive",
+      "vegetable",
+      "oil"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": 120,
+    "after_opening_pantry_days": 120
+  },
+  {
+    "name": "Okra",
+    "keywords": [
+      "okra"
+    ],
+    "dop_fridge_days": 3,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": 1,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Olives, black and green",
+    "keywords": [
+      "olives",
+      "black",
+      "green",
+      "olive"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 450,
+    "after_opening_fridge_days": 14,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Olives, from olive bar",
+    "keywords": [
+      "olives",
+      "bar",
+      "olive"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Onion powder, dried, commercially bottled or purchased in bulk",
+    "keywords": [
+      "onion powder",
+      "onion",
+      "powder",
+      "dried",
+      "commercially bottled",
+      "commercially",
+      "bottled",
+      "bottle",
+      "commercial",
+      "purchased in bulk",
+      "bulk",
+      "purchased",
+      "purchase"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Onions, spring or green",
+    "keywords": [
+      "onions",
+      "spring",
+      "green",
+      "onion"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": 30,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Onions, yellow, white, red, etc.",
+    "keywords": [
+      "onions",
+      "yellow",
+      "white",
+      "red",
+      "onion"
+    ],
+    "dop_fridge_days": 60,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": 30,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Orange juice, commercially frozen concentrate",
+    "keywords": [
+      "orange juice",
+      "commercially frozen concentrate",
+      "orange",
+      "juice",
+      "commercially",
+      "frozen",
+      "concentrate",
+      "commercially frozen",
+      "frozen concentrate"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Orange juice, commercially packaged carton",
+    "keywords": [
+      "orange juice",
+      "commercially packaged carton",
+      "orange",
+      "juice",
+      "commercially",
+      "packaged",
+      "carton",
+      "packaged carton",
+      "commercially packaged",
+      "commercial"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 300,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 9,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Oyster sauce",
+    "keywords": [
+      "oyster sauce",
+      "oyster",
+      "sauce"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 630,
+    "after_opening_fridge_days": 135,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pancakes, waffles",
+    "keywords": [
+      "pancakes",
+      "waffles",
+      "pancake"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 90,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Papaya, mango, feijoa, passionfruit, casaha melon",
+    "keywords": [
+      "papaya",
+      "mango",
+      "feijoa",
+      "passionfruit",
+      "casaha melon",
+      "melon",
+      "fruit",
+      "passion"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 4,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pasta, dry, without eggs",
+    "keywords": [
+      "pasta",
+      "dry",
+      "eggs",
+      "egg",
+      "without egg",
+      "without eggs"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Pastries, danish",
+    "keywords": [
+      "pastries",
+      "danish",
+      "pastry"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 8,
+    "after_opening_fridge_days": 420,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pate",
+    "keywords": [
+      "pate"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Peanut butter, commercial",
+    "keywords": [
+      "peanut butter",
+      "butter",
+      "commercial",
+      "peanut"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 450,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 75
+  },
+  {
+    "name": "Peanut butter, commercially produced, containing hydrogenated fat or other stabilizers",
+    "keywords": [
+      "peanut butter",
+      "butter",
+      "commercial peanut butter",
+      "hydrogenated fat",
+      "fat",
+      "stabilizers",
+      "stabilizer"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 225,
+    "after_opening_fridge_days": 105,
+    "after_opening_pantry_days": 75
+  },
+  {
+    "name": "Peanut butter, natural",
+    "keywords": [
+      "peanut butter",
+      "butter",
+      "natural"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 105,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Peanuts, boiled, shelled",
+    "keywords": [
+      "peanuts",
+      "boiled",
+      "shelled",
+      "peanut"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1095,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Peanuts, no shell",
+    "keywords": [
+      "peanuts",
+      "peanut",
+      "no shell",
+      "shell",
+      "nut"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": 720,
+    "dop_pantry_days": 28,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Peanuts, shell",
+    "keywords": [
+      "peanuts",
+      "peanut",
+      "shell",
+      "nut"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": 720,
+    "dop_pantry_days": 120,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Peas, dried split",
+    "keywords": [
+      "peas",
+      "pea",
+      "dried split",
+      "split"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Pecans, no shell",
+    "keywords": [
+      "pecans",
+      "pecan",
+      "no shell",
+      "shell"
+    ],
+    "dop_fridge_days": 270,
+    "dop_freezer_days": 720,
+    "dop_pantry_days": 21,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pecans, shell",
+    "keywords": [
+      "pecans",
+      "pecan",
+      "shell"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": 720,
+    "dop_pantry_days": 21,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pectin",
+    "keywords": [
+      "pectin"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 30
+  },
+  {
+    "name": "Peppers",
+    "keywords": [
+      "peppers",
+      "pepper"
+    ],
+    "dop_fridge_days": 9,
+    "dop_freezer_days": 210,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pesto, jarred",
+    "keywords": [
+      "pesto",
+      "jarred",
+      "jar"
+    ],
+    "dop_fridge_days": 180,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 3,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pheasant, young, whole",
+    "keywords": [
+      "pheasant",
+      "young",
+      "whole"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pickles",
+    "keywords": [
+      "pickles",
+      "pickle"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 60,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pies, mincemeat",
+    "keywords": [
+      "pies",
+      "mincemeat",
+      "pie",
+      "meat",
+      "mince"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pies, pecan",
+    "keywords": [
+      "pies",
+      "pie",
+      "pecan"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pies, pumpkin",
+    "keywords": [
+      "pies",
+      "pie",
+      "pumpkin"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pimento cheese, packaged",
+    "keywords": [
+      "pimento cheese",
+      "pimento",
+      "cheese"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 28,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pistachios, shell or no shell",
+    "keywords": [
+      "pistachios",
+      "shell",
+      "no shell",
+      "pistachio",
+      "pista"
+    ],
+    "dop_fridge_days": 360,
+    "dop_freezer_days": 720,
+    "dop_pantry_days": 21,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pitaya/dragon fruit",
+    "keywords": [
+      "pitaya",
+      "dragon fruit",
+      "fruit",
+      "fruits"
+    ],
+    "dop_fridge_days": 18,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Polenta, shelf-stable",
+    "keywords": [
+      "polenta",
+      "shelf stable",
+      "shelf stable polenta"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 6,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pomegranate",
+    "keywords": [
+      "pomegranate"
+    ],
+    "dop_fridge_days": 60,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 4,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Popcorn, commercially popped in bags",
+    "keywords": [
+      "popcorn",
+      "commercially",
+      "popped in bags",
+      "bags",
+      "bag",
+      "in bags"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 75,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 11
+  },
+  {
+    "name": "Popcorn, dry kernels in jar",
+    "keywords": [
+      "popcorn",
+      "dry kernels in jar",
+      "jar",
+      "dry kernels",
+      "kernels",
+      "in jar",
+      "kernel",
+      "chips",
+      "chip"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Popcorn, microwave packets",
+    "keywords": [
+      "popcorn",
+      "microwave packets",
+      "packets",
+      "microwave",
+      "packet"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 2
+  },
+  {
+    "name": "Pork roll",
+    "keywords": [
+      "pork roll",
+      "pork",
+      "roll"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, crown roast - large",
+    "keywords": [
+      "pork",
+      "roast",
+      "crown",
+      "crown roast - large",
+      "large",
+      "crown roast"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, crown roast - small",
+    "keywords": [
+      "pork",
+      "roast",
+      "crown",
+      "crown roast - small",
+      "small",
+      "crown roast"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, ground",
+    "keywords": [
+      "pork",
+      "ground"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, loin chops, bone-in",
+    "keywords": [
+      "pork",
+      "loin chops",
+      "bone-in",
+      "chops",
+      "bone",
+      "loin"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, loin chops, boneless",
+    "keywords": [
+      "pork",
+      "loin",
+      "boneless",
+      "loin chops",
+      "chops"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, loin roast, bone-in",
+    "keywords": [
+      "pork",
+      "loin roast",
+      "bone-in",
+      "roast",
+      "bone",
+      "loin"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, loin roast, boneless",
+    "keywords": [
+      "pork",
+      "loin",
+      "boneless",
+      "loin roast",
+      "roast"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, loin, cubes",
+    "keywords": [
+      "pork",
+      "loin",
+      "cubes",
+      "cube"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, ribs",
+    "keywords": [
+      "pork",
+      "ribs",
+      "rib"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, shoulder",
+    "keywords": [
+      "pork",
+      "shoulder"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, tenderloin",
+    "keywords": [
+      "pork",
+      "tenderloin"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pork, tenderloin medallions or loin cubes",
+    "keywords": [
+      "pork",
+      "tenderloin",
+      "tenderloin medallions",
+      "loin cubes",
+      "medallion",
+      "loin cube",
+      "loin",
+      "medallions",
+      "cube",
+      "cubes"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Potato chips",
+    "keywords": [
+      "potato chips",
+      "potato",
+      "chips",
+      "chip",
+      "potatoes"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 60,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 11
+  },
+  {
+    "name": "Potatoes",
+    "keywords": [
+      "potatoes",
+      "potato"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 45,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Potatoes, instant",
+    "keywords": [
+      "potatoes",
+      "potato",
+      "instant"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 375,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 270
+  },
+  {
+    "name": "Powdered milk",
+    "keywords": [
+      "powdered milk",
+      "powdered",
+      "milk",
+      "powder"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 90
+  },
+  {
+    "name": "Pretzels",
+    "keywords": [
+      "pretzels",
+      "pretzel"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 195,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 21
+  },
+  {
+    "name": "Prickly pear",
+    "keywords": [
+      "prickly pear",
+      "pear",
+      "pickle"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pudding",
+    "keywords": [
+      "pudding"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pudding mixes",
+    "keywords": [
+      "pudding mixes",
+      "pudding",
+      "mixes",
+      "mix"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 105
+  },
+  {
+    "name": "Pumpkins",
+    "keywords": [
+      "pumpkins",
+      "pumpkin"
+    ],
+    "dop_fridge_days": 120,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 75,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Pure vanilla extract",
+    "keywords": [
+      "vanilla",
+      "vanila extract"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 360
+  },
+  {
+    "name": "Quail, whole",
+    "keywords": [
+      "quail",
+      "whole"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Quiche",
+    "keywords": [
+      "quiche"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Quinoa, uncooked",
+    "keywords": [
+      "quinoa",
+      "cooked",
+      "uncooked",
+      "cook"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 913,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Radishes",
+    "keywords": [
+      "radishes",
+      "radish"
+    ],
+    "dop_fridge_days": 12,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Raspberries",
+    "keywords": [
+      "raspberries",
+      "raspberry"
+    ],
+    "dop_fridge_days": 3,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Raw kabobs with vegetables",
+    "keywords": [
+      "raw kabobs",
+      "vegetables",
+      "kabobs",
+      "kabob"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Re-hydrated textured soy protein, (TSP)",
+    "keywords": [
+      "re hydrated textured soy protein",
+      "protein",
+      "tsp",
+      "soy",
+      "soy protein",
+      "textured soy protein",
+      "re hydrated"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 105,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Ready-to-bake pie crust",
+    "keywords": [
+      "ready to bake pie crust",
+      "pie",
+      "crust",
+      "bake",
+      "ready"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 60,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Red wine",
+    "keywords": [
+      "red wine",
+      "red",
+      "wine"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Refried beans",
+    "keywords": [
+      "refried beans",
+      "refried bean"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1095,
+    "after_opening_fridge_days": 3,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Relish",
+    "keywords": [
+      "relish"
+    ],
+    "dop_fridge_days": 270,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 900,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Retort pouches or boxes",
+    "keywords": [
+      "retort pouches",
+      "boxes",
+      "box",
+      "retort",
+      "pouch"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Retort pouches or boxes",
+    "keywords": [
+      "retort pouches",
+      "boxes",
+      "box",
+      "retort",
+      "pouch"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Rhubarb",
+    "keywords": [
+      "rhubarb"
+    ],
+    "dop_fridge_days": 5,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Rice milk",
+    "keywords": [
+      "rice milk",
+      "rice",
+      "milk"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 9,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Rice, brown",
+    "keywords": [
+      "rice",
+      "brown"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 180,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Rice, white or wild",
+    "keywords": [
+      "rice",
+      "white",
+      "wild"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": 180,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Ricotta",
+    "keywords": [
+      "ricotta"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Roasted nuts (peanuts, cashews, almonds)",
+    "keywords": [
+      "roasted nuts",
+      "roasted",
+      "nuts",
+      "roasted peanuts",
+      "roasted almonds",
+      "roasted cashews",
+      "almonds",
+      "cashews",
+      "peanuts"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 28,
+    "after_opening_pantry_days": 11
+  },
+  {
+    "name": "Rotisserie chicken",
+    "keywords": [
+      "rotisserie chicken",
+      "chicken",
+      "rotisserie"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 120,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Rutabagas",
+    "keywords": [
+      "rutabagas"
+    ],
+    "dop_fridge_days": 18,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": 7,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Salad dressing, creamy",
+    "keywords": [
+      "creamy salad dressing",
+      "salad",
+      "dressing",
+      "salad dressing",
+      "creamy"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 180,
+    "after_opening_fridge_days": 25,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Salad dressing, dry,packaged",
+    "keywords": [
+      "salad dressing",
+      "salad",
+      "dressing",
+      "dry",
+      "packaged",
+      "package",
+      "powdered",
+      "powder"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 28,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Salad dressing, homemade",
+    "keywords": [
+      "homemade salad dressing",
+      "homemade",
+      "salad dressing",
+      "salad",
+      "dressing"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 14,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Salad dressing, vinaigrette",
+    "keywords": [
+      "salad dressing",
+      "vinaigrette",
+      "salad",
+      "dressing"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 180,
+    "after_opening_fridge_days": 28,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Salad dressings, commercial, bottled",
+    "keywords": [
+      "salad dressings",
+      "dressings",
+      "dressing",
+      "commercial",
+      "bottled",
+      "bottle",
+      "salad"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 330,
+    "after_opening_fridge_days": 60,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Salami, pre-packaged, luncheon/deli meat",
+    "keywords": [
+      "salami",
+      "pre-packaged",
+      "luncheon meat",
+      "deli meat",
+      "packaged",
+      "luncheon/deli",
+      "pre"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Salsa, picante and taco sauces",
+    "keywords": [
+      "salsa",
+      "picante",
+      "taco sauces",
+      "taco",
+      "sauces",
+      "sauce"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 30,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Sauce mixes, nondairy (spaghetti, taco, etc.)",
+    "keywords": [
+      "sauce mixes",
+      "sauce",
+      "mixes",
+      "mix",
+      "nondairy",
+      "dairy",
+      "spaghetti",
+      "taco"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Sausage, fully cooked smoked links, kielbasa",
+    "keywords": [
+      "sausage",
+      "fully cooked smoked links",
+      "kielbasa",
+      "smoked links",
+      "links",
+      "fully cooked",
+      "link"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Sausage, hard, dry (pepperoni), sliced",
+    "keywords": [
+      "sausage",
+      "hard",
+      "dry",
+      "pepperoni",
+      "sliced",
+      "slice",
+      "dry pepperoni"
+    ],
+    "dop_fridge_days": 18,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Sausage, raw bulk type or patties",
+    "keywords": [
+      "sausage",
+      "raw bulk type",
+      "patties",
+      "raw",
+      "patty"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Sausages, precooked",
+    "keywords": [
+      "sausages",
+      "sausage",
+      "precooked",
+      "cooked"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Sausages, uncooked",
+    "keywords": [
+      "sausages",
+      "sausage",
+      "uncooked",
+      "cooked"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Scallops",
+    "keywords": [
+      "scallops",
+      "scallop"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Seafood, canned",
+    "keywords": [
+      "canned seafood",
+      "seafood",
+      "canned"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Seasoning blends",
+    "keywords": [
+      "seasoning blends",
+      "blends",
+      "seasoning",
+      "blend"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 548,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 548
+  },
+  {
+    "name": "Sesame oil",
+    "keywords": [
+      "sesame oil",
+      "sesame",
+      "oil"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 180
+  },
+  {
+    "name": "Sherbet, sorbet",
+    "keywords": [
+      "sherbet",
+      "sorbet"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Shortening, solid",
+    "keywords": [
+      "shortening",
+      "solid"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 548,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 270
+  },
+  {
+    "name": "Shrimp, crayfish",
+    "keywords": [
+      "shrimp",
+      "crayfish",
+      "cray",
+      "fish"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Shrimp, shellfish",
+    "keywords": [
+      "shrimp",
+      "shellfish",
+      "fish"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 450,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Shucked clams, mussels, and oysters",
+    "keywords": [
+      "shucked clams",
+      "mussels",
+      "oysters",
+      "clams",
+      "clam",
+      "mussel",
+      "oyster"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Soda, carbonated cola drinks, mixers, diet sodas; bottles or cans",
+    "keywords": [
+      "soda",
+      "carbonated cola drinks",
+      "mixers",
+      "diet sodas",
+      "bottles",
+      "cans",
+      "cola drinks",
+      "drinks",
+      "drink",
+      "cola",
+      "carbonated",
+      "carbonated cola",
+      "mixer",
+      "diet",
+      "sodas",
+      "bottle",
+      "can"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 3,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Soup mixes, dry bouillon",
+    "keywords": [
+      "soup mixes",
+      "mixes",
+      "mix",
+      "soup",
+      "dry bouillon",
+      "bouillon"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Soy crumbles and hot dogs",
+    "keywords": [
+      "soy crumbles",
+      "hot dogs",
+      "hot dog",
+      "soy",
+      "soy crumble"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Soy flour, full-fat",
+    "keywords": [
+      "soy flour",
+      "full fat",
+      "soy",
+      "flour",
+      "fat"
+    ],
+    "dop_fridge_days": 180,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 60,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Soy meat substitutes",
+    "keywords": [
+      "soy meat substitutes",
+      "soy",
+      "meat",
+      "soy meat",
+      "meat substitutes",
+      "substitutes",
+      "substitute"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 450,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Soy milk",
+    "keywords": [
+      "soy milk",
+      "soy",
+      "milk"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 9,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Soy or rice beverage",
+    "keywords": [
+      "soy",
+      "rice beverage",
+      "rice",
+      "beverage"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 9,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Soy sauce or teriyaki sauce",
+    "keywords": [
+      "soy sauce",
+      "teriyaki sauce",
+      "sauce",
+      "soy",
+      "teriyaki"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1095,
+    "after_opening_fridge_days": 30,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Spaghetti sauce, in jars",
+    "keywords": [
+      "spaghetti sauce",
+      "sauce",
+      "in jars",
+      "jars",
+      "jar",
+      "spaghetti"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 540,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Spice/spices, ground",
+    "keywords": [
+      "spice",
+      "spices",
+      "ground"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 913,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 913
+  },
+  {
+    "name": "Spice/spices, whole",
+    "keywords": [
+      "spice",
+      "spices",
+      "whole"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 1278,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 1278
+  },
+  {
+    "name": "Squash, summer and zucchini",
+    "keywords": [
+      "squash",
+      "summer",
+      "zucchini"
+    ],
+    "dop_fridge_days": 5,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": 3,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Squash, winter",
+    "keywords": [
+      "squash",
+      "winter"
+    ],
+    "dop_fridge_days": 60,
+    "dop_freezer_days": 330,
+    "dop_pantry_days": 28,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Squid",
+    "keywords": [
+      "squid"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Star fruit",
+    "keywords": [
+      "star fruit",
+      "fruit",
+      "fruits"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Strawberries",
+    "keywords": [
+      "strawberries",
+      "strawberry"
+    ],
+    "dop_fridge_days": 3,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "String Cheese",
+    "keywords": [
+      "string cheese",
+      "cheese"
+    ],
+    "dop_fridge_days": 150,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Stuffed, raw pork chops",
+    "keywords": [
+      "stuffed",
+      "raw pork chops",
+      "chops",
+      "raw pork",
+      "pork"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Sugar substitutes",
+    "keywords": [
+      "sugar substitutes",
+      "sugar",
+      "substitutes",
+      "substitute"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Sugar, brown",
+    "keywords": [
+      "sugar",
+      "brown"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 630
+  },
+  {
+    "name": "Sugar, confectioners",
+    "keywords": [
+      "sugar",
+      "confectioners",
+      "confectioner"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 630
+  },
+  {
+    "name": "Sugar, granulated",
+    "keywords": [
+      "sugar",
+      "granulated"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 630
+  },
+  {
+    "name": "Sun dried tomatoes, jar",
+    "keywords": [
+      "sun dried tomatoes",
+      "dried tomatoes",
+      "sun",
+      "sun dried",
+      "dried",
+      "tomatoes",
+      "tomato"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 135,
+    "after_opening_pantry_days": 135
+  },
+  {
+    "name": "Sunflower oil",
+    "keywords": [
+      "sunflower oil",
+      "oil",
+      "sunflower"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Sunflower seeds, roasted, no shell",
+    "keywords": [
+      "sunflower",
+      "sunflower seed",
+      "sunflower seeds",
+      "seed",
+      "seeds",
+      "kernal",
+      "shell"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 360,
+    "after_opening_fridge_days": 225,
+    "after_opening_pantry_days": 105
+  },
+  {
+    "name": "Surimi seafood",
+    "keywords": [
+      "surimi seafood",
+      "surimi",
+      "sea",
+      "food"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Swiss chard",
+    "keywords": [
+      "swiss chard",
+      "chard"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Syrup",
+    "keywords": [
+      "syrup"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 180,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tahini",
+    "keywords": [
+      "tahini"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": 21,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tamarind",
+    "keywords": [
+      "tamarind"
+    ],
+    "dop_fridge_days": 180,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 14,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tamarind paste",
+    "keywords": [
+      "tamarind paste",
+      "paste",
+      "tamarind"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": 75,
+    "after_opening_pantry_days": 180
+  },
+  {
+    "name": "Tapenade",
+    "keywords": [
+      "tapenade"
+    ],
+    "dop_fridge_days": 270,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tapiocas",
+    "keywords": [
+      "tapiocas",
+      "tapioca"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 360,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 360
+  },
+  {
+    "name": "Taro",
+    "keywords": [
+      "taro"
+    ],
+    "dop_fridge_days": 3,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 7,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tea, bags",
+    "keywords": [
+      "tea",
+      "bags",
+      "bag"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 810,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 270
+  },
+  {
+    "name": "Tea, instant",
+    "keywords": [
+      "tea",
+      "instant"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 913,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 270
+  },
+  {
+    "name": "Tea, loose",
+    "keywords": [
+      "tea",
+      "loose"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 270
+  },
+  {
+    "name": "Tempeh",
+    "keywords": [
+      "tempeh"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Textured soy protein, (TSP)",
+    "keywords": [
+      "textured soy protein",
+      "protein",
+      "tsp",
+      "soy protein",
+      "soy"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 105
+  },
+  {
+    "name": "Thai red curry paste",
+    "keywords": [
+      "thai red curry paste",
+      "red curry paste",
+      "curry paste",
+      "paste",
+      "curry"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": 5,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Toaster pastries",
+    "keywords": [
+      "toaster pastries",
+      "pastry",
+      "toaster",
+      "pastries"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 270,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 11
+  },
+  {
+    "name": "Tofu",
+    "keywords": [
+      "tofu"
+    ],
+    "dop_fridge_days": 7,
+    "dop_freezer_days": 150,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tomato paste",
+    "keywords": [
+      "tomato paste"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 810,
+    "after_opening_fridge_days": 5,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tomato sauce, spaghetti, pizza",
+    "keywords": [
+      "tomato sauce",
+      "sauce",
+      "spaghetti",
+      "pizza"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tomatoes",
+    "keywords": [
+      "tomatoes",
+      "tomato"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 60,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tortillas, corn",
+    "keywords": [
+      "tortillas",
+      "corn"
+    ],
+    "dop_fridge_days": 75,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 35,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tortillas, flour",
+    "keywords": [
+      "tortillas",
+      "tortilla"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 180,
+    "dop_pantry_days": 90,
+    "after_opening_fridge_days": 90,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Tuna, packet",
+    "keywords": [
+      "tuna packet",
+      "tuna",
+      "packet",
+      "retort",
+      "retort packaging"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 540,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Turducken",
+    "keywords": [
+      "turducken"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Turkey bacon",
+    "keywords": [
+      "turkey bacon",
+      "turkey",
+      "bacon"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": 90,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 7,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Turkey parts, breast halves, bone-in",
+    "keywords": [
+      "turkey parts",
+      "breast halves",
+      "bone-in",
+      "halves",
+      "bone",
+      "breast",
+      "half",
+      "turkey"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Turkey parts, breast halves, boneless",
+    "keywords": [
+      "turkey parts",
+      "breast",
+      "boneless",
+      "bone",
+      "turkey"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Turkey parts, legs or thighs",
+    "keywords": [
+      "turkey parts",
+      "legs",
+      "thighs",
+      "turkey",
+      "leg",
+      "thigh"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Turkey, pre-packaged, luncheon/deli meat",
+    "keywords": [
+      "turkey",
+      "pre-packaged",
+      "luncheon/deli meat",
+      "packaged",
+      "luncheon",
+      "deli"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Turkey, whole",
+    "keywords": [
+      "turkey",
+      "whole"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 360,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Turnips",
+    "keywords": [
+      "turnips",
+      "turnip"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": 270,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Variety meats, liver, tongue, chitterlings, etc.",
+    "keywords": [
+      "variety meats",
+      "liver",
+      "tongue",
+      "chitterlings",
+      "meats",
+      "meat",
+      "chitterling"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Veal, ground",
+    "keywords": [
+      "veal",
+      "ground"
+    ],
+    "dop_fridge_days": 2,
+    "dop_freezer_days": 105,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Veal, leg rump or round roast, boneless",
+    "keywords": [
+      "veal",
+      "leg rump",
+      "rump",
+      "leg",
+      "round",
+      "round roast",
+      "roast",
+      "boneless"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Veal, loin roast, bone-in",
+    "keywords": [
+      "veal",
+      "loin roast",
+      "bone-in",
+      "roast",
+      "bone",
+      "loin"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Veal, shoulder roast, boneless",
+    "keywords": [
+      "veal",
+      "shoulder",
+      "boneless",
+      "shoulder roast",
+      "roast"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Vegan Cheddar Cheese",
+    "keywords": [
+      "vegan cheddar cheese",
+      "cheese",
+      "cheddar"
+    ],
+    "dop_fridge_days": 120,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 5,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Vegetable juice, homemade",
+    "keywords": [
+      "vegetable juice",
+      "juices",
+      "homemade",
+      "vegetable"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Vegetable juice, shelf-stable",
+    "keywords": [
+      "vegetable juice",
+      "stable",
+      "shelf",
+      "shelf-stable"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 540,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Vegetable oil sprays",
+    "keywords": [
+      "vegetable oil sprays",
+      "sprays",
+      "oil",
+      "vegetable",
+      "vegetable oil"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": 365
+  },
+  {
+    "name": "Vegetable stock/broth, commercially produced",
+    "keywords": [
+      "vegetable stock",
+      "vegetable broth",
+      "broth",
+      "commercial vegetable stock",
+      "commercial vegetable broth",
+      "vegetable"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 4,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Vegetables",
+    "keywords": [
+      "vegetables",
+      "vegetable"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": 420,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Vegetables",
+    "keywords": [
+      "vegetables",
+      "vegetable"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Venison, round, rump, loin, or rib roast",
+    "keywords": [
+      "venison",
+      "rump",
+      "round",
+      "loin",
+      "rib",
+      "rib roast",
+      "roast"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": 240,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Vinegar",
+    "keywords": [
+      "vinegar"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Walnuts, shell or no shell",
+    "keywords": [
+      "walnuts",
+      "shell",
+      "no shell",
+      "walnut"
+    ],
+    "dop_fridge_days": 315,
+    "dop_freezer_days": 720,
+    "dop_pantry_days": 21,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Watermelon",
+    "keywords": [
+      "watermelon"
+    ],
+    "dop_fridge_days": 4,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 2,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Whipped cream, aerosol can",
+    "keywords": [
+      "whipped cream",
+      "cream",
+      "aerosol can",
+      "can"
+    ],
+    "dop_fridge_days": 25,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Whipped topping, aerosol can",
+    "keywords": [
+      "whipped topping",
+      "topping",
+      "aerosol can",
+      "can",
+      "whipped"
+    ],
+    "dop_fridge_days": 90,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Whipped topping, tub",
+    "keywords": [
+      "whipped topping",
+      "topping",
+      "tub",
+      "whipped"
+    ],
+    "dop_fridge_days": 14,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "White wine",
+    "keywords": [
+      "white wine",
+      "white",
+      "wine"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": 2,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Worcestershire sauce",
+    "keywords": [
+      "worcestershire sauce",
+      "worcestershire",
+      "sauce"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 365,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Yams/sweet potatoes",
+    "keywords": [
+      "yams",
+      "sweet potatoes",
+      "potatoes",
+      "potato",
+      "yam"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 18,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Yeast, packaged",
+    "keywords": [
+      "yeast",
+      "packaged"
+    ],
+    "dop_fridge_days": null,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 730,
+    "after_opening_fridge_days": 120,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Yogurt",
+    "keywords": [
+      "yogurt"
+    ],
+    "dop_fridge_days": 11,
+    "dop_freezer_days": null,
+    "dop_pantry_days": null,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Yuca/cassava",
+    "keywords": [
+      "yuca",
+      "cassava"
+    ],
+    "dop_fridge_days": 3,
+    "dop_freezer_days": 45,
+    "dop_pantry_days": 7,
+    "after_opening_fridge_days": null,
+    "after_opening_pantry_days": null
+  },
+  {
+    "name": "Yuzu juice",
+    "keywords": [
+      "yuzu juice",
+      "yuzu",
+      "juice"
+    ],
+    "dop_fridge_days": 315,
+    "dop_freezer_days": null,
+    "dop_pantry_days": 150,
+    "after_opening_fridge_days": 105,
+    "after_opening_pantry_days": null
+  }
+]
