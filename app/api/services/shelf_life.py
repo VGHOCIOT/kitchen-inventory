@@ -33,15 +33,23 @@ def _find_entry(name: str) -> dict | None:
 
     best_match = None
     best_len = 0
+    fallback_match = None
+    fallback_len = 0
     for entry in _ENTRIES:
         candidates = [entry["name"].lower()] + [k.lower() for k in entry.get("keywords", [])]
         for candidate in candidates:
-            if candidate in normalized or normalized in candidate:
+            if candidate in normalized:
                 if len(candidate) > best_len:
                     best_len = len(candidate)
                     best_match = entry
+            elif normalized in candidate:
+                if len(candidate) > fallback_len:
+                    fallback_len = len(candidate)
+                    fallback_match = entry
     if best_match:
         return best_match
+    if fallback_match:
+        return fallback_match
 
     matches = difflib.get_close_matches(normalized, _SEARCH_STRINGS, n=1, cutoff=0.7)
     if matches:
