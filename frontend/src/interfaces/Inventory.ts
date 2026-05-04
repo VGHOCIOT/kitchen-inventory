@@ -65,26 +65,3 @@ export function computeExpiryStatus(expiresAt: string | null, location: string):
   return 'good'
 }
 
-export const OPENED_SHELF_LIFE: Record<string, Partial<Record<string, number>>> = {
-  dairy:      { fridge: 7,  cupboard: 1 },
-  meat:       { fridge: 3,  freezer: 90 },
-  seafood:    { fridge: 2,  freezer: 90 },
-  canned:     { fridge: 5,  cupboard: 365 },
-  condiments: { fridge: 30, cupboard: 90 },
-  beverages:  { fridge: 5,  cupboard: 3 },
-}
-
-export function suggestExpiryAfterOpening(categories: string[], location: string): Date {
-  const lc = location.toLowerCase()
-  for (const cat of categories) {
-    const entry = OPENED_SHELF_LIFE[cat.toLowerCase()]
-    if (entry && entry[lc] !== undefined) {
-      const d = new Date()
-      d.setDate(d.getDate() + entry[lc]!)
-      return d
-    }
-  }
-  const d = new Date()
-  d.setDate(d.getDate() + 7)
-  return d
-}

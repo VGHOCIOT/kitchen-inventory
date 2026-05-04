@@ -70,7 +70,9 @@ async def update_lot_opened_at(
         )
         product_ref = prod_result.scalar_one_or_none()
         if product_ref:
-            opened_days = estimate_opened_shelf_life_days(product_ref.name, lot.location)
+            opened_days = estimate_opened_shelf_life_days(
+                product_ref.name, lot.location, product_ref.categories or []
+            )
             if opened_days is not None:
                 lot.expires_at = opened_at.replace(tzinfo=None) + timedelta(days=opened_days)
 

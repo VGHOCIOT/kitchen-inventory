@@ -27,6 +27,48 @@ _LOCATION_DEFAULTS = {
     Locations.CUPBOARD: 30,
 }
 
+# Ordered by specificity — first match wins. Keywords are checked against each
+# category string after stripping the "en:" prefix and lowercasing.
+_CATEGORY_OPENED_FALLBACK: list[tuple[str, dict[Locations, int]]] = [
+    ("sausage",     {Locations.FRIDGE: 5,  Locations.FREEZER: 60}),
+    ("deli-meat",   {Locations.FRIDGE: 5}),
+    ("smoked-meat", {Locations.FRIDGE: 7}),
+    ("cured-meat",  {Locations.FRIDGE: 7}),
+    ("deli",        {Locations.FRIDGE: 5}),
+    ("poultry",     {Locations.FRIDGE: 3,  Locations.FREEZER: 90}),
+    ("meat",        {Locations.FRIDGE: 3,  Locations.FREEZER: 90}),
+    ("seafood",     {Locations.FRIDGE: 2,  Locations.FREEZER: 90}),
+    ("fish",        {Locations.FRIDGE: 2,  Locations.FREEZER: 90}),
+    ("cheese",      {Locations.FRIDGE: 14}),
+    ("dairy",       {Locations.FRIDGE: 7,  Locations.CUPBOARD: 1}),
+    ("milk",        {Locations.FRIDGE: 7}),
+    ("oil",         {Locations.CUPBOARD: 90, Locations.FRIDGE: 180}),
+    ("spread",      {Locations.FRIDGE: 21, Locations.CUPBOARD: 14}),
+    ("jam",         {Locations.FRIDGE: 90, Locations.CUPBOARD: 30}),
+    ("pickle",      {Locations.FRIDGE: 90}),
+    ("condiment",   {Locations.FRIDGE: 30, Locations.CUPBOARD: 90}),
+    ("sauce",       {Locations.FRIDGE: 14, Locations.CUPBOARD: 30}),
+    ("canned",      {Locations.FRIDGE: 5,  Locations.CUPBOARD: 5}),
+    ("beverage",    {Locations.FRIDGE: 5,  Locations.CUPBOARD: 3}),
+    ("drink",       {Locations.FRIDGE: 5,  Locations.CUPBOARD: 3}),
+    ("bread",       {Locations.CUPBOARD: 5, Locations.FRIDGE: 14}),
+    ("cereal",      {Locations.CUPBOARD: 30}),
+    ("pasta",       {Locations.CUPBOARD: 365}),
+    ("spice",       {Locations.CUPBOARD: 365}),
+    ("snack",       {Locations.CUPBOARD: 14}),
+    ("frozen",      {Locations.FREEZER: 30}),
+]
+
+
+def _opened_days_from_categories(categories: list[str], location: Locations) -> int | None:
+    if location == Locations.FREEZER:
+        return None
+    normalised = [c.lower().removeprefix("en:") for c in categories]
+    for keyword, loc_map in _CATEGORY_OPENED_FALLBACK:
+        if any(keyword in cat for cat in normalised):
+            return loc_map.get(location)
+    return None
+
 
 def _find_entry(name: str) -> dict | None:
     normalized = name.lower().strip()
@@ -74,16 +116,31 @@ def estimate_shelf_life_days(name: str, location: Locations) -> int:
     return _LOCATION_DEFAULTS[location]
 
 
-def estimate_opened_shelf_life_days(name: str, location: Locations) -> int | None:
-    """Returns shelf life in days after opening. None if no after-opening data exists."""
-    entry = _find_entry(name)
-    if not entry:
-        return None
+def estimate_opened_shelf_life_days(
+    name: str,
+    location: Locations,
+    categories: list[str] | None = None,
+) -> int | None:
+    """Returns shelf life in days after opening.
+
+    Resolution order:
+    1. Specific foodkeeper entry for the item name.
+    2. Category-based fallback using _CATEGORY_OPENED_FALLBACK.
+    3. None — caller decides what to do (e.g. keep existing expiry).
+    """
     if location == Locations.FREEZER:
-        # No after-opening freezer data exists; moving-on-open is handled separately
         return None
-    elif location == Locations.CUPBOARD:
-        days = entry.get("after_opening_pantry_days") or entry.get("after_opening_fridge_days")
-    else:
-        days = entry.get("after_opening_fridge_days")
-    return int(days) if days is not None else None
+
+    entry = _find_entry(name)
+    if entry:
+        if location == Locations.CUPBOARD:
+            days = entry.get("after_opening_pantry_days") or entry.get("after_opening_fridge_days")
+        else:
+            days = entry.get("after_opening_fridge_days")
+        if days is not None:
+            return int(days)
+
+    if categories:
+        return _opened_days_from_categories(categories, location)
+
+    return None
