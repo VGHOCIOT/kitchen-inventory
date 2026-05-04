@@ -3,6 +3,7 @@ from sqlalchemy import select, func
 from uuid import UUID
 import logging
 
+import events
 from models.stock_lot import StockLot
 from models.item import Item, Locations
 
@@ -48,13 +49,30 @@ async def get_lots_for_item(
     return list(result.scalars().all())
 
 
+async def update_lot_opened_at(
+    db: AsyncSession,
+    lot_id: UUID,
+    opened_at,
+) -> StockLot | None:
+    """Set opened_at on a lot, then sync Item.expires_at to the minimum across active lots."""
+    result = await db.execute(select(StockLot).where(StockLot.id == lot_id))
+    lot = result.scalar_one_or_none()
+    if not lot:
+        return None
+    lot.opened_at = opened_at.replace(tzinfo=None) if opened_at is not None else None
+    await db.flush()
+    await refresh_item_cache(db, lot.product_reference_id, lot.location, lot.unit)
+    await db.refresh(lot)
+    return lot
+
+
 async def deduct_from_lots(
     db: AsyncSession,
     product_reference_id: UUID,
     location: Locations,
     amount: float,
 ) -> float:
-    """Walk lots FIFO and subtract amount. Returns actual amount deducted."""
+    """Walk lots FEFO and subtract amount. Returns actual amount deducted."""
     lots = await get_lots_for_item(db, product_reference_id, location)
     remaining_to_deduct = amount
     total_deducted = 0.0
@@ -115,6 +133,10 @@ async def refresh_item_cache(
         if item:
             await db.delete(item)
         await db.commit()
+        events.emit("item_deleted", {
+            "product_reference_id": str(product_reference_id),
+            "location": location.value,
+        })
         return None
 
     if item:
@@ -133,4 +155,12 @@ async def refresh_item_cache(
 
     await db.commit()
     await db.refresh(item)
+    events.emit("item_updated", {
+        "id": str(item.id),
+        "product_reference_id": str(item.product_reference_id),
+        "location": item.location.value,
+        "qty": item.qty,
+        "unit": item.unit,
+        "expires_at": item.expires_at.isoformat() if item.expires_at else None,
+    })
     return item

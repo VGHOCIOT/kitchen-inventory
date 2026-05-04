@@ -137,7 +137,6 @@ export default function InventoryPage() {
           productReferenceId={lotsOpen.item.product_reference_id}
           location={lotsOpen.item.location}
           productName={lotsOpen.product.name}
-          categories={lotsOpen.product.categories}
           onClose={() => setLotsOpen(null)}
         />
       )}

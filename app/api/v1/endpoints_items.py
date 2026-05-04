@@ -1,13 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from db.session import get_db
 import logging
 
 logger = logging.getLogger(__name__)
 
 from crud.item import (
-    get_all_items,
     get_all_items_with_products,
     get_items_by_location,
     get_item_by_id,
@@ -17,8 +15,7 @@ from crud.item import (
     move_item,
     delete_item_by_composite_key,
 )
-from crud.stock_lot import get_lots_for_item, refresh_item_cache
-from models.stock_lot import StockLot
+from crud.stock_lot import get_lots_for_item, update_lot_opened_at
 from schemas.stock_lot import StockLotUpdateIn
 from crud.product_reference import (
     get_product_by_barcode,
@@ -81,18 +78,10 @@ async def update_lot(
     payload: StockLotUpdateIn,
     db: AsyncSession = Depends(get_db),
 ):
-    """Update a lot's expires_at and/or opened_at. Syncs Item.expires_at to the new minimum."""
-    result = await db.execute(select(StockLot).where(StockLot.id == _UUID(lot_id)))
-    lot = result.scalar_one_or_none()
+    """Mark a lot as opened. Syncs Item.expires_at to the new minimum across active lots."""
+    lot = await update_lot_opened_at(db, _UUID(lot_id), payload.opened_at)
     if not lot:
         raise HTTPException(status_code=404, detail="Lot not found")
-    if payload.expires_at is not None:
-        lot.expires_at = payload.expires_at.replace(tzinfo=None)
-    if payload.opened_at is not None:
-        lot.opened_at = payload.opened_at.replace(tzinfo=None)
-    await db.flush()
-    await refresh_item_cache(db, lot.product_reference_id, lot.location, lot.unit)
-    await db.refresh(lot)
     return lot
 
 
@@ -294,7 +283,7 @@ async def adjust_quantity(
     """
     Adjust item quantity by delta (in base units: grams, ml, or count).
     Delta is a float — supports fractional amounts (e.g. -0.5 for half a lemon).
-    Positive delta adds a new lot. Negative delta deducts from lots FIFO.
+    Positive delta adds a new lot. Negative delta deducts from lots FEFO.
     If quantity reaches 0, item is deleted.
     """
     if payload.delta == 0:
@@ -318,7 +307,7 @@ async def move_item_between_locations(
 ):
     """
     Move stock between locations (in base units).
-    Deducts from source lots FIFO, creates new lot at destination.
+    Deducts from source lots FEFO, creates new lot at destination.
     """
     existing = await get_item_by_product_and_location(
         db, payload.product_reference_id, payload.from_location

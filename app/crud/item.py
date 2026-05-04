@@ -55,7 +55,7 @@ async def deduct_stock(
     amount: float,
     unit: str,
 ) -> Item | None:
-    """Deduct stock by walking lots FIFO. Returns updated Item or None if depleted."""
+    """Deduct stock by walking lots FEFO. Returns updated Item or None if depleted."""
     actual_deducted = await deduct_from_lots(db, product_reference_id, location, amount)
 
     if actual_deducted <= 0:
@@ -119,7 +119,7 @@ async def adjust_item_quantity(
     location: Locations,
     delta: float,
 ) -> Item | None:
-    """Adjust item by delta. Positive creates a lot; negative deducts FIFO. Returns None if depleted."""
+    """Adjust item by delta. Positive creates a lot; negative deducts FEFO. Returns None if depleted."""
     existing = await get_item_by_product_and_location(db, product_reference_id, location)
     if delta > 0:
         unit = existing.unit if existing else "unit"

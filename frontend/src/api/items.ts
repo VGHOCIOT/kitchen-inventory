@@ -53,7 +53,7 @@ export async function getLots(productReferenceId: string, location: string): Pro
 
 export async function updateLot(
   lotId: string,
-  body: { expires_at?: string | null; opened_at?: string | null },
+  body: { opened_at?: string | null },
 ): Promise<StockLotOut> {
   const res = await fetch(`/api/v1/items/lots/${lotId}`, {
     method: 'PATCH',

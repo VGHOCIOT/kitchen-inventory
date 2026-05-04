@@ -21,5 +21,4 @@ class StockLotOut(BaseModel):
 
 
 class StockLotUpdateIn(BaseModel):
-    expires_at: Optional[datetime] = None
     opened_at: Optional[datetime] = None
